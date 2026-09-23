@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EnvGuard Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<style>
+  :root {
+    --bg: #0f1419;
+    --card: #1a2129;
+    --accent: #4fd1c5;
+    --alert: #f56565;
+    --text: #e2e8f0;
+    --muted: #718096;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 24px;
+  }
+  h1 { font-size: 1.5rem; margin-bottom: 4px; }
+  .subtitle { color: var(--muted); margin-bottom: 24px; font-size: 0.9rem; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .card {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid #2a333d;
+    transition: border-color 0.3s;
+  }
+  .card.alert { border-color: var(--alert); }
+  .card .label { color: var(--muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  .card .value { font-size: 2rem; font-weight: 600; margin-top: 8px; }
+  .card .unit { font-size: 1rem; color: var(--muted); font-weight: 400; }
+  .status-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    background: var(--card);
+    border-radius: 8px;
+    margin-bottom: 24px;
+    font-size: 0.85rem;
+  }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+  .dot.offline { background: var(--alert); }
+  .chart-container { background: var(--card); border-radius: 12px; padding: 20px; }
+</style>
+</head>
+<body>
+  <h1>🌡️ EnvGuard</h1>
+  <p class="subtitle">Monitoramento ambiental em tempo real via ESP32</p>
+
+  <div class="status-bar">
+    <span class="dot" id="statusDot"></span>
+    <span id="statusText">Conectando...</span>
+  </div>
+
+  <div class="grid">
+    <div class="card" id="cardTemp">
+      <div class="label">Temperatura</div>
+      <div class="value"><span id="temp">--</span><span class="unit">°C</span></div>
+    </div>
+    <div class="card" id="cardHum">
+      <div class="label">Umidade</div>
+      <div class="value"><span id="hum">--</span><span class="unit">%</span></div>
+    </div>
+    <div class="card" id="cardAir">
+      <div class="label">Qualidade do Ar</div>
+      <div class="value"><span id="air">--</span><span class="unit">ppm est.</span></div>
+    </div>
+    <div class="card" id="cardNoise">
+      <div class="label">Ruído</div>
+      <div class="value"><span id="noise">--</span><span class="unit">adc</span></div>
+    </div>
+  </div>
+
+  <div class="chart-container">
+    <canvas id="historyChart" height="80"></canvas>
+  </div>
+
+<script>
+// Ajuste para o IP do seu ESP32, ex: 'http://192.168.1.50'
+const ESP32_HOST = window.location.origin.includes('file') ? 'http://192.168.1.50' : '';
+
+const maxPoints = 30;
+const history = { labels: [], temp: [], hum: [] };
+
+const ctx = document.getElementById('historyChart').getContext('2d');
+const chart = new Chart(ctx, {
+  type: 'line',
+  data: {
+    labels: history.labels,
+    datasets: [
+      { label: 'Temperatura (°C)', data: history.temp, borderColor: '#4fd1c5', tension: 0.3 },
+      { label: 'Umidade (%)', data: history.hum, borderColor: '#63b3ed', tension: 0.3 }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { labels: { color: '#e2e8f0' } } },
+    scales: {
+      x: { ticks: { color: '#718096' }, grid: { color: '#2a333d' } },
+      y: { ticks: { color: '#718096' }, grid: { color: '#2a333d' } }
+    }
+  }
+});
+
+function setAlert(cardId, isAlert) {
+  document.getElementById(cardId).classList.toggle('alert', isAlert);
+}
+
+async function fetchData() {
+  try {
+    const res = await fetch(`${ESP32_HOST}/api/data`);
+    const data = await res.json();
+
+    document.getElementById('temp').textContent = data.temperature.toFixed(1);
+    document.getElementById('hum').textContent = data.humidity.toFixed(1);
+    document.getElementById('air').textContent = data.air_quality;
+    document.getElementById('noise').textContent = data.noise_level;
+
+    setAlert('cardTemp', data.temperature > 30);
+    setAlert('cardHum', data.humidity > 70);
+    setAlert('cardAir', data.air_quality > 400);
+    setAlert('cardNoise', data.noise_level > 700);
+
+    document.getElementById('statusDot').classList.remove('offline');
+    document.getElementById('statusText').textContent = 'Online — atualizado agora';
+
+    const now = new Date().toLocaleTimeString();
+    history.labels.push(now);
+    history.temp.push(data.temperature);
+    history.hum.push(data.humidity);
+    if (history.labels.length > maxPoints) {
+      history.labels.shift(); history.temp.shift(); history.hum.shift();
+    }
+    chart.update();
+  } catch (err) {
+    document.getElementById('statusDot').classList.add('offline');
+    document.getElementById('statusText').textContent = 'Offline — verifique a conexão com o ESP32';
+  }
+}
+
+fetchData();
+setInterval(fetchData, 5000);
+</script>
+</body>
+</html>
