@@ -11,7 +11,7 @@ App web (PWA) para estudar inglês, pensado para falantes de português.
 
 ## Como rodar
 ```bash
-cd app-ingles
+cd english-ai-coach/prototype-pwa
 python3 -m http.server 8000
 # abra http://localhost:8000
 ```

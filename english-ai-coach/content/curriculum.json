@@ -1,0 +1,1767 @@
+{
+ "course": "English AI Coach",
+ "level": "A1",
+ "book_sequence": "Interchange Intro (5th ed.) - ordem das unidades; exemplos originais",
+ "units": [
+  {
+   "id": "U01",
+   "order": 1,
+   "title": "What's your name?",
+   "topics": "Alphabet; greetings e despedidas; nomes e títulos; números 0–10; telefones e e-mails",
+   "grammar": "Possessivos my/your/his/her; verbo be (afirmativo) e contrações",
+   "speaking": "Apresentar-se e apresentar amigos; dizer olá e tchau; pedir nomes e telefones",
+   "vocabulary": [
+    {
+     "en": "hello",
+     "pt": "olá",
+     "example": "Hello, I'm Ana."
+    },
+    {
+     "en": "good morning",
+     "pt": "bom dia",
+     "example": "Good morning, Mr. Lima."
+    },
+    {
+     "en": "goodbye",
+     "pt": "tchau",
+     "example": "Goodbye, see you!"
+    },
+    {
+     "en": "name",
+     "pt": "nome",
+     "example": "My name is Ana."
+    },
+    {
+     "en": "last name",
+     "pt": "sobrenome",
+     "example": "What's your last name?"
+    },
+    {
+     "en": "phone number",
+     "pt": "número de telefone",
+     "example": "My phone number is five-five-five, one-two-three-four."
+    },
+    {
+     "en": "nice to meet you",
+     "pt": "prazer em conhecê-lo",
+     "example": "Nice to meet you."
+    },
+    {
+     "en": "how are you?",
+     "pt": "como você está?",
+     "example": "How are you? I'm fine, thanks."
+    }
+   ],
+   "dialogue": [
+    {
+     "speaker": "A",
+     "line": "Hi, I'm Ana. What's your name?"
+    },
+    {
+     "speaker": "B",
+     "line": "My name is Leo. Nice to meet you."
+    },
+    {
+     "speaker": "A",
+     "line": "Nice to meet you, too. How do you spell your last name?"
+    },
+    {
+     "speaker": "B",
+     "line": "L-I-M-A."
+    }
+   ],
+   "quiz": [
+    {
+     "question": "Complete: 'What's ___ name?' (a pergunta é para você)",
+     "options": [
+      "my",
+      "your",
+      "his"
+     ],
+     "answer_index": 1,
+     "explanation_pt": "Para perguntar ao outro, usa-se 'your'."
+    },
+    {
+     "question": "Complete: 'This is Paulo. ___ last name is Souza.'",
+     "options": [
+      "Her",
+      "His",
+      "My"
+     ],
+     "answer_index": 1,
+     "explanation_pt": "Paulo é homem, então 'his'."
+    },
+    {
+     "question": "Qual é a resposta natural para 'Nice to meet you'?",
+     "options": [
+      "Fine, thanks.",
+      "Nice to meet you, too.",
+      "It's Rogers."
+     ],
+     "answer_index": 1,
+     "explanation_pt": "Resposta de apresentação."
+    },
+    {
+     "question": "Como se escreve o número 8?",
+     "options": [
+      "eight",
+      "eighth",
+      "ate"
+     ],
+     "answer_index": 0,
+     "explanation_pt": "8 = eight."
+    }
+   ]
+  },
+  {
+   "id": "U02",
+   "order": 2,
+   "title": "Where are my keys?",
+   "topics": "Objetos pessoais e da sala de aula; localização de objetos",
+   "grammar": "Artigos a/an/the; this/these, it/they; plurais; perguntas yes/no e where com be; preposições in, in front of, behind, on, next to, under",
+   "speaking": "Nomear objetos; perguntar e dizer onde as coisas estão",
+   "vocabulary": [
+    {
+     "en": "keys",
+     "pt": "chaves",
+     "example": "Where are my keys?"
+    },
+    {
+     "en": "wallet",
+     "pt": "carteira",
+     "example": "My wallet is on the desk."
+    },
+    {
+     "en": "umbrella",
+     "pt": "guarda-chuva",
+     "example": "It's an umbrella."
+    },
+    {
+     "en": "phone",
+     "pt": "celular",
+     "example": "Is this your phone?"
+    },
+    {
+     "en": "desk",
+     "pt": "mesa de trabalho",
+     "example": "The pen is on the desk."
+    },
+    {
+     "en": "bag",
+     "pt": "bolsa/mochila",
+     "example": "The keys are in my bag."
+    },
+    {
+     "en": "chair",
+     "pt": "cadeira",
+     "example": "The cat is under the chair."
+    },
+    {
+     "en": "notebook",
+     "pt": "caderno",
+     "example": "These are notebooks."
+    }
+   ],
+   "dialogue": [
+    {
+     "speaker": "A",
+     "line": "Excuse me. Where are my keys?"
+    },
+    {
+     "speaker": "B",
+     "line": "They're on the desk, next to your phone."
+    },
+    {
+     "speaker": "A",
+     "line": "Oh, thank you! And where is my umbrella?"
+    },
+    {
+     "speaker": "B",
+     "line": "It's behind the chair."
+    }
+   ],
+   "quiz": [
+    {
+     "question": "Complete: 'It's ___ umbrella.'",
+     "options": [
+      "a",
+      "an",
+      "the plural"
+     ],
+     "answer_index": 1,
+     "explanation_pt": "Umbrella começa com som de vogal: 'an'."
+    },
+    {
+     "question": "Plural de 'key':",
+     "options": [
+      "keys",
+      "keies",
+      "key's"
+     ],
+     "answer_index": 0,
+     "explanation_pt": "Basta acrescentar -s."
+    },
+    {
+     "question": "'The phone is ___ the desk.' (em cima)",
+     "options": [
+      "on",
+      "under",
+      "behind"
+     ],
+     "answer_index": 0,
+     "explanation_pt": "on = em cima de."
+    },
+    {
+     "question": "Qual está correto?",
+     "options": [
+      "Where is my keys?",
+      "Where are my keys?",
+      "Where am my keys?"
+     ],
+     "answer_index": 1,
+     "explanation_pt": "Keys é plural: are."
+    }
+   ]
+  },
+  {
+   "id": "U03",
+   "order": 3,
+   "title": "Where are you from?",
+   "topics": "Cidades e países; adjetivos de personalidade e aparência; números 11–103 e idades",
+   "grammar": "Verbo be: afirmativo, negativo, perguntas yes/no, respostas curtas e Wh-",
+   "speaking": "Falar de origem, nacionalidade, idioma e idade; descrever pessoas",
+   "vocabulary": [
+    {
+     "en": "country",
+     "pt": "país",
+     "example": "Brazil is a big country."
+    },
+    {
+     "en": "city",
+     "pt": "cidade",
+     "example": "I'm from a small city."
+    },
+    {
+     "en": "language",
+     "pt": "idioma",
+     "example": "My first language is Portuguese."
+    },
+    {
+     "en": "tall",
+     "pt": "alto",
+     "example": "My brother is tall."
+    },
+    {
+     "en": "short",
+     "pt": "baixo/curto",
+     "example": "She is short."
+    },
+    {
+     "en": "friendly",
+     "pt": "simpático",
+     "example": "He is very friendly."
+    },
+    {
+     "en": "shy",
+     "pt": "tímido",
+     "example": "I'm a little shy."
+    },
+    {
+     "en": "years old",
+     "pt": "anos de idade",
+     "example": "I'm thirty years old."
+    }
+   ],
+   "dialogue": [
+    {
+     "speaker": "A",
+     "line": "Where are you from?"
+    },
+    {
+     "speaker": "B",
+     "line": "I'm from Fortaleza, in Brazil. And you?"
+    },
+    {
+     "speaker": "A",
+     "line": "I'm from Toronto. Is Portuguese your first language?"
+    },
+    {
+     "speaker": "B",
+     "line": "Yes, it is."
+    }
+   ],
+   "quiz": [
+    {
+     "question": "'She ___ from Brazil.'",
+     "options": [
+      "am",
+      "is",
+      "are"
+     ],
+     "answer_index": 1,
+     "explanation_pt": "She + is."
+    },
+    {
+     "question": "Forma negativa de 'I am a student':",
+     "options": [
+      "I not am a student.",
+      "I'm not a student.",
+      "I amn't a student."
+     ],
+     "answer_index": 1,
+     "explanation_pt": "I'm not."
+    },
+    {
+     "question": "Resposta curta para 'Are you shy?' (sim):",
+     "options": [
+      "Yes, I am.",
+      "Yes, I'm.",
+      "Yes, I do."
+     ],
+     "answer_index": 0,
+     "explanation_pt": "Resposta curta afirmativa não usa contração."
+    },
+    {
+     "question": "Como se diz 31?",
+     "options": [
+      "thirteen",
+      "thirty-one",
+      "thirty-first"
+     ],
+     "answer_index": 1,
+     "explanation_pt": "31 = thirty-one."
+    }
+   ]
+  },
+  {
+   "id": "U04",
+   "order": 4,
+   "title": "Is this coat yours?",
+   "topics": "Roupas; cores; clima e estações; donos de objetos",
+   "grammar": "Possessivos our/their; pronomes possessivos; whose; present continuous; and, but, so; adjetivo antes do substantivo",
+   "speaking": "Descrever roupas e cores; falar do clima e das estações; descobrir de quem é algo",
+   "vocabulary": [
+    {
+     "en": "coat",
+     "pt": "casaco",
+     "example": "Is this coat yours?"
+    },
+    {
+     "en": "shirt",
+     "pt": "camisa",
+     "example": "He is wearing a blue shirt."
+    },
+    {
+     "en": "shoes",
+     "pt": "sapatos",
+     "example": "Her shoes are black."
+    },
+    {
+     "en": "dress",
+     "pt": "vestido",
+     "example": "She's wearing a red dress."
+    },
+    {
+     "en": "sunny",
+     "pt": "ensolarado",
+     "example": "It's sunny today."
+    },
+    {
+     "en": "rainy",
+     "pt": "chuvoso",
+     "example": "It's rainy in winter."
+    },
+    {
+     "en": "winter",
+     "pt": "inverno",
+     "example": "Winter is cold here."
+    },
+    {
+     "en": "whose",
+     "pt": "de quem",
+     "example": "Whose bag is this?"
+    }
+   ],
+   "dialogue": [
+    {
+     "speaker": "A",
+     "line": "Whose coat is this?"
+    },
+    {
+     "speaker": "B",
+     "line": "It's mine. It's a black coat."
+    },
+    {
+     "speaker": "A",
+     "line": "It's raining, but you aren't wearing it!"
+    },
+    {
+     "speaker": "B",
+     "line": "Oh, you're right. Thanks!"
+    }
+   ],
+   "quiz": [
+    {
+     "question": "'This bag is ___.' (é minha)",
+     "options": [
+      "my",
+      "mine",
+      "me"
+     ],
+     "answer_index": 1,
+     "explanation_pt": "Pronome possessivo sem substantivo: mine."
+    },
+    {
+     "question": "'They ___ wearing jackets.'",
+     "options": [
+      "is",
+      "are",
+      "do"
+     ],
+     "answer_index": 1,
+     "explanation_pt": "They + are + -ing."
+    },
+    {
+     "question": "Ordem correta:",
+     "options": [
+      "a coat black",
+      "a black coat",
+      "black a coat"
+     ],
+     "answer_index": 1,
+     "explanation_pt": "Adjetivo vem antes do substantivo."
+    },
+    {
+     "question": "It's cold, ___ I'm wearing a coat.",
+     "options": [
+      "but",
+      "so",
+      "and not"
+     ],
+     "answer_index": 1,
+     "explanation_pt": "'so' indica consequência."
+    }
+   ]
+  },
+  {
+   "id": "U05",
+   "order": 5,
+   "title": "What time is it?",
+   "topics": "Horas; períodos do dia; atividades do dia a dia",
+   "grammar": "Expressões de tempo (o'clock, a.m./p.m., noon, midnight, in the morning, at night); Wh- no present continuous",
+   "speaking": "Perguntar e dizer as horas; descrever o que alguém está fazendo agora",
+   "vocabulary": [
+    {
+     "en": "o'clock",
+     "pt": "em ponto",
+     "example": "It's five o'clock."
+    },
+    {
+     "en": "half past",
+     "pt": "e meia",
+     "example": "It's half past six."
+    },
+    {
+     "en": "morning",
+     "pt": "manhã",
+     "example": "I study in the morning."
+    },
+    {
+     "en": "afternoon",
+     "pt": "tarde",
+     "example": "We eat lunch in the afternoon."
+    },
+    {
+     "en": "evening",
+     "pt": "noite (início)",
+     "example": "I watch TV in the evening."
+    },
+    {
+     "en": "midnight",
+     "pt": "meia-noite",
+     "example": "It's midnight."
+    },
+    {
+     "en": "cook",
+     "pt": "cozinhar",
+     "example": "She is cooking dinner."
+    },
+    {
+     "en": "sleep",
+     "pt": "dormir",
+     "example": "The baby is sleeping."
+    }
+   ],
+   "dialogue": [
+    {
+     "speaker": "A",
+     "line": "What time is it?"
+    },
+    {
+     "speaker": "B",
+     "line": "It's seven forty-five."
+    },
+    {
+     "speaker": "A",
+     "line": "What are you doing?"
+    },
+    {
+     "speaker": "B",
+     "line": "I'm making breakfast."
+    }
+   ],
+   "quiz": [
+    {
+     "question": "'It's 3:00 ___ the afternoon.'",
+     "options": [
+      "in",
+      "at",
+      "on"
+     ],
+     "answer_index": 0,
+     "explanation_pt": "in the afternoon."
+    },
+    {
+     "question": "'What ___ you doing now?'",
+     "options": [
+      "is",
+      "are",
+      "do"
+     ],
+     "answer_index": 1,
+     "explanation_pt": "you + are."
+    },
+    {
+     "question": "12:00 da noite é:",
+     "options": [
+      "noon",
+      "midnight",
+      "morning"
+     ],
+     "answer_index": 1,
+     "explanation_pt": "midnight."
+    },
+    {
+     "question": "'He ___ sleeping.'",
+     "options": [
+      "is",
+      "does",
+      "has"
+     ],
+     "answer_index": 0,
+     "explanation_pt": "is + -ing."
+    }
+   ]
+  },
+  {
+   "id": "U06",
+   "order": 6,
+   "title": "I ride my bike to school.",
+   "topics": "Transportes; família; rotinas diárias; dias da semana",
+   "grammar": "Present simple (verbos regulares e irregulares); perguntas yes/no e Wh-; expressões de tempo (every day, on Sundays, on weekends)",
+   "speaking": "Falar de como as pessoas vão ao trabalho/escola; descrever rotinas diárias e semanais",
+   "vocabulary": [
+    {
+     "en": "bus",
+     "pt": "ônibus",
+     "example": "I take the bus to work."
+    },
+    {
+     "en": "bike",
+     "pt": "bicicleta",
+     "example": "He rides his bike to school."
+    },
+    {
+     "en": "walk",
+     "pt": "caminhar",
+     "example": "I walk to the market."
+    },
+    {
+     "en": "mother",
+     "pt": "mãe",
+     "example": "My mother works at a bank."
+    },
+    {
+     "en": "brother",
+     "pt": "irmão",
+     "example": "My brother lives in Recife."
+    },
+    {
+     "en": "wake up",
+     "pt": "acordar",
+     "example": "I wake up at six."
+    },
+    {
+     "en": "every day",
+     "pt": "todos os dias",
+     "example": "I study every day."
+    },
+    {
+     "en": "weekend",
+     "pt": "fim de semana",
+     "example": "On weekends I rest."
+    }
+   ],
+   "dialogue": [
+    {
+     "speaker": "A",
+     "line": "How do you go to work?"
+    },
+    {
+     "speaker": "B",
+     "line": "I take the bus. And you?"
+    },
+    {
+     "speaker": "A",
+     "line": "I ride my bike. I ride it every day."
+    },
+    {
+     "speaker": "B",
+     "line": "Wow, that's great!"
+    }
+   ],
+   "quiz": [
+    {
+     "question": "'She ___ to school by bus.'",
+     "options": [
+      "go",
+      "goes",
+      "going"
+     ],
+     "answer_index": 1,
+     "explanation_pt": "3ª pessoa do singular: goes."
+    },
+    {
+     "question": "'___ you walk to work?'",
+     "options": [
+      "Do",
+      "Does",
+      "Are"
+     ],
+     "answer_index": 0,
+     "explanation_pt": "you + Do."
+    },
+    {
+     "question": "'He ___ up at 7:00.'",
+     "options": [
+      "wake",
+      "wakes",
+      "waking"
+     ],
+     "answer_index": 1,
+     "explanation_pt": "he + wakes."
+    },
+    {
+     "question": "Qual frase está correta?",
+     "options": [
+      "I works on Sundays.",
+      "I work on Sundays.",
+      "I working on Sundays."
+     ],
+     "answer_index": 1,
+     "explanation_pt": "I + work."
+    }
+   ]
+  },
+  {
+   "id": "U07",
+   "order": 7,
+   "title": "Does it have a view?",
+   "topics": "Casas e apartamentos; cômodos; móveis",
+   "grammar": "Respostas curtas no present simple; there is/there are; there isn't a / there aren't any",
+   "speaking": "Descrever casas e apartamentos; falar dos móveis de um cômodo",
+   "vocabulary": [
+    {
+     "en": "kitchen",
+     "pt": "cozinha",
+     "example": "The kitchen is small."
+    },
+    {
+     "en": "bedroom",
+     "pt": "quarto",
+     "example": "My bedroom has a window."
+    },
+    {
+     "en": "bathroom",
+     "pt": "banheiro",
+     "example": "There is a bathroom upstairs."
+    },
+    {
+     "en": "sofa",
+     "pt": "sofá",
+     "example": "There's a sofa in the living room."
+    },
+    {
+     "en": "bed",
+     "pt": "cama",
+     "example": "The bed is comfortable."
+    },
+    {
+     "en": "view",
+     "pt": "vista",
+     "example": "Does it have a view?"
+    },
+    {
+     "en": "window",
+     "pt": "janela",
+     "example": "There are two windows."
+    },
+    {
+     "en": "elevator",
+     "pt": "elevador",
+     "example": "There isn't an elevator."
+    }
+   ],
+   "dialogue": [
+    {
+     "speaker": "A",
+     "line": "Does your apartment have a view?"
+    },
+    {
+     "speaker": "B",
+     "line": "Yes, it does. There's a big window in the living room."
+    },
+    {
+     "speaker": "A",
+     "line": "Are there two bedrooms?"
+    },
+    {
+     "speaker": "B",
+     "line": "No, there aren't. There's only one."
+    }
+   ],
+   "quiz": [
+    {
+     "question": "'___ a sofa in the room.'",
+     "options": [
+      "There is",
+      "There are",
+      "They are"
+     ],
+     "answer_index": 0,
+     "explanation_pt": "sofá = singular."
+    },
+    {
+     "question": "'There ___ any chairs.'",
+     "options": [
+      "isn't",
+      "aren't",
+      "don't"
+     ],
+     "answer_index": 1,
+     "explanation_pt": "chairs = plural: aren't."
+    },
+    {
+     "question": "Resposta curta para 'Does it have a balcony?' (sim):",
+     "options": [
+      "Yes, it has.",
+      "Yes, it does.",
+      "Yes, there is."
+     ],
+     "answer_index": 1,
+     "explanation_pt": "Does -> does."
+    },
+    {
+     "question": "Onde se cozinha?",
+     "options": [
+      "bathroom",
+      "kitchen",
+      "bedroom"
+     ],
+     "answer_index": 1,
+     "explanation_pt": "kitchen."
+    }
+   ]
+  },
+  {
+   "id": "U08",
+   "order": 8,
+   "title": "Where do you work?",
+   "topics": "Profissões e locais de trabalho; opinião sobre trabalhos; rotina de trabalho",
+   "grammar": "Present simple Wh- com do/does; adjetivos depois de be e antes de substantivos",
+   "speaking": "Perguntar e falar sobre trabalho; dar opiniões; descrever o dia de trabalho",
+   "vocabulary": [
+    {
+     "en": "teacher",
+     "pt": "professor(a)",
+     "example": "She is a teacher."
+    },
+    {
+     "en": "nurse",
+     "pt": "enfermeiro(a)",
+     "example": "He's a nurse at a hospital."
+    },
+    {
+     "en": "office",
+     "pt": "escritório",
+     "example": "I work in an office."
+    },
+    {
+     "en": "hospital",
+     "pt": "hospital",
+     "example": "My sister works at a hospital."
+    },
+    {
+     "en": "boss",
+     "pt": "chefe",
+     "example": "My boss is nice."
+    },
+    {
+     "en": "busy",
+     "pt": "ocupado",
+     "example": "I'm busy on Mondays."
+    },
+    {
+     "en": "boring",
+     "pt": "chato/entediante",
+     "example": "This job is boring."
+    },
+    {
+     "en": "interesting",
+     "pt": "interessante",
+     "example": "Her job is interesting."
+    }
+   ],
+   "dialogue": [
+    {
+     "speaker": "A",
+     "line": "What do you do?"
+    },
+    {
+     "speaker": "B",
+     "line": "I'm a nurse. I work at a hospital."
+    },
+    {
+     "speaker": "A",
+     "line": "Do you like your job?"
+    },
+    {
+     "speaker": "B",
+     "line": "Yes, I do. It's busy, but it's interesting."
+    }
+   ],
+   "quiz": [
+    {
+     "question": "'Where ___ she work?'",
+     "options": [
+      "do",
+      "does",
+      "is"
+     ],
+     "answer_index": 1,
+     "explanation_pt": "she + does."
+    },
+    {
+     "question": "'What ___ you do?'",
+     "options": [
+      "do",
+      "does",
+      "are"
+     ],
+     "answer_index": 0,
+     "explanation_pt": "you + do."
+    },
+    {
+     "question": "'It's an ___ job.' (interessante)",
+     "options": [
+      "interesting",
+      "interest",
+      "interested"
+     ],
+     "answer_index": 0,
+     "explanation_pt": "adjetivo: interesting."
+    },
+    {
+     "question": "Pergunta sobre o local de trabalho:",
+     "options": [
+      "Where do you work?",
+      "Where you work?",
+      "What are you work?"
+     ],
+     "answer_index": 0,
+     "explanation_pt": "Where do you work?"
+    }
+   ]
+  },
+  {
+   "id": "U09",
+   "order": 9,
+   "title": "I always eat breakfast.",
+   "topics": "Alimentos básicos; café da manhã; refeições",
+   "grammar": "Substantivos contáveis e incontáveis; some/any; advérbios de frequência (always, usually, often, sometimes, hardly ever, never)",
+   "speaking": "Falar de gostos e hábitos alimentares; comida saudável e não saudável; o que você tem e precisa",
+   "vocabulary": [
+    {
+     "en": "bread",
+     "pt": "pão",
+     "example": "I eat bread for breakfast."
+    },
+    {
+     "en": "egg",
+     "pt": "ovo",
+     "example": "I have an egg every morning."
+    },
+    {
+     "en": "milk",
+     "pt": "leite",
+     "example": "Do you want some milk?"
+    },
+    {
+     "en": "rice",
+     "pt": "arroz",
+     "example": "We eat rice every day."
+    },
+    {
+     "en": "fruit",
+     "pt": "fruta",
+     "example": "I eat fruit in the afternoon."
+    },
+    {
+     "en": "coffee",
+     "pt": "café",
+     "example": "I never drink coffee at night."
+    },
+    {
+     "en": "healthy",
+     "pt": "saudável",
+     "example": "Fruit is healthy."
+    },
+    {
+     "en": "lunch",
+     "pt": "almoço",
+     "example": "I usually have lunch at noon."
+    }
+   ],
+   "dialogue": [
+    {
+     "speaker": "A",
+     "line": "Do you eat breakfast?"
+    },
+    {
+     "speaker": "B",
+     "line": "Yes, I always eat breakfast. I usually have bread and coffee."
+    },
+    {
+     "speaker": "A",
+     "line": "Do you have any fruit?"
+    },
+    {
+     "speaker": "B",
+     "line": "Sometimes. I need some apples."
+    }
+   ],
+   "quiz": [
+    {
+     "question": "'I need ___ milk.'",
+     "options": [
+      "a",
+      "an",
+      "some"
+     ],
+     "answer_index": 2,
+     "explanation_pt": "milk é incontável: some."
+    },
+    {
+     "question": "'Do you have ___ eggs?'",
+     "options": [
+      "any",
+      "a",
+      "some of"
+     ],
+     "answer_index": 0,
+     "explanation_pt": "Em perguntas: any."
+    },
+    {
+     "question": "Frequência: 100% do tempo",
+     "options": [
+      "never",
+      "sometimes",
+      "always"
+     ],
+     "answer_index": 2,
+     "explanation_pt": "always."
+    },
+    {
+     "question": "Posição correta:",
+     "options": [
+      "I eat always rice.",
+      "I always eat rice.",
+      "Always I eat rice."
+     ],
+     "answer_index": 1,
+     "explanation_pt": "Advérbio vem antes do verbo principal."
+    }
+   ]
+  },
+  {
+   "id": "U10",
+   "order": 10,
+   "title": "What sports do you like?",
+   "topics": "Esportes; habilidades e talentos",
+   "grammar": "Perguntas Wh- no present simple; can para habilidade; perguntas yes/no e Wh- com can",
+   "speaking": "Perguntar sobre atividades de lazer; falar de habilidades",
+   "vocabulary": [
+    {
+     "en": "soccer",
+     "pt": "futebol",
+     "example": "I play soccer on Sundays."
+    },
+    {
+     "en": "swim",
+     "pt": "nadar",
+     "example": "Can you swim?"
+    },
+    {
+     "en": "run",
+     "pt": "correr",
+     "example": "She can run fast."
+    },
+    {
+     "en": "dance",
+     "pt": "dançar",
+     "example": "I can't dance."
+    },
+    {
+     "en": "sing",
+     "pt": "cantar",
+     "example": "He can sing well."
+    },
+    {
+     "en": "tennis",
+     "pt": "tênis",
+     "example": "I like tennis."
+    },
+    {
+     "en": "team",
+     "pt": "time",
+     "example": "My team is great."
+    },
+    {
+     "en": "well",
+     "pt": "bem",
+     "example": "She plays well."
+    }
+   ],
+   "dialogue": [
+    {
+     "speaker": "A",
+     "line": "What sports do you like?"
+    },
+    {
+     "speaker": "B",
+     "line": "I like soccer and swimming. Can you swim?"
+    },
+    {
+     "speaker": "A",
+     "line": "Yes, I can. But I can't dance!"
+    },
+    {
+     "speaker": "B",
+     "line": "Me neither!"
+    }
+   ],
+   "quiz": [
+    {
+     "question": "'I ___ swim.' (sei)",
+     "options": [
+      "can",
+      "cans",
+      "am"
+     ],
+     "answer_index": 0,
+     "explanation_pt": "can + verbo."
+    },
+    {
+     "question": "'She ___ sing.' (não sabe)",
+     "options": [
+      "can't",
+      "doesn't",
+      "isn't"
+     ],
+     "answer_index": 0,
+     "explanation_pt": "can't."
+    },
+    {
+     "question": "'What sports ___ you like?'",
+     "options": [
+      "do",
+      "does",
+      "are"
+     ],
+     "answer_index": 0,
+     "explanation_pt": "you + do."
+    },
+    {
+     "question": "'Can he play tennis?' resposta curta (sim):",
+     "options": [
+      "Yes, he can.",
+      "Yes, he does.",
+      "Yes, he is."
+     ],
+     "answer_index": 0,
+     "explanation_pt": "can -> can."
+    }
+   ]
+  },
+  {
+   "id": "U11",
+   "order": 11,
+   "title": "I'm going to have a party.",
+   "topics": "Meses e datas; aniversários; feriados e festas",
+   "grammar": "Futuro com be going to; perguntas yes/no e Wh- com be going to; expressões de tempo futuro",
+   "speaking": "Falar de aniversários; planos para a noite, fim de semana e outras ocasiões",
+   "vocabulary": [
+    {
+     "en": "birthday",
+     "pt": "aniversário",
+     "example": "My birthday is in May."
+    },
+    {
+     "en": "party",
+     "pt": "festa",
+     "example": "I'm going to have a party."
+    },
+    {
+     "en": "January",
+     "pt": "janeiro",
+     "example": "It's in January."
+    },
+    {
+     "en": "holiday",
+     "pt": "feriado",
+     "example": "Tomorrow is a holiday."
+    },
+    {
+     "en": "gift",
+     "pt": "presente",
+     "example": "I'm going to buy a gift."
+    },
+    {
+     "en": "tonight",
+     "pt": "hoje à noite",
+     "example": "We're going to eat out tonight."
+    },
+    {
+     "en": "next week",
+     "pt": "semana que vem",
+     "example": "I'm going to travel next week."
+    },
+    {
+     "en": "celebrate",
+     "pt": "comemorar",
+     "example": "We celebrate on Saturday."
+    }
+   ],
+   "dialogue": [
+    {
+     "speaker": "A",
+     "line": "When is your birthday?"
+    },
+    {
+     "speaker": "B",
+     "line": "It's on June tenth. I'm going to have a party."
+    },
+    {
+     "speaker": "A",
+     "line": "Great! Who is going to come?"
+    },
+    {
+     "speaker": "B",
+     "line": "My friends and my family."
+    }
+   ],
+   "quiz": [
+    {
+     "question": "'I ___ going to study tonight.'",
+     "options": [
+      "am",
+      "do",
+      "will to"
+     ],
+     "answer_index": 0,
+     "explanation_pt": "I am going to."
+    },
+    {
+     "question": "'She ___ going to travel.'",
+     "options": [
+      "is",
+      "are",
+      "does"
+     ],
+     "answer_index": 0,
+     "explanation_pt": "she + is."
+    },
+    {
+     "question": "'___ you going to cook?'",
+     "options": [
+      "Are",
+      "Do",
+      "Is"
+     ],
+     "answer_index": 0,
+     "explanation_pt": "you + Are."
+    },
+    {
+     "question": "Mês depois de março:",
+     "options": [
+      "April",
+      "May",
+      "February"
+     ],
+     "answer_index": 0,
+     "explanation_pt": "April."
+    }
+   ]
+  },
+  {
+   "id": "U12",
+   "order": 12,
+   "title": "How do you feel?",
+   "topics": "Partes do corpo; problemas de saúde e conselhos; remédios",
+   "grammar": "Have + substantivo; feel + adjetivo; adjetivos negativos e positivos; imperativos",
+   "speaking": "Descrever problemas de saúde; falar de remédios comuns; dar conselhos",
+   "vocabulary": [
+    {
+     "en": "headache",
+     "pt": "dor de cabeça",
+     "example": "I have a headache."
+    },
+    {
+     "en": "stomachache",
+     "pt": "dor de barriga",
+     "example": "He has a stomachache."
+    },
+    {
+     "en": "fever",
+     "pt": "febre",
+     "example": "She has a fever."
+    },
+    {
+     "en": "tired",
+     "pt": "cansado",
+     "example": "I feel tired."
+    },
+    {
+     "en": "sick",
+     "pt": "doente",
+     "example": "I feel sick."
+    },
+    {
+     "en": "medicine",
+     "pt": "remédio",
+     "example": "Take this medicine."
+    },
+    {
+     "en": "rest",
+     "pt": "descansar",
+     "example": "Please rest today."
+    },
+    {
+     "en": "doctor",
+     "pt": "médico",
+     "example": "See a doctor."
+    }
+   ],
+   "dialogue": [
+    {
+     "speaker": "A",
+     "line": "How do you feel?"
+    },
+    {
+     "speaker": "B",
+     "line": "Not good. I have a headache."
+    },
+    {
+     "speaker": "A",
+     "line": "Take some medicine and rest."
+    },
+    {
+     "speaker": "B",
+     "line": "Thanks. I feel tired, too."
+    }
+   ],
+   "quiz": [
+    {
+     "question": "'I ___ a fever.'",
+     "options": [
+      "have",
+      "am",
+      "feel"
+     ],
+     "answer_index": 0,
+     "explanation_pt": "have a fever."
+    },
+    {
+     "question": "'I ___ tired.'",
+     "options": [
+      "feel",
+      "have",
+      "do"
+     ],
+     "answer_index": 0,
+     "explanation_pt": "feel + adjetivo."
+    },
+    {
+     "question": "Conselho (imperativo):",
+     "options": [
+      "You drink water.",
+      "Drink water.",
+      "Drinking water."
+     ],
+     "answer_index": 1,
+     "explanation_pt": "Imperativo = verbo na forma base."
+    },
+    {
+     "question": "Oposto de 'sick':",
+     "options": [
+      "healthy",
+      "sad",
+      "busy"
+     ],
+     "answer_index": 0,
+     "explanation_pt": "healthy."
+    }
+   ]
+  },
+  {
+   "id": "U13",
+   "order": 13,
+   "title": "How do I get there?",
+   "topics": "Lojas e coisas que se compram; pontos turísticos",
+   "grammar": "Preposições de lugar (on the corner of, across from, next to, between); dar direções com imperativos",
+   "speaking": "Falar de lojas e lugares; pedir e dar direções",
+   "vocabulary": [
+    {
+     "en": "bank",
+     "pt": "banco",
+     "example": "The bank is on Main Street."
+    },
+    {
+     "en": "pharmacy",
+     "pt": "farmácia",
+     "example": "The pharmacy is next to the bank."
+    },
+    {
+     "en": "supermarket",
+     "pt": "supermercado",
+     "example": "Is there a supermarket near here?"
+    },
+    {
+     "en": "corner",
+     "pt": "esquina",
+     "example": "It's on the corner."
+    },
+    {
+     "en": "turn left",
+     "pt": "vire à esquerda",
+     "example": "Turn left at the light."
+    },
+    {
+     "en": "turn right",
+     "pt": "vire à direita",
+     "example": "Turn right."
+    },
+    {
+     "en": "go straight",
+     "pt": "siga em frente",
+     "example": "Go straight for two blocks."
+    },
+    {
+     "en": "across from",
+     "pt": "em frente a",
+     "example": "It's across from the park."
+    }
+   ],
+   "dialogue": [
+    {
+     "speaker": "A",
+     "line": "Excuse me. How do I get to the pharmacy?"
+    },
+    {
+     "speaker": "B",
+     "line": "Go straight and turn left. It's across from the bank."
+    },
+    {
+     "speaker": "A",
+     "line": "Is it far?"
+    },
+    {
+     "speaker": "B",
+     "line": "No, it's two blocks."
+    }
+   ],
+   "quiz": [
+    {
+     "question": "'The bank is ___ the pharmacy and the school.'",
+     "options": [
+      "between",
+      "under",
+      "in"
+     ],
+     "answer_index": 0,
+     "explanation_pt": "entre dois lugares: between."
+    },
+    {
+     "question": "'___ left at the corner.'",
+     "options": [
+      "Turn",
+      "Turns",
+      "Turning"
+     ],
+     "answer_index": 0,
+     "explanation_pt": "Imperativo: Turn."
+    },
+    {
+     "question": "'It's ___ from the park.' (do lado oposto da rua)",
+     "options": [
+      "across",
+      "behind",
+      "at"
+     ],
+     "answer_index": 0,
+     "explanation_pt": "across from."
+    },
+    {
+     "question": "Onde se compra remédio?",
+     "options": [
+      "pharmacy",
+      "bank",
+      "school"
+     ],
+     "answer_index": 0,
+     "explanation_pt": "pharmacy."
+    }
+   ]
+  },
+  {
+   "id": "U14",
+   "order": 14,
+   "title": "I had a good time.",
+   "topics": "Fins de semana; tarefas domésticas; atividades de lazer; férias",
+   "grammar": "Simple past (regulares e irregulares); perguntas yes/no e respostas curtas no passado",
+   "speaking": "Falar de atividades no fim de semana e nas férias",
+   "vocabulary": [
+    {
+     "en": "visited",
+     "pt": "visitei/visitou",
+     "example": "I visited my aunt."
+    },
+    {
+     "en": "watched",
+     "pt": "assistiu",
+     "example": "We watched a movie."
+    },
+    {
+     "en": "went",
+     "pt": "foi/fui",
+     "example": "She went to the beach."
+    },
+    {
+     "en": "had",
+     "pt": "teve/tive",
+     "example": "I had a good time."
+    },
+    {
+     "en": "cleaned",
+     "pt": "limpou",
+     "example": "He cleaned the house."
+    },
+    {
+     "en": "vacation",
+     "pt": "férias",
+     "example": "Our vacation was great."
+    },
+    {
+     "en": "beach",
+     "pt": "praia",
+     "example": "We went to the beach."
+    },
+    {
+     "en": "yesterday",
+     "pt": "ontem",
+     "example": "I worked yesterday."
+    }
+   ],
+   "dialogue": [
+    {
+     "speaker": "A",
+     "line": "What did you do last weekend?"
+    },
+    {
+     "speaker": "B",
+     "line": "I went to the beach and had a good time."
+    },
+    {
+     "speaker": "A",
+     "line": "Did you swim?"
+    },
+    {
+     "speaker": "B",
+     "line": "Yes, I did."
+    }
+   ],
+   "quiz": [
+    {
+     "question": "Passado de 'go':",
+     "options": [
+      "goed",
+      "went",
+      "gone"
+     ],
+     "answer_index": 1,
+     "explanation_pt": "go -> went."
+    },
+    {
+     "question": "'I ___ a movie yesterday.'",
+     "options": [
+      "watched",
+      "watch",
+      "watching"
+     ],
+     "answer_index": 0,
+     "explanation_pt": "passado regular: watched."
+    },
+    {
+     "question": "'___ you have fun?'",
+     "options": [
+      "Did",
+      "Do",
+      "Were"
+     ],
+     "answer_index": 0,
+     "explanation_pt": "Did + you."
+    },
+    {
+     "question": "Resposta curta (não) para 'Did she work?':",
+     "options": [
+      "No, she didn't.",
+      "No, she wasn't.",
+      "No, she doesn't."
+     ],
+     "answer_index": 0,
+     "explanation_pt": "didn't."
+    }
+   ]
+  },
+  {
+   "id": "U15",
+   "order": 15,
+   "title": "Where were you born?",
+   "topics": "Dados biográficos; anos; época da escola",
+   "grammar": "Passado de be (was/were); perguntas Wh- com did, was e were",
+   "speaking": "Falar de data e local de nascimento; descrever experiências escolares",
+   "vocabulary": [
+    {
+     "en": "born",
+     "pt": "nascido",
+     "example": "I was born in Brazil."
+    },
+    {
+     "en": "year",
+     "pt": "ano",
+     "example": "I was born in 1995."
+    },
+    {
+     "en": "school",
+     "pt": "escola",
+     "example": "My school was big."
+    },
+    {
+     "en": "teacher",
+     "pt": "professor(a)",
+     "example": "My teacher was kind."
+    },
+    {
+     "en": "childhood",
+     "pt": "infância",
+     "example": "My childhood was happy."
+    },
+    {
+     "en": "grew up",
+     "pt": "cresci",
+     "example": "I grew up in Ceará."
+    },
+    {
+     "en": "graduated",
+     "pt": "formou-se",
+     "example": "She graduated in 2018."
+    },
+    {
+     "en": "favorite",
+     "pt": "favorito",
+     "example": "Math was my favorite class."
+    }
+   ],
+   "dialogue": [
+    {
+     "speaker": "A",
+     "line": "Where were you born?"
+    },
+    {
+     "speaker": "B",
+     "line": "I was born in Fortaleza."
+    },
+    {
+     "speaker": "A",
+     "line": "When did you start school?"
+    },
+    {
+     "speaker": "B",
+     "line": "I started in 2002. My teachers were great."
+    }
+   ],
+   "quiz": [
+    {
+     "question": "'I ___ born in 1990.'",
+     "options": [
+      "was",
+      "were",
+      "am"
+     ],
+     "answer_index": 0,
+     "explanation_pt": "I + was."
+    },
+    {
+     "question": "'They ___ at school.'",
+     "options": [
+      "was",
+      "were",
+      "are"
+     ],
+     "answer_index": 1,
+     "explanation_pt": "They + were."
+    },
+    {
+     "question": "'Where ___ you born?'",
+     "options": [
+      "was",
+      "were",
+      "did"
+     ],
+     "answer_index": 1,
+     "explanation_pt": "you + were."
+    },
+    {
+     "question": "'When ___ she graduate?'",
+     "options": [
+      "did",
+      "was",
+      "were"
+     ],
+     "answer_index": 0,
+     "explanation_pt": "Com verbo principal: did."
+    }
+   ]
+  },
+  {
+   "id": "U16",
+   "order": 16,
+   "title": "Can I take a message?",
+   "topics": "Localização de pessoas; ligações telefônicas; convites; sair com amigos",
+   "grammar": "Frases preposicionais; pronomes sujeito e objeto; convites com Do you want to...? e Would you like to...?; verb + to",
+   "speaking": "Descrever onde as pessoas estão; fazer, aceitar e recusar convites; dar desculpas",
+   "vocabulary": [
+    {
+     "en": "message",
+     "pt": "recado",
+     "example": "Can I take a message?"
+    },
+    {
+     "en": "call back",
+     "pt": "ligar de volta",
+     "example": "Please call me back."
+    },
+    {
+     "en": "invite",
+     "pt": "convidar",
+     "example": "I want to invite you."
+    },
+    {
+     "en": "movie",
+     "pt": "filme",
+     "example": "Would you like to see a movie?"
+    },
+    {
+     "en": "busy",
+     "pt": "ocupado",
+     "example": "Sorry, I'm busy tonight."
+    },
+    {
+     "en": "sorry",
+     "pt": "desculpe",
+     "example": "Sorry, I can't."
+    },
+    {
+     "en": "maybe",
+     "pt": "talvez",
+     "example": "Maybe next time."
+    },
+    {
+     "en": "meet",
+     "pt": "encontrar",
+     "example": "Let's meet at six."
+    }
+   ],
+   "dialogue": [
+    {
+     "speaker": "A",
+     "line": "Hello, may I speak to Ana?"
+    },
+    {
+     "speaker": "B",
+     "line": "She's not here. Can I take a message?"
+    },
+    {
+     "speaker": "A",
+     "line": "Yes. Please ask her to call me back."
+    },
+    {
+     "speaker": "B",
+     "line": "Sure. Would you like to leave your number?"
+    }
+   ],
+   "quiz": [
+    {
+     "question": "Convite educado:",
+     "options": [
+      "Would you like to go out?",
+      "You go out?",
+      "Do you like go?"
+     ],
+     "answer_index": 0,
+     "explanation_pt": "Would you like to...?"
+    },
+    {
+     "question": "'Please call ___.' (eu)",
+     "options": [
+      "I",
+      "me",
+      "my"
+     ],
+     "answer_index": 1,
+     "explanation_pt": "pronome objeto: me."
+    },
+    {
+     "question": "Recusar com desculpa:",
+     "options": [
+      "Sorry, I'm busy.",
+      "Yes, I'm busy.",
+      "I want busy."
+     ],
+     "answer_index": 0,
+     "explanation_pt": "Sorry, I'm busy."
+    },
+    {
+     "question": "'I want ___ see a movie.'",
+     "options": [
+      "to",
+      "for",
+      "at"
+     ],
+     "answer_index": 0,
+     "explanation_pt": "want + to + verbo."
+    }
+   ]
+  }
+ ]
+}

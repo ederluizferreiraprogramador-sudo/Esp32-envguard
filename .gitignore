@@ -67,3 +67,11 @@ vcpkg_installed/
 # test output & cache
 Testing/
 .cache/
+
+# Livros/PDFs protegidos por direitos autorais: nunca versionar
+*.pdf
+english-ai-coach/books/
+.env
+.venv/
+english-ai-coach/mcp-server/progress.json
+__pycache__/
