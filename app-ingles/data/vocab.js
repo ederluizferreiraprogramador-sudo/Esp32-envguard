@@ -1,0 +1,22 @@
+window.VOCAB = [
+  { en: "hello", pt: "olá", level: "A1" },
+  { en: "goodbye", pt: "tchau", level: "A1" },
+  { en: "thank you", pt: "obrigado(a)", level: "A1" },
+  { en: "please", pt: "por favor", level: "A1" },
+  { en: "water", pt: "água", level: "A1" },
+  { en: "food", pt: "comida", level: "A1" },
+  { en: "house", pt: "casa", level: "A1" },
+  { en: "friend", pt: "amigo(a)", level: "A1" },
+  { en: "family", pt: "família", level: "A1" },
+  { en: "work", pt: "trabalho", level: "A1" },
+  { en: "school", pt: "escola", level: "A1" },
+  { en: "book", pt: "livro", level: "A1" },
+  { en: "to learn", pt: "aprender", level: "A2" },
+  { en: "to travel", pt: "viajar", level: "A2" },
+  { en: "to understand", pt: "entender", level: "A2" },
+  { en: "to remember", pt: "lembrar", level: "A2" },
+  { en: "enough", pt: "suficiente", level: "A2" },
+  { en: "however", pt: "porém", level: "B1" },
+  { en: "although", pt: "embora", level: "B1" },
+  { en: "achieve", pt: "alcançar", level: "B1" }
+];

@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Aplicativo de Inglês</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>English Up</h1>
+    <nav>
+      <button data-view="cards" class="active">Flashcards</button>
+      <button data-view="quiz">Quiz</button>
+      <button data-view="stats">Progresso</button>
+    </nav>
+  </header>
+  <main>
+    <section id="cards" class="view">
+      <div id="card" class="card" tabindex="0" role="button" aria-label="Virar cartão">
+        <div id="card-text"></div>
+      </div>
+      <button id="speak" class="ghost">🔊 Ouvir</button>
+      <div class="row">
+        <button id="wrong" class="bad">Errei</button>
+        <button id="right" class="good">Acertei</button>
+      </div>
+    </section>
+    <section id="quiz" class="view" hidden>
+      <h2 id="q-text"></h2>
+      <div id="q-options"></div>
+      <p id="q-feedback" aria-live="polite"></p>
+      <button id="q-next" class="ghost" hidden>Próxima</button>
+    </section>
+    <section id="stats" class="view" hidden>
+      <div id="stats-body"></div>
+      <button id="reset" class="ghost">Zerar progresso</button>
+    </section>
+  </main>
+  <script src="data/vocab.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

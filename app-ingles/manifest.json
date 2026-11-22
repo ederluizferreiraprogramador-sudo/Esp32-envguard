@@ -1,0 +1,10 @@
+{
+  "name": "English Up",
+  "short_name": "English Up",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#14161c",
+  "theme_color": "#3b6cff",
+  "lang": "pt-BR",
+  "icons": []
+}
