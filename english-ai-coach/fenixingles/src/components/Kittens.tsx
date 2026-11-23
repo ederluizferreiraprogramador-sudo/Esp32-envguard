@@ -84,11 +84,22 @@ export function Kitten({ name = "charlotte", size = 80, animated = true, classNa
 }
 
 /** Personagem falando: bichinho + balão de fala. */
+export const KITTEN_NAMES: Record<KittenName, string> = { charlotte: "Charlotte", mingau: "Mingau", luna: "Luna" };
+const TAG: Record<KittenName, string> = { charlotte: "#FF4FA3", mingau: "#E8892B", luna: "#6E6E85" };
+
+/** Etiqueta com o nome do personagem. */
+export function NameTag({ name }: { name: KittenName }) {
+  return <span className="inline-block rounded-full px-2 py-0.5 text-xs font-extrabold text-white" style={{ background: TAG[name] }}>{KITTEN_NAMES[name]}</span>;
+}
+
 export function CharlotteSays({ children, name = "charlotte" }: { children: ReactNode; name?: KittenName }) {
   return (
     <div className="mt-4 flex items-end gap-2">
-      <Kitten name={name} size={76} className="shrink-0" />
-      <div className="relative min-w-0 rounded-2xl border-2 border-fx-gray bg-white p-3 text-lg">
+      <div className="flex shrink-0 flex-col items-center gap-1">
+        <Kitten name={name} size={76} />
+        <NameTag name={name} />
+      </div>
+      <div className="relative mb-6 min-w-0 rounded-2xl border-2 border-fx-gray bg-white p-3 text-lg">
         <span aria-hidden className="absolute -left-2 bottom-4 h-3 w-3 rotate-45 border-b-2 border-l-2 border-fx-gray bg-white" />
         {children}
       </div>

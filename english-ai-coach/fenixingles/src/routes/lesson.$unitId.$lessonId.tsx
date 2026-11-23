@@ -6,7 +6,7 @@ import { playCorrect, playFinish, playWrong, speak } from "@/lib/audio";
 import { recordMistake } from "@/lib/mistakes";
 import { Phoenix } from "@/components/Phoenix";
 import { Capi, Uni } from "@/components/Characters";
-import { CharlotteSays, Kitten } from "@/components/Kittens";
+import { CharlotteSays, Kitten, NameTag } from "@/components/Kittens";
 
 export const Route = createFileRoute("/lesson/$unitId/$lessonId")({
   head: () => ({
@@ -263,7 +263,7 @@ function ActivityView(props: AVProps) {
       return (
         <>
           <h1 className={h}>Ouça e escolha o que você ouviu</h1>
-          <div className="mt-6 flex items-end justify-center gap-4"><Kitten name="charlotte" size={110} /><SpeakBtn text={act.audio} big /></div>
+          <div className="mt-6 flex items-end justify-center gap-4"><div className="flex flex-col items-center gap-1"><Kitten name="charlotte" size={110} /><NameTag name="charlotte" /></div><SpeakBtn text={act.audio} big /></div>
           <p className="mt-2 text-center text-sm text-muted-foreground">A Charlotte vai falar. Toque no 🔊 (ou na 🐢 para ouvir devagar).</p>
           <Options options={act.options} {...props} />
         </>
@@ -294,7 +294,7 @@ function Build({ act, seed, setValue, locked, hint }: AVProps & { act: Extract<A
     <>
       <h1 className="text-2xl font-extrabold">Traduza esta frase</h1>
       <div className="mt-5 flex items-center gap-3">
-        <Kitten name="luna" size={70} className="shrink-0" />
+        <div className="flex shrink-0 flex-col items-center gap-1"><Kitten name="luna" size={70} /><NameTag name="luna" /></div>
         <p className="rounded-2xl border-2 border-fx-gray p-3 text-lg">{act.pt}</p>
       </div>
       <Hint text={hint} />

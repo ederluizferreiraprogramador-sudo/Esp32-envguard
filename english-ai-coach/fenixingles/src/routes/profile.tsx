@@ -44,7 +44,7 @@ function Profile() {
       <main className="mx-auto max-w-lg px-4 py-6">
         <div className="flex items-center gap-4">
           <Phoenix size={90} />
-          <div><h1 className="text-2xl font-extrabold">Seu perfil</h1><p className="text-muted-foreground">Continue voando alto!</p></div>
+          <div><h1 className="text-2xl font-extrabold">Seu perfil</h1><p className="text-muted-foreground">A Charlotte e a turma estão torcendo por você!</p></div>
         </div>
         <div className="mt-6 grid grid-cols-2 gap-3">
           {stats.map((s) => (
