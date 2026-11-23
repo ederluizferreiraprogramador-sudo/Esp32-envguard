@@ -6,6 +6,7 @@ import { playCorrect, playFinish, playWrong, speak } from "@/lib/audio";
 import { recordMistake } from "@/lib/mistakes";
 import { Phoenix } from "@/components/Phoenix";
 import { Capi, Uni } from "@/components/Characters";
+import { CharlotteSays, Kitten } from "@/components/Kittens";
 
 export const Route = createFileRoute("/lesson/$unitId/$lessonId")({
   head: () => ({
@@ -183,7 +184,7 @@ function LessonPage() {
               <p className={`text-xl font-extrabold ${status === "correct" ? "text-fx-green-dark" : "text-fx-red-dark"}`}>
                 {status === "correct" ? (retry ? "Isso! Agora você acertou." : "Muito bem!") : `Resposta correta: ${correctText(act)}`}
               </p>
-              {status === "wrong" && <p className="text-sm font-extrabold text-fx-red-dark">O Uni está dançando para te animar — bora repetir! 🦄</p>}
+              {status === "wrong" && <p className="text-sm font-extrabold text-fx-red-dark">O Uni rebolou para te animar — bora repetir! 🦄</p>}
               <p className={status === "correct" ? "text-fx-green-dark" : "text-fx-red-dark"}>{act.explain}</p>
             </div>
             {status === "wrong" && spokenAnswer(act) && (
@@ -239,12 +240,12 @@ function ActivityView(props: AVProps) {
       return (
         <>
           <h1 className={h}>Complete o diálogo</h1>
-          {act.context && <p className="mt-5 rounded-2xl border-2 border-fx-gray p-3 text-lg">{act.context}</p>}
-          <p className="mt-3 rounded-2xl border-2 border-fx-gray p-3 text-lg">
-            {act.before}{" "}
+          {act.context && <CharlotteSays>{act.context.replace(/^A:\s*/, "")}</CharlotteSays>}
+          <CharlotteSays name={act.context ? "mingau" : "charlotte"}>
+            {act.before.replace(/^B:\s*/, "")}{" "}
             <span className={`inline-block min-w-16 border-b-2 px-1 text-center ${value ? "border-fx-blue text-fx-blue-dark" : "border-fx-gray-dark"}`}>{value || " "}</span>{" "}
             {act.after}
-          </p>
+          </CharlotteSays>
           <Options options={act.options} {...props} />
         </>
       );
@@ -252,10 +253,9 @@ function ActivityView(props: AVProps) {
       return (
         <>
           <h1 className={h}>Escolha a resposta correta</h1>
-          <div className="mt-5 flex items-center gap-3">
-            <SpeakBtn text={act.line} />
-            <p className="rounded-2xl border-2 border-fx-gray p-3 text-lg">{act.line}</p>
-          </div>
+          <CharlotteSays>
+            <span className="flex items-center gap-3"><SpeakBtn text={act.line} /><span>{act.line}</span></span>
+          </CharlotteSays>
           <Options options={act.options} {...props} />
         </>
       );
@@ -263,7 +263,8 @@ function ActivityView(props: AVProps) {
       return (
         <>
           <h1 className={h}>Ouça e escolha o que você ouviu</h1>
-          <div className="mt-6 flex justify-center"><SpeakBtn text={act.audio} big /></div>
+          <div className="mt-6 flex items-end justify-center gap-4"><Kitten name="charlotte" size={110} /><SpeakBtn text={act.audio} big /></div>
+          <p className="mt-2 text-center text-sm text-muted-foreground">A Charlotte vai falar. Toque no 🔊 (ou na 🐢 para ouvir devagar).</p>
           <Options options={act.options} {...props} />
         </>
       );
@@ -293,7 +294,7 @@ function Build({ act, seed, setValue, locked, hint }: AVProps & { act: Extract<A
     <>
       <h1 className="text-2xl font-extrabold">Traduza esta frase</h1>
       <div className="mt-5 flex items-center gap-3">
-        <Phoenix size={64} />
+        <Kitten name="luna" size={70} className="shrink-0" />
         <p className="rounded-2xl border-2 border-fx-gray p-3 text-lg">{act.pt}</p>
       </div>
       <Hint text={hint} />

@@ -3,6 +3,8 @@ import { units } from "@/data/units";
 import { lessonKey, useProgress } from "@/lib/progress";
 import { TopBar, BottomNav } from "@/components/TopBar";
 import { Phoenix } from "@/components/Phoenix";
+import { Capi, UniFront } from "@/components/Characters";
+import { Kitten } from "@/components/Kittens";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -74,7 +76,7 @@ function Trail() {
                     </div>
                   );
                 })}
-                {u.id === 1 && <Phoenix size={90} className="absolute right-0 top-16 anim-bob" />}
+                <UnitBuddy id={u.id} side={u.id % 2 === 0 ? "left-0" : "right-0"} />
               </div>
             </section>
           );
@@ -83,4 +85,17 @@ function Trail() {
       <BottomNav active="trail" />
     </div>
   );
+}
+
+/** Um personagem da turma acompanha cada unidade na trilha. */
+function UnitBuddy({ id, side }: { id: number; side: string }) {
+  const cls = `absolute ${side} top-14`;
+  switch (id % 6) {
+    case 1: return id === 1 ? <Phoenix size={90} className={`${cls} anim-bob`} /> : <Capi size={92} className={cls} />;
+    case 2: return <Kitten name="charlotte" size={92} className={cls} />;
+    case 3: return <UniFront size={92} className={`${cls} anim-bob`} />;
+    case 4: return <Kitten name="mingau" size={92} className={cls} />;
+    case 5: return <Kitten name="luna" size={92} className={cls} />;
+    default: return <Capi size={92} className={cls} />;
+  }
 }

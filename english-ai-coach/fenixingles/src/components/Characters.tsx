@@ -1,4 +1,5 @@
 // Personagens originais do FenixInglês (SVG próprio, sem imagens de terceiros).
+import { BigEye } from "./Kittens";
 // Capi (capivara): comemora acertos. Uni (unicórnio): aparece nos erros com uma dancinha.
 
 const CSS = `
@@ -12,8 +13,8 @@ const CSS = `
 .fx-capi { animation: fx-capi-hop .9s ease-in-out infinite; transform-origin: 50% 100%; }
 .fx-capi-eye { animation: fx-capi-blink 3s infinite; transform-box: fill-box; transform-origin: center; }
 .fx-uni { animation: fx-uni-bounce .5s ease-in-out infinite; }
-.fx-uni-hips { animation: fx-uni-wiggle .5s ease-in-out infinite; transform-box: view-box; transform-origin: 120px 150px; }
-.fx-uni-tail { animation: fx-uni-tail .25s ease-in-out infinite; transform-box: view-box; transform-origin: 165px 118px; }
+.fx-uni-hips { animation: fx-uni-wiggle .5s ease-in-out infinite; transform-box: view-box; transform-origin: 100px 110px; }
+.fx-uni-tail { animation: fx-uni-tail .25s ease-in-out infinite; transform-box: view-box; transform-origin: 106px 150px; }
 .fx-uni-leg { animation: fx-uni-legs .5s ease-in-out infinite; }
 .fx-uni-leg2 { animation: fx-uni-legs .5s ease-in-out infinite .25s; }
 .fx-note { animation: fx-note 1.2s ease-out infinite; }
@@ -43,8 +44,8 @@ export function Capi({ size = 80, dancing = true, className = "" }: { size?: num
         <path d="M100 6 C108 18 116 22 112 34 C120 30 122 24 121 20 C130 32 124 44 112 46 L88 46 C76 44 72 32 80 22 C80 28 84 32 88 34 C84 22 94 16 100 6 Z" fill="#FF9600" />
         <path d="M100 20 C104 28 108 30 106 38 L94 38 C92 32 96 28 100 20 Z" fill="#FFC800" />
         {/* olhos felizes */}
-        <path className="fx-capi-eye" d="M62 62 q9 -10 18 0" stroke="#3B2414" strokeWidth="5" fill="none" strokeLinecap="round" />
-        <path className="fx-capi-eye" d="M120 62 q9 -10 18 0" stroke="#3B2414" strokeWidth="5" fill="none" strokeLinecap="round" />
+        <g className="fx-capi-eye"><BigEye cx={70} cy={58} r={13} iris="#C08A2E" /></g>
+        <g className="fx-capi-eye"><BigEye cx={130} cy={58} r={13} iris="#C08A2E" /></g>
         {/* bochechas */}
         <ellipse cx="54" cy="78" rx="8" ry="5" fill="#FF8FA3" opacity=".7" />
         <ellipse cx="146" cy="78" rx="8" ry="5" fill="#FF8FA3" opacity=".7" />
@@ -64,62 +65,73 @@ export function Capi({ size = 80, dancing = true, className = "" }: { size?: num
   );
 }
 
-/** Uni, o unicórnio que aparece nos erros rebolando para animar o aluno. */
+/** Uni de costas, rebolando a bundinha para animar o aluno depois de um erro. */
 export function Uni({ size = 80, dancing = true, className = "" }: { size?: number; dancing?: boolean; className?: string }) {
   const d = dancing;
   return (
-    <svg viewBox="0 0 200 200" width={size} height={size} className={className} role="img" aria-label="Uni, o unicórnio, dançando">
+    <svg viewBox="0 0 200 200" width={size} height={size} className={className} role="img" aria-label="Uni, o unicórnio, rebolando de costas">
       <Style />
-      {/* notinhas musicais */}
-      {d && <text className="fx-note" x="22" y="60" fontSize="22" fill="#CE82FF">♪</text>}
-      {d && <text className="fx-note2" x="170" y="50" fontSize="22" fill="#1CB0F6">♫</text>}
+      {d && <text className="fx-note" x="16" y="70" fontSize="24" fill="#CE82FF">♪</text>}
+      {d && <text className="fx-note2" x="172" y="60" fontSize="24" fill="#1CB0F6">♫</text>}
+      {d && <text className="fx-note" x="168" y="120" fontSize="18" fill="#FF4FA3">♥</text>}
       <g className={d ? "fx-uni" : undefined}>
-        {/* patas (dançando alternado) */}
-        <g className={d ? "fx-uni-leg" : undefined}>
-          <rect x="76" y="150" width="16" height="34" rx="8" fill="#FFFFFF" stroke="#E5E5E5" strokeWidth="2" />
-          <rect x="76" y="176" width="16" height="10" rx="5" fill="#FF86C8" />
-        </g>
-        <g className={d ? "fx-uni-leg2" : undefined}>
-          <rect x="132" y="150" width="16" height="34" rx="8" fill="#FFFFFF" stroke="#E5E5E5" strokeWidth="2" />
-          <rect x="132" y="176" width="16" height="10" rx="5" fill="#FF86C8" />
-        </g>
-        {/* quadril + rabo rebolando */}
+        {/* cabeça vista de trás, olhando por cima do ombro */}
+        <ellipse cx="100" cy="58" rx="40" ry="36" fill="#F7A8D8" stroke="#D9539E" strokeWidth="3" />
+        <path d="M72 30 L66 6 L88 24 Z" fill="#F7A8D8" stroke="#D9539E" strokeWidth="3" strokeLinejoin="round" />
+        <path d="M128 30 L134 6 L112 24 Z" fill="#F7A8D8" stroke="#D9539E" strokeWidth="3" strokeLinejoin="round" />
+        <path d="M76 26 L72 12 L84 22 Z" fill="#FFD84D" />
+        <path d="M124 26 L128 12 L116 22 Z" fill="#FFD84D" />
+        <path d="M100 22 L104 -2 L110 24 Z" fill="#FFC800" stroke="#E0A800" strokeWidth="2" />
+        {/* crina descendo pelas costas */}
+        <path d="M96 22 C84 40 112 56 94 76 C112 86 92 104 104 118" stroke="#FF6FB5" strokeWidth="12" fill="none" strokeLinecap="round" />
+        <path d="M104 24 C94 40 118 56 102 76 C118 86 100 104 110 116" stroke="#9C7BFF" strokeWidth="6" fill="none" strokeLinecap="round" />
+        {/* olhinho espiando por cima do ombro */}
+        <BigEye cx={136} cy={60} r={11} iris="#B57BFF" />
+        {/* quadril + bundinha rebolando */}
         <g className={d ? "fx-uni-hips" : undefined}>
+          <path d="M100 98 C58 98 40 128 44 152 C48 180 76 186 100 172 C124 186 152 180 156 152 C160 128 142 98 100 98 Z" fill="#F7A8D8" stroke="#D9539E" strokeWidth="3" />
+          <path d="M100 132 C100 150 100 162 100 172" stroke="#D9539E" strokeWidth="3" fill="none" strokeLinecap="round" />
+          {/* manchinhas coloridas de pelúcia */}
+          <circle cx="70" cy="132" r="7" fill="#9CDCFF" opacity=".8" />
+          <circle cx="132" cy="126" r="6" fill="#FFE27A" opacity=".9" />
+          <circle cx="78" cy="160" r="5" fill="#FFE27A" opacity=".9" />
+          <circle cx="128" cy="160" r="7" fill="#9CDCFF" opacity=".8" />
+          <circle cx="112" cy="110" r="4" fill="#C9A8FF" />
+          {/* rabinho arco-íris abanando */}
           <g className={d ? "fx-uni-tail" : undefined}>
-            <path d="M160 116 C190 100 196 130 186 146 C180 156 170 150 174 140 C178 130 168 128 160 132 Z" fill="#FF86C8" />
-            <path d="M162 124 C184 118 186 136 178 142 C184 130 172 128 164 132 Z" fill="#7AD7F0" />
-            <path d="M163 128 C176 128 178 138 172 144" stroke="#FFC800" strokeWidth="4" fill="none" strokeLinecap="round" />
+            <path d="M100 150 C90 170 96 196 112 198 C104 186 108 172 114 162 C116 176 124 186 134 186 C122 176 120 160 110 148 Z" fill="#FF4FA3" />
+            <path d="M104 156 C100 172 104 186 112 192" stroke="#FFC800" strokeWidth="4" fill="none" strokeLinecap="round" />
+            <path d="M108 154 C112 168 120 178 128 182" stroke="#7AD7F0" strokeWidth="4" fill="none" strokeLinecap="round" />
           </g>
-          <ellipse cx="120" cy="138" rx="48" ry="30" fill="#FFFFFF" stroke="#E5E5E5" strokeWidth="2" />
-          {/* coraçõezinhos no bumbum */}
-          <path d="M146 128 c3 -5 9 -1 5 4 l-5 5 l-5 -5 c-4 -5 2 -9 5 -4 Z" fill="#FF86C8" />
-          <circle cx="140" cy="142" r="2.5" fill="#FFC800" />
-          <circle cx="152" cy="140" r="2" fill="#CE82FF" />
+          {/* cascos dourados */}
+          <g className={d ? "fx-uni-leg" : undefined}><ellipse cx="66" cy="182" rx="14" ry="9" fill="#FFC800" stroke="#E0A800" strokeWidth="2" /></g>
+          <g className={d ? "fx-uni-leg2" : undefined}><ellipse cx="134" cy="182" rx="14" ry="9" fill="#FFC800" stroke="#E0A800" strokeWidth="2" /></g>
         </g>
-        {/* cabeça */}
-        <ellipse cx="66" cy="92" rx="38" ry="36" fill="#FFFFFF" stroke="#E5E5E5" strokeWidth="2" />
-        <ellipse cx="48" cy="108" rx="18" ry="13" fill="#FFE1F0" />
-        <circle cx="44" cy="106" r="2" fill="#E07AA8" />
-        {/* chifre */}
-        <path d="M70 58 L82 18 L90 60 Z" fill="#FFC800" stroke="#E0A800" strokeWidth="2" />
-        <path d="M74 50 L86 46 M77 40 L87 36 M80 30 L86 27" stroke="#E0A800" strokeWidth="2" />
-        {/* orelha */}
-        <path d="M92 64 L104 44 L106 70 Z" fill="#FFFFFF" stroke="#E5E5E5" strokeWidth="2" />
-        <path d="M96 64 L103 52 L104 66 Z" fill="#FFB3D9" />
-        {/* crina */}
-        <path d="M88 60 C112 56 122 76 112 92 C126 96 124 116 108 118 C114 106 104 98 96 104 C104 90 96 74 84 72 Z" fill="#FF86C8" />
-        <path d="M94 66 C108 68 112 80 104 90 C112 92 112 104 104 108" stroke="#7AD7F0" strokeWidth="6" fill="none" strokeLinecap="round" />
-        <path d="M90 62 C76 60 62 66 58 74 C70 70 80 72 86 78 Z" fill="#CE82FF" />
-        {/* olho grande brilhante (piscadinha de "tudo bem!") */}
-        <ellipse cx="62" cy="88" rx="11" ry="13" fill="#2B2B52" />
-        <ellipse cx="62" cy="90" rx="7" ry="8" fill="#1CB0F6" />
-        <circle cx="58" cy="84" r="4" fill="#FFFFFF" />
-        <circle cx="65" cy="94" r="2" fill="#FFFFFF" />
-        <path d="M52 76 L48 72 M58 74 L56 69 M64 74 L64 69" stroke="#2B2B52" strokeWidth="2" strokeLinecap="round" />
-        {/* bochecha e sorriso */}
-        <ellipse cx="80" cy="104" rx="7" ry="4" fill="#FF86C8" opacity=".6" />
-        <path d="M52 116 q8 6 16 0" stroke="#E07AA8" strokeWidth="3" fill="none" strokeLinecap="round" />
       </g>
+    </svg>
+  );
+}
+
+/** Uni de frente (estilo pelúcia zoiuda) para a turma e a trilha. */
+export function UniFront({ size = 80, className = "" }: { size?: number; className?: string }) {
+  return (
+    <svg viewBox="0 0 200 200" width={size} height={size} className={className} role="img" aria-label="Uni, o unicórnio">
+      <ellipse cx="100" cy="158" rx="42" ry="34" fill="#F7A8D8" stroke="#D9539E" strokeWidth="3" />
+      <circle cx="80" cy="150" r="6" fill="#9CDCFF" opacity=".8" /><circle cx="122" cy="164" r="6" fill="#FFE27A" />
+      <ellipse cx="80" cy="188" rx="13" ry="8" fill="#FFC800" stroke="#E0A800" strokeWidth="2" />
+      <ellipse cx="120" cy="188" rx="13" ry="8" fill="#FFC800" stroke="#E0A800" strokeWidth="2" />
+      <path d="M50 54 L42 18 L80 40 Z" fill="#F7A8D8" stroke="#D9539E" strokeWidth="3" strokeLinejoin="round" />
+      <path d="M150 54 L158 18 L120 40 Z" fill="#F7A8D8" stroke="#D9539E" strokeWidth="3" strokeLinejoin="round" />
+      <path d="M56 46 L52 28 L72 40 Z" fill="#FFD84D" /><path d="M144 46 L148 28 L128 40 Z" fill="#FFD84D" />
+      <ellipse cx="100" cy="86" rx="60" ry="54" fill="#F7A8D8" stroke="#D9539E" strokeWidth="3" />
+      <circle cx="62" cy="62" r="7" fill="#9CDCFF" opacity=".8" /><circle cx="140" cy="118" r="6" fill="#FFE27A" />
+      <path d="M92 36 L100 2 L108 36 Z" fill="#FFC800" stroke="#E0A800" strokeWidth="2" />
+      <path d="M86 34 C96 20 112 24 116 36 C110 30 96 30 86 40 Z" fill="#FF4FA3" />
+      <BigEye cx={74} cy={84} r={19} iris="#C08A2E" />
+      <BigEye cx={126} cy={84} r={19} iris="#C08A2E" />
+      <ellipse cx="100" cy="116" rx="24" ry="17" fill="#FFFFFF" />
+      <circle cx="92" cy="114" r="2.5" fill="#E07AA8" /><circle cx="108" cy="114" r="2.5" fill="#E07AA8" />
+      <path d="M92 124 q8 6 16 0" stroke="#E07AA8" strokeWidth="3" fill="none" strokeLinecap="round" />
     </svg>
   );
 }

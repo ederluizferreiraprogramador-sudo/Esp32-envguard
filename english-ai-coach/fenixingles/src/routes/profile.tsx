@@ -3,6 +3,8 @@ import { units } from "@/data/units";
 import { lessonKey, reset, update, useProgress } from "@/lib/progress";
 import { TopBar, BottomNav } from "@/components/TopBar";
 import { Phoenix } from "@/components/Phoenix";
+import { Capi, UniFront } from "@/components/Characters";
+import { Kitten } from "@/components/Kittens";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { getAudioDiagnostics, speak } from "@/lib/audio";
@@ -52,6 +54,17 @@ function Profile() {
             </div>
           ))}
         </div>
+        <section className="mt-6 rounded-2xl border-2 border-fx-gray p-4">
+          <h2 className="font-extrabold">Turma do FenixInglês</h2>
+          <div className="mt-3 grid grid-cols-3 gap-3 text-center text-xs">
+            <div><Kitten name="charlotte" size={72} className="mx-auto" />Charlotte<br /><span className="text-muted-foreground">professora</span></div>
+            <div><Kitten name="mingau" size={72} className="mx-auto" />Mingau<br /><span className="text-muted-foreground">colega de diálogo</span></div>
+            <div><Kitten name="luna" size={72} className="mx-auto" />Luna<br /><span className="text-muted-foreground">tradutora</span></div>
+            <div><Capi size={72} className="mx-auto" />Capi<br /><span className="text-muted-foreground">comemora acertos</span></div>
+            <div><UniFront size={72} className="mx-auto" />Uni<br /><span className="text-muted-foreground">rebola nos erros</span></div>
+            <div><Phoenix size={72} className="mx-auto" />Fênix<br /><span className="text-muted-foreground">mascote</span></div>
+          </div>
+        </section>
         <label className="mt-6 flex items-center justify-between rounded-2xl border-2 border-fx-gray p-4">
           <span>🔊 Efeitos sonoros</span>
           <input id="sound" type="checkbox" className="h-6 w-6 accent-[var(--fx-green)]" checked={p.sound} onChange={(e) => update((x) => ({ ...x, sound: e.target.checked }))} />
