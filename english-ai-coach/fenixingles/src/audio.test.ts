@@ -1,0 +1,25 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+vi.mock("sonner", () => ({ toast: { error: vi.fn() } }));
+class Utterance { lang = ""; rate = 1; voice: SpeechSynthesisVoice | null = null; onstart: (() => void) | null = null; onerror: (() => void) | null = null; onend: (() => void) | null = null; constructor(public text: string) {} }
+const voice = (lang: string) => ({ lang }) as SpeechSynthesisVoice;
+let available: SpeechSynthesisVoice[];
+let engine: any;
+async function audio() { return import("@/lib/audio"); }
+function spoken(): Utterance { const u: unknown = engine.speak.mock.calls.at(-1)?.[0]; if (!(u instanceof Utterance)) throw new Error("No utterance submitted"); return u; }
+beforeEach(() => { vi.resetModules(); vi.useFakeTimers(); vi.clearAllMocks(); sessionStorage.clear(); available = [];
+  engine = { getVoices: vi.fn(() => available), onvoiceschanged: null, speaking: false, pending: false, cancel: vi.fn(), resume: vi.fn(), speak: vi.fn() };
+  vi.stubGlobal("speechSynthesis", engine); vi.stubGlobal("SpeechSynthesisUtterance", Utterance); });
+afterEach(() => { vi.useRealTimers(); vi.unstubAllGlobals(); });
+describe("Android speech playback", () => {
+  it("updates cached voices after voiceschanged and prefers en-US", async () => { const a = await audio(); expect(a.getEnglishVoiceCount()).toBe(0); available = [voice("pt-BR"), voice("en-GB"), voice("en-US")]; engine.onvoiceschanged?.(); expect(a.getEnglishVoiceCount()).toBe(2); a.speak("Hello"); vi.advanceTimersByTime(50); expect(spoken().voice?.lang).toBe("en-US"); });
+  it("accepts en_US before other English voices", async () => { available = [voice("en-GB"), voice("en_US")]; (await audio()).speak("Hello"); vi.advanceTimersByTime(50); expect(spoken().voice?.lang).toBe("en_US"); });
+  it("falls back to any English voice", async () => { available = [voice("pt-BR"), voice("en-AU")]; (await audio()).speak("Hello"); vi.advanceTimersByTime(50); expect(spoken().voice?.lang).toBe("en-AU"); });
+  it("still speaks en-US with the default engine when no English voice exists", async () => { (await audio()).speak("Hello"); vi.advanceTimersByTime(50); expect(spoken().lang).toBe("en-US"); expect(spoken().voice).toBeNull(); });
+  it("does not cancel an idle engine and waits 50 ms before resuming and speaking", async () => { (await audio()).speak("Hello"); expect(engine.cancel).not.toHaveBeenCalled(); vi.advanceTimersByTime(49); expect(engine.speak).not.toHaveBeenCalled(); vi.advanceTimersByTime(1); expect(engine.speak).toHaveBeenCalledTimes(1); expect(engine.resume.mock.invocationCallOrder[0]).toBeLessThan(engine.speak.mock.invocationCallOrder[0] ?? 0); });
+  it.each(["speaking", "pending"] as const)("cancels only when %s", async (state) => { engine[state] = true; (await audio()).speak("Hello"); expect(engine.cancel).toHaveBeenCalledTimes(1); expect(engine.speak).not.toHaveBeenCalled(); vi.advanceTimersByTime(50); expect(engine.speak).toHaveBeenCalledTimes(1); });
+  it("warns after 2 seconds without onstart, at most once per session", async () => { const { toast } = await import("sonner"); const a = await audio(); a.speak("Hello"); vi.advanceTimersByTime(2049); expect(toast.error).not.toHaveBeenCalled(); vi.advanceTimersByTime(1); expect(toast.error).toHaveBeenCalledTimes(1); a.speak("Again"); vi.advanceTimersByTime(2050); expect(toast.error).toHaveBeenCalledTimes(1); vi.resetModules(); (await audio()).speak("After reload"); vi.advanceTimersByTime(2050); expect(toast.error).toHaveBeenCalledTimes(1); });
+  it("clears the watchdog when speech starts and retains the utterance through playback", async () => { const { toast } = await import("sonner"); (await audio()).speak("Hello"); vi.advanceTimersByTime(50); const u = spoken(); u.onstart?.(); vi.advanceTimersByTime(2000); expect(toast.error).not.toHaveBeenCalled(); u.onerror?.(); expect(toast.error).toHaveBeenCalledTimes(1); });
+  it("warns when speech synthesis is unavailable", async () => { vi.stubGlobal("speechSynthesis", undefined); const { toast } = await import("sonner"); (await audio()).speak("Hello"); expect(toast.error).toHaveBeenCalledTimes(1); });
+  it("ignores cancelled speech errors and submits only the most recent rapid tap", async () => { const { toast } = await import("sonner"); const a = await audio(); a.speak("First"); vi.advanceTimersByTime(50); const first = spoken(); engine.speaking = true; a.speak("Second"); first.onerror?.(); a.speak("Third"); vi.advanceTimersByTime(50); expect(spoken().text).toBe("Third"); expect(engine.speak).toHaveBeenCalledTimes(2); expect(toast.error).not.toHaveBeenCalled(); });
+  it("NOVO: retries once without the chosen voice when it errors", async () => { const { toast } = await import("sonner"); available = [voice("en-US")]; (await audio()).speak("Hello"); vi.advanceTimersByTime(50); const u = spoken(); (u.onerror as any)?.({ error: "synthesis-failed" }); vi.advanceTimersByTime(50); expect(engine.speak).toHaveBeenCalledTimes(2); expect(spoken().voice).toBeNull(); expect(toast.error).not.toHaveBeenCalled(); });
+});
