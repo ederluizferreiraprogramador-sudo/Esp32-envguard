@@ -32,7 +32,13 @@ function Trail() {
   const [p] = useProgress();
   const [st, stReady] = useStudent();
   const nav = useNavigate();
-  useEffect(() => { if (stReady && !st.name) nav({ to: "/bem-vindo" }); }, [stReady, st.name]);
+  useEffect(() => {
+    if (!stReady) return;
+    if (!st.name) { nav({ to: "/bem-vindo" }); return; }
+    try {
+      if (!sessionStorage.getItem("fx-chat-greeted")) { sessionStorage.setItem("fx-chat-greeted", "1"); nav({ to: "/conversa" }); }
+    } catch { /* sem sessionStorage: segue na trilha */ }
+  }, [stReady, st.name]);
   const first = st.name.split(" ")[0];
   const flat = units.flatMap((u) => u.lessons.map((_, i) => lessonKey(u.id, i)));
   const current = flat.find((k) => !p.completed.includes(k));
@@ -46,7 +52,10 @@ function Trail() {
           <div className="min-w-0">
             <p className="font-extrabold">Oi{first ? `, ${first}` : ""}! Eu sou a Charlotte, sua professora de inglês. 🐾</p>
             <p className="text-sm text-muted-foreground">Vamos seguir o livro unidade por unidade. Quando errar, o Uni rebola e a gente repete juntos!</p>
-            <button className="mt-2 rounded-xl bg-fx-blue-light px-3 py-1 text-sm font-extrabold text-fx-blue-dark" onClick={() => speak("Hi! I'm Charlotte, your English teacher. Let's learn together!")}>🔊 Ouvir a Charlotte</button>
+            <div className="mt-2 flex flex-wrap gap-2">
+              <Link to="/conversa" className="rounded-xl bg-fx-green px-3 py-1.5 text-sm font-extrabold text-white">💬 Conversar com a Charlotte</Link>
+              <button className="rounded-xl bg-fx-blue-light px-3 py-1.5 text-sm font-extrabold text-fx-blue-dark" onClick={() => speak("Hi! I'm Charlotte, your English teacher. Let's learn together!")}>🔊 Ouvir</button>
+            </div>
           </div>
         </section>
         {units.map((u) => {

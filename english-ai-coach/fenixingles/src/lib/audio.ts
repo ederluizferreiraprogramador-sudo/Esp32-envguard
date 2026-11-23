@@ -78,11 +78,30 @@ export function getAudioDiagnostics() {
     lastError,
     lastOk,
     browser: typeof navigator === "undefined" ? "" : /Edg\//.test(navigator.userAgent) ? "Edge" : isChrome() ? "Chrome" : "Outro",
+    claudeVoice: provider !== null,
   };
 }
 
+/** Voz externa opcional (ex.: a voz da Claude na versão de teste). Sem ela, usa a voz do navegador. */
+export interface VoiceProvider { speak(text: string, slow: boolean): Promise<unknown> }
+let provider: VoiceProvider | null = null;
+export function setVoiceProvider(p: VoiceProvider | null) { provider = p; }
+export function hasVoiceProvider() { return provider !== null; }
+
 export function speak(text: string, slow = false, retry = false) {
   if (typeof window === "undefined") return;
+  if (provider && !retry) {
+    provider.speak(text, slow).then(() => { lastOk = true; lastError = ""; }).catch((e: { code?: string }) => {
+      if (e?.code === "stopped") return;
+      lastError = `voz da Claude: ${e?.code ?? "erro"}`;
+      if (e?.code !== "not_granted") browserSpeak(text, slow, false);
+    });
+    return;
+  }
+  browserSpeak(text, slow, retry);
+}
+
+function browserSpeak(text: string, slow: boolean, retry: boolean) {
   const engine = getSynthesis();
   if (!engine || typeof window.SpeechSynthesisUtterance === "undefined") {
     lastError = "sem suporte a voz";
@@ -105,7 +124,7 @@ export function speak(text: string, slow = false, retry = false) {
     if (code === "interrupted" || code === "canceled") return;
     lastError = code;
     // Chrome Android: a voz escolhida pode falhar; tenta 1 vez com o motor padrão.
-    if (!retry && u.voice) { utterance = null; speak(text, slow, true); return; }
+    if (!retry && u.voice) { utterance = null; browserSpeak(text, slow, true); return; }
     warnAudio();
   };
   u.onend = () => {

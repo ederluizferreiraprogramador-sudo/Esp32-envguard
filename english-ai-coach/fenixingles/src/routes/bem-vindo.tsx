@@ -27,7 +27,8 @@ function Welcome() {
   const next = () => {
     if (step === 3) {
       updateStudent((x) => ({ ...x, name: name.trim(), age, goal }));
-      nav({ to: "/" }); return;
+      try { sessionStorage.setItem("fx-chat-greeted", "1"); } catch { /* */ }
+      nav({ to: "/conversa" }); return;
     }
     if (step === 2) speak(`${first}, your learning journey is ready!`);
     setStep(step + 1);

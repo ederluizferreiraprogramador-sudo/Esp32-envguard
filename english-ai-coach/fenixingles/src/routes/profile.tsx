@@ -113,7 +113,7 @@ function Profile() {
           <p className="font-extrabold">Diagnóstico do áudio</p>
           {diag && (
             <ul className="mt-1 space-y-0.5 text-muted-foreground">
-              <li>Navegador: {diag.browser}{diag.supported ? "" : " (sem suporte a voz)"}</li>
+              <li>Navegador: {diag.browser}{diag.supported ? "" : " (sem suporte a voz)"}{diag.claudeVoice ? " · usando a voz da Claude" : ""}</li>
               <li>{n} {n === 1 ? "voz em inglês encontrada" : "vozes em inglês encontradas"}{n > 0 && `: ${diag.englishVoices.slice(0, 4).join(", ")}${n > 4 ? "…" : ""}`}</li>
               <li>{diag.lastOk ? "✅ Último áudio tocou" : diag.lastError ? `⚠️ Último erro: ${diag.lastError}` : "Toque em Testar áudio"}</li>
             </ul>
