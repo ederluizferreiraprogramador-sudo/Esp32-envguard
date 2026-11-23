@@ -6,6 +6,7 @@ Sem HTML feito à mão: construído por plataformas no-code com IA.
 ## Onde está
 - **Lovable (principal):** https://lovable.dev/projects/60981d66-8189-4a20-94de-9a98b00adf52
 - **App publicado (testar):** https://fenixingles.lovable.app
+- **Versão Base44 (reserva, com resumo de erros + PDF):** https://fenix-ingles-c5968695.base44.app — editor: https://app.base44.com/apps/6b03f9395666f1f1c5968695/editor/preview
 
 ## Regras
 1. Seguir a **ordem do livro** (16 unidades, ver `CURRICULO.md`) e os **tipos de atividade do workbook**:
