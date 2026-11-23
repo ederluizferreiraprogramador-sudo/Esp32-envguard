@@ -5,7 +5,8 @@ import { completeLesson, lessonKey, MAX_HEARTS, update, useProgress } from "@/li
 import { playCorrect, playFinish, playWrong, speak } from "@/lib/audio";
 import { recordMistake } from "@/lib/mistakes";
 import { Phoenix } from "@/components/Phoenix";
-import { Capi, Uni } from "@/components/Characters";
+import { Uni } from "@/components/Characters";
+import { CastImage } from "@/components/CastImage";
 import { CharlotteSays, Kitten, NameTag } from "@/components/Kittens";
 
 export const Route = createFileRoute("/lesson/$unitId/$lessonId")({
@@ -89,7 +90,7 @@ function LessonPage() {
     const unitDone = unit.lessons.every((_, i) => p.completed.includes(lessonKey(unit.id, i)));
     return (
       <div className="mx-auto flex min-h-screen max-w-lg flex-col items-center justify-center gap-6 p-6 text-center">
-        <div className="flex items-end gap-2"><Phoenix size={150} className="anim-bob" /><Capi size={110} /></div>
+        <div className="flex items-end gap-1">{unitDone ? <Phoenix pose="guerreira" size={160} className="anim-bob" /> : <Phoenix pose="voando" size={160} className="anim-bob" />}<CastImage id="capivara" size={110} /></div>
         <h1 className="anim-pop text-3xl font-extrabold text-fx-orange">Lição concluída!</h1>
         <div className="grid w-full grid-cols-2 gap-3">
           <div className="anim-pop overflow-hidden rounded-2xl border-2 border-fx-yellow"><div className="bg-fx-yellow py-1 text-sm font-extrabold text-primary-foreground">XP GANHO</div><div className="py-3 text-2xl font-extrabold text-fx-orange">💎 +10</div></div>
@@ -107,7 +108,7 @@ function LessonPage() {
   if (ready && p.hearts <= 0 && status === "idle" && !retry) {
     return (
       <div className="mx-auto flex min-h-screen max-w-lg flex-col items-center justify-center gap-5 p-6 text-center">
-        <div className="text-6xl">💔</div>
+        <Phoenix pose="meditando" size={150} />
         <h1 className="text-2xl font-extrabold">Suas vidas acabaram</h1>
         <p className="text-muted-foreground">Elas recarregam amanhã — ou recarregue agora para continuar praticando.</p>
         <button className="btn3d btn-blue w-full" onClick={() => update((x) => ({ ...x, hearts: MAX_HEARTS }))}>Recarregar vidas</button>
@@ -179,7 +180,7 @@ function LessonPage() {
       ) : (
         <div className={`anim-up p-4 ${status === "correct" ? "bg-fx-green-light" : "bg-fx-red-light"}`}>
           <div className="mb-3 flex items-start gap-3">
-            {status === "correct" ? <Capi size={72} className="anim-pop shrink-0" /> : <Uni size={84} className="anim-pop shrink-0" />}
+            {status === "correct" ? <CastImage id="capivara" size={76} className="anim-bob shrink-0" /> : <Uni size={84} className="anim-pop shrink-0" />}
             <div className="flex-1">
               <p className={`text-xl font-extrabold ${status === "correct" ? "text-fx-green-dark" : "text-fx-red-dark"}`}>
                 {status === "correct" ? (retry ? "Isso! Agora você acertou." : "Muito bem!") : `Resposta correta: ${correctText(act)}`}
@@ -271,7 +272,8 @@ function ActivityView(props: AVProps) {
     case "write":
       return (
         <>
-          <h1 className={h}>Escreva por extenso em inglês</h1>
+          <h1 className={h}>Escreva em inglês</h1>
+          <div className="mt-3 flex items-center gap-2"><CastImage id="polvinho" size={64} /><span className="rounded-full bg-fx-blue px-2 py-0.5 text-xs font-extrabold text-white">Tito</span><span className="text-sm text-muted-foreground">Escreva com calma, letra por letra.</span></div>
           <div className="mt-6 text-center text-6xl font-extrabold text-fx-blue">{act.prompt}</div>
           <Hint text={hint} />
           <input autoFocus disabled={locked} value={value} onChange={(e) => setValue(e.target.value)}
@@ -294,7 +296,7 @@ function Build({ act, seed, setValue, locked, hint }: AVProps & { act: Extract<A
     <>
       <h1 className="text-2xl font-extrabold">Traduza esta frase</h1>
       <div className="mt-5 flex items-center gap-3">
-        <div className="flex shrink-0 flex-col items-center gap-1"><Kitten name="luna" size={70} /><NameTag name="luna" /></div>
+        <div className="flex shrink-0 flex-col items-center gap-1"><CastImage id="camaleao" size={76} /><span className="rounded-full bg-fx-green px-2 py-0.5 text-xs font-extrabold text-white">Leo</span></div>
         <p className="rounded-2xl border-2 border-fx-gray p-3 text-lg">{act.pt}</p>
       </div>
       <Hint text={hint} />

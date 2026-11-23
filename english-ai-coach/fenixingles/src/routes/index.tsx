@@ -1,9 +1,11 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
+import { useStudent } from "@/lib/student";
+import { CastImage } from "@/components/CastImage";
+import { UNIT_BUDDY } from "@/lib/cast";
 import { units } from "@/data/units";
 import { lessonKey, useProgress } from "@/lib/progress";
 import { TopBar, BottomNav } from "@/components/TopBar";
-import { Phoenix } from "@/components/Phoenix";
-import { Capi, UniFront } from "@/components/Characters";
 import { Kitten, NameTag } from "@/components/Kittens";
 import { speak } from "@/lib/audio";
 
@@ -28,6 +30,10 @@ const headerBg: Record<string, string> = {
 
 function Trail() {
   const [p] = useProgress();
+  const [st, stReady] = useStudent();
+  const nav = useNavigate();
+  useEffect(() => { if (stReady && !st.name) nav({ to: "/bem-vindo" }); }, [stReady, st.name]);
+  const first = st.name.split(" ")[0];
   const flat = units.flatMap((u) => u.lessons.map((_, i) => lessonKey(u.id, i)));
   const current = flat.find((k) => !p.completed.includes(k));
 
@@ -38,7 +44,7 @@ function Trail() {
         <section className="mt-5 flex items-center gap-3 rounded-2xl border-2 border-fx-gray p-3" aria-label="Boas-vindas da Charlotte">
           <div className="flex shrink-0 flex-col items-center gap-1"><Kitten name="charlotte" size={84} /><NameTag name="charlotte" /></div>
           <div className="min-w-0">
-            <p className="font-extrabold">Oi! Eu sou a Charlotte, sua professora de inglês. 🐾</p>
+            <p className="font-extrabold">Oi{first ? `, ${first}` : ""}! Eu sou a Charlotte, sua professora de inglês. 🐾</p>
             <p className="text-sm text-muted-foreground">Vamos seguir o livro unidade por unidade. Quando errar, o Uni rebola e a gente repete juntos!</p>
             <button className="mt-2 rounded-xl bg-fx-blue-light px-3 py-1 text-sm font-extrabold text-fx-blue-dark" onClick={() => speak("Hi! I'm Charlotte, your English teacher. Let's learn together!")}>🔊 Ouvir a Charlotte</button>
           </div>
@@ -85,7 +91,7 @@ function Trail() {
                     </div>
                   );
                 })}
-                <UnitBuddy id={u.id} side={u.id % 2 === 0 ? "left-0" : "right-0"} />
+                <CastImage id={UNIT_BUDDY[(u.id - 1) % UNIT_BUDDY.length]!} size={104} className={`absolute ${u.id % 2 === 0 ? "left-0" : "right-0"} top-12 ${u.id % 3 === 0 ? "anim-bob" : ""}`} />
               </div>
             </section>
           );
@@ -96,15 +102,3 @@ function Trail() {
   );
 }
 
-/** Um personagem da turma acompanha cada unidade na trilha. */
-function UnitBuddy({ id, side }: { id: number; side: string }) {
-  const cls = `absolute ${side} top-14`;
-  switch (id % 6) {
-    case 1: return id === 1 ? <Phoenix size={92} className={`${cls} anim-bob`} /> : <Capi size={92} className={cls} />;
-    case 2: return <Kitten name="charlotte" size={92} className={cls} />;
-    case 3: return <UniFront size={92} className={`${cls} anim-bob`} />;
-    case 4: return <Kitten name="mingau" size={92} className={cls} />;
-    case 5: return <Kitten name="luna" size={92} className={cls} />;
-    default: return <Capi size={92} className={cls} />;
-  }
-}

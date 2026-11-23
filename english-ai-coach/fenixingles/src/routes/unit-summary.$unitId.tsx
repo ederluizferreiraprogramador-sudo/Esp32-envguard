@@ -38,7 +38,7 @@ function UnitSummary() {
         <h1 className="text-2xl font-extrabold">Resumo da Unidade {unit.id}</h1>
       </div>
       <div className="flex items-center gap-4 rounded-2xl border-2 border-fx-gray p-4">
-        <Phoenix size={72} className="anim-bob shrink-0" />
+        <Phoenix pose="leitora" size={84} className="anim-bob shrink-0" />
         <div>
           <p className="text-lg font-extrabold">{unit.title}</p>
           <p className="text-muted-foreground">
