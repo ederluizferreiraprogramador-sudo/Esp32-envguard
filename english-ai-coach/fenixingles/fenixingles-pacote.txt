@@ -1,0 +1,972 @@
+# FenixInglês — especificação para o Base44
+
+App de inglês para brasileiros iniciantes (A1), estilo de gamificação do Duolingo, marca própria.
+Interface em português, conteúdo em inglês. Mobile-first. Sem login por enquanto: progresso e erros no localStorage.
+
+## Visual
+- Fonte Nunito 700/800, cantos bem arredondados, botões "3D" (box-shadow 0 4px 0 de cor mais escura; afundam ao clicar).
+- Cores: verde #58CC02 (sombra #58A700), azul #1CB0F6 (#1899D6), vermelho #FF4B4B (#EA2B2B), amarelo #FFC800, laranja #FF9600, cinza #E5E5E5, texto #4B4B4B, fundo branco.
+- Mascote: fênix laranja/vermelha em SVG, com CHAMAS na cabeça e asas de fogo (não pode parecer coruja; não usar marca do Duolingo).
+
+## Telas
+1. Trilha (/): barra superior com 🔥 sequência, 💎 XP, ❤️ vidas (5). 16 unidades na ordem dos arquivos de dados, cada uma com cabeçalho colorido ("UNIDADE N" + título; cores alternando verde, azul, laranja, vermelho) e 3 bolinhas grandes em zigue-zague (uma por lição). Lição atual verde pulsando com balão "COMEÇAR"; concluídas douradas com 👑; futuras cinza com 🔒. Unidade com todas as lições concluídas mostra link "📄 Resumo de erros". Navegação inferior: Trilha / Perfil.
+2. Lição (/lesson/:unit/:lesson): ✕ para sair, barra de progresso verde, ❤️. Uma atividade por vez, botão "VERIFICAR". Faixa inferior verde "Muito bem!" ou vermelha "Resposta correta: ..." + explicação, botão "CONTINUAR". Errar tira 1 vida, registra o erro (recordMistake) e a questão volta no fim.
+3. Fim da lição: fênix comemorando, +10 XP, % de acertos, sequência. Se a unidade inteira ficou concluída: texto "Unidade concluída! Veja onde você pode melhorar." e Continuar leva ao resumo da unidade.
+4. Resumo da unidade (/unit-summary/:unit): ver arquivo unit-summary.$unitId.tsx — erros agrupados por categoria, dica de como melhorar, "Você respondeu / Certo / Por quê", botão "📄 Baixar PDF com explicações" (mistakesPdf.ts, jsPDF).
+5. Perfil: XP, sequência, lições concluídas, liga/desliga sons, botão "🔊 Testar áudio" (fala "Hello! Welcome to FenixInglês." e mostra quantas vozes em inglês existem), botão "Zerar progresso" (apaga progresso e erros).
+
+## Atividades (tipos em units.ts)
+- fill: "Complete o diálogo" — mostra context (opcional) e a frase before ___ after; opções em botões.
+- choose: "Escolha a resposta correta" — fala (com 🔊) e opções.
+- listen: "Ouça e escolha o que você ouviu" — botão 🔊 grande + 🐢 (devagar, rate 0.6); opções.
+- write: "Escreva em inglês" — prompt grande + campo de texto; aceita qualquer item de answer (ignorar maiúsculas, pontuação e espaços extras).
+- build: "Traduza esta frase" — frase em português; blocos = palavras da resposta + extra, embaralhados; tocar adiciona/remove; correto se igual à resposta (normalizado).
+- match: "Ligue os pares" — duas colunas embaralhadas; par certo fica verde, errado treme vermelho; concluído quando todos os pares forem ligados.
+Opções sempre embaralhadas.
+
+## Áudio (importante: Android)
+Web Speech API, voz en-US. No Chrome Android: carregar vozes também no evento voiceschanged; escolher en-US, senão qualquer en-*; só chamar cancel() se speaking||pending; falar dentro de setTimeout(50) depois de resume(); manter referência da utterance; se onstart não disparar em 2 s ou houver onerror, mostrar aviso (uma vez por sessão): "Não consegui tocar o áudio. Abra o app no Chrome e confira em Configurações › Idiomas › Saída de conversão de texto em voz se há voz em inglês instalada."
+Sons de acerto/erro/fim com WebAudio (osciladores curtos), desligáveis no Perfil.
+
+## Regras de progresso
+- Vidas recarregam para 5 a cada novo dia; sem vidas, oferecer "Recarregar vidas".
+- Sequência: +1 se estudou ontem, reinicia se pulou um dia.
+- Lições liberadas em ordem; concluídas podem ser refeitas.
+
+
+===== ARQUIVO: src/data/units.ts =====
+// Tipos copiados do projeto Lovable (src/data/units.ts) para validação local.
+export type Activity =
+  | { type: "fill"; before: string; after: string; options: string[]; answer: string; explain: string; context?: string }
+  | { type: "choose"; line: string; options: string[]; answer: string; explain: string }
+  | { type: "build"; pt: string; answer: string; extra: string[]; explain: string }
+  | { type: "listen"; audio: string; options: string[]; answer: string; explain: string }
+  | { type: "write"; prompt: string; answer: string[]; explain: string }
+  | { type: "match"; pairs: [string, string][]; explain: string };
+export interface Lesson { title: string; activities: Activity[] }
+
+
+===== ARQUIVO: src/data/units1to2.ts =====
+// Unidades 1 e 2 do FenixInglês (cópia do app no Lovable).
+import type { Lesson } from "./units";
+
+export const unit1: Lesson[] = [
+  { title: "Olá e nomes", activities: [
+    { type: "match", pairs: [["hello", "olá"], ["goodbye", "tchau"], ["good morning", "bom dia"], ["name", "nome"]], explain: "Cumprimentos básicos." },
+    { type: "fill", context: "A: Hi, I'm Ana. What's your name?", before: "B: My", after: "is Leo.", options: ["name", "names", "nome"], answer: "name", explain: "\"My name is...\" = \"Meu nome é...\"." },
+    { type: "choose", line: "What's your name?", options: ["My name is Leo.", "I'm fine, thanks.", "Goodbye!"], answer: "My name is Leo.", explain: "A pergunta é sobre o nome, então respondemos com o nome." },
+    { type: "listen", audio: "Nice to meet you.", options: ["Nice to meet you.", "Nice to see you.", "Good morning."], answer: "Nice to meet you.", explain: "\"Nice to meet you\" = \"Prazer em conhecê-lo\"." },
+    { type: "build", pt: "Meu nome é Ana.", answer: "My name is Ana", extra: ["your", "are"], explain: "Use \"my\" para \"meu/minha\"." },
+    { type: "choose", line: "Nice to meet you.", options: ["Nice to meet you, too.", "My name is Ana.", "I'm ten."], answer: "Nice to meet you, too.", explain: "Respondemos com \"Nice to meet you, too\" (também)." },
+    { type: "fill", before: "Good", after: "! How are you?", options: ["morning", "night", "name"], answer: "morning", explain: "\"Good morning\" = \"Bom dia\"." },
+    { type: "build", pt: "Como você está?", answer: "How are you", extra: ["is", "what"], explain: "\"How are you?\" é a pergunta mais comum para cumprimentar." },
+  ] },
+  { title: "Verbo be e números", activities: [
+    { type: "fill", before: "I", after: "Leo.", options: ["am", "is", "are"], answer: "am", explain: "Com \"I\" usamos \"am\": I am (I'm)." },
+    { type: "fill", before: "She", after: "my friend.", options: ["is", "am", "are"], answer: "is", explain: "Com he/she/it usamos \"is\"." },
+    { type: "write", prompt: "8", answer: ["eight"], explain: "8 = eight." },
+    { type: "write", prompt: "3", answer: ["three"], explain: "3 = three." },
+    { type: "match", pairs: [["one", "1"], ["five", "5"], ["seven", "7"], ["ten", "10"], ["zero", "0"]], explain: "Números de 0 a 10." },
+    { type: "choose", line: "Qual é a contração de \"you are\"?", options: ["you're", "your", "you's"], answer: "you're", explain: "you are = you're. Cuidado: \"your\" significa \"seu/sua\"." },
+    { type: "listen", audio: "six", options: ["six", "seven", "sixteen"], answer: "six", explain: "six = 6." },
+    { type: "build", pt: "Ele é meu amigo.", answer: "He is my friend", extra: ["are", "her"], explain: "he + is. \"my friend\" = meu amigo." },
+  ] },
+  { title: "Soletrar e telefone", activities: [
+    { type: "fill", context: "A: How do you spell your last name?", before: "B:", after: "", options: ["L-I-M-A.", "Lima, too.", "Ten."], answer: "L-I-M-A.", explain: "\"Spell\" = soletrar. Dizemos letra por letra." },
+    { type: "match", pairs: [["last name", "sobrenome"], ["phone number", "número de telefone"], ["his", "dele"], ["her", "dela"]], explain: "Vocabulário de dados pessoais." },
+    { type: "fill", before: "This is Leo.", after: "name is Leo.", options: ["His", "Her", "My"], answer: "His", explain: "Para um homem usamos \"his\" (dele)." },
+    { type: "fill", before: "This is Ana.", after: "last name is Costa.", options: ["Her", "His", "Your"], answer: "Her", explain: "Para uma mulher usamos \"her\" (dela)." },
+    { type: "choose", line: "What's your phone number?", options: ["It's 555-0192.", "It's L-I-M-A.", "I'm fine."], answer: "It's 555-0192.", explain: "Perguntou o número de telefone, respondemos com números." },
+    { type: "listen", audio: "What's your last name?", options: ["What's your last name?", "What's your phone number?", "What's his name?"], answer: "What's your last name?", explain: "\"last name\" = sobrenome." },
+    { type: "write", prompt: "9", answer: ["nine"], explain: "9 = nine." },
+    { type: "build", pt: "Qual é o seu número de telefone?", answer: "What's your phone number", extra: ["my", "name"], explain: "\"your\" = seu/sua." },
+  ] },
+];
+
+export const unit2: Lesson[] = [
+  { title: "Objetos do dia a dia", activities: [
+    { type: "match", pairs: [["keys", "chaves"], ["wallet", "carteira"], ["umbrella", "guarda-chuva"], ["phone", "celular"]], explain: "Objetos pessoais." },
+    { type: "fill", before: "It's", after: "umbrella.", options: ["an", "a", "the"], answer: "an", explain: "Use \"an\" antes de som de vogal: an umbrella." },
+    { type: "fill", before: "It's", after: "wallet.", options: ["a", "an", "these"], answer: "a", explain: "Use \"a\" antes de som de consoante: a wallet." },
+    { type: "listen", audio: "notebook", options: ["notebook", "phone", "desk"], answer: "notebook", explain: "notebook = caderno." },
+    { type: "choose", line: "What's this?", options: ["It's a bag.", "They're bags.", "It's an bag."], answer: "It's a bag.", explain: "\"This\" é singular → \"It's a...\"." },
+    { type: "match", pairs: [["desk", "mesa"], ["bag", "bolsa"], ["chair", "cadeira"], ["notebook", "caderno"]], explain: "Mais objetos." },
+    { type: "build", pt: "Isto é um celular.", answer: "This is a phone", extra: ["these", "an"], explain: "\"This is a...\" = \"Isto é um(a)...\"." },
+    { type: "write", prompt: "keys (em português)", answer: ["chaves"], explain: "keys = chaves." },
+  ] },
+  { title: "Plurais: this / these", activities: [
+    { type: "fill", before: "What are", after: "?", options: ["these", "this", "it"], answer: "these", explain: "\"These\" é o plural de \"this\"." },
+    { type: "choose", line: "What are these?", options: ["They're keys.", "It's a key.", "It's keys."], answer: "They're keys.", explain: "Plural → \"They're...\"." },
+    { type: "write", prompt: "Plural de \"chair\"", answer: ["chairs"], explain: "A maioria dos plurais ganha -s: chairs." },
+    { type: "write", prompt: "Plural de \"wallet\"", answer: ["wallets"], explain: "wallet → wallets." },
+    { type: "listen", audio: "They're umbrellas.", options: ["They're umbrellas.", "It's an umbrella.", "These are wallets."], answer: "They're umbrellas.", explain: "\"They're\" = eles/elas são." },
+    { type: "build", pt: "Estes são meus cadernos.", answer: "These are my notebooks", extra: ["this", "is"], explain: "these + are + plural." },
+    { type: "fill", before: "Is", after: "your bag? Yes, it is.", options: ["this", "these", "they"], answer: "this", explain: "\"bag\" é singular → \"this\"." },
+    { type: "match", pairs: [["this", "isto/este"], ["these", "estes"], ["it", "ele/ela (coisa)"], ["they", "eles/elas"]], explain: "Singular x plural." },
+  ] },
+  { title: "Onde está?", activities: [
+    { type: "match", pairs: [["in", "dentro de"], ["on", "em cima de"], ["under", "embaixo de"], ["behind", "atrás de"]], explain: "Preposições de lugar." },
+    { type: "fill", context: "A: Excuse me. Where are my keys?", before: "B: They're", after: "the desk.", options: ["on", "in", "under"], answer: "on", explain: "\"on\" = em cima de (em contato com a superfície)." },
+    { type: "fill", before: "Where", after: "my umbrella?", options: ["is", "are", "am"], answer: "is", explain: "umbrella é singular → \"Where is...?\"." },
+    { type: "choose", line: "Where is my umbrella?", options: ["It's behind the chair.", "They're behind the chair.", "It's a chair."], answer: "It's behind the chair.", explain: "Singular → \"It's...\"; behind = atrás de." },
+    { type: "listen", audio: "It's next to your phone.", options: ["It's next to your phone.", "It's in front of your phone.", "It's under your phone."], answer: "It's next to your phone.", explain: "\"next to\" = ao lado de." },
+    { type: "match", pairs: [["next to", "ao lado de"], ["in front of", "na frente de"], ["the", "o/a"], ["where", "onde"]], explain: "Mais preposições." },
+    { type: "build", pt: "A carteira está embaixo da cadeira.", answer: "The wallet is under the chair", extra: ["on", "are"], explain: "under = embaixo de." },
+    { type: "build", pt: "Onde estão minhas chaves?", answer: "Where are my keys", extra: ["is", "your"], explain: "keys é plural → \"Where are...?\"." },
+  ] },
+];
+
+
+===== ARQUIVO: src/data/units3to8.ts =====
+// Unidades 3 a 8 do FenixInglês (ordem do livro-base; conteúdo original).
+import type { Lesson } from "./units";
+
+export const unit3: Lesson[] = [
+  {
+    title: "Países e cidades",
+    activities: [
+      { type: "match", pairs: [["country", "país"], ["city", "cidade"], ["language", "idioma"], ["from", "de (origem)"]], explain: "Vocabulário de origem." },
+      { type: "fill", context: "A: Where are you from?", before: "B: I'm", after: "Brazil.", options: ["from", "in", "on"], answer: "from", explain: "\"I'm from...\" = \"Eu sou de...\"." },
+      { type: "choose", line: "Where are you from?", options: ["I'm from Fortaleza.", "I'm fine.", "It's on the desk."], answer: "I'm from Fortaleza.", explain: "A pergunta é sobre origem." },
+      { type: "listen", audio: "Is Portuguese your first language?", options: ["Is Portuguese your first language?", "Is Brazil your country?", "Is this your city?"], answer: "Is Portuguese your first language?", explain: "\"first language\" = língua materna." },
+      { type: "fill", before: "She", after: "from Canada.", options: ["is", "are", "am"], answer: "is", explain: "she + is." },
+      { type: "build", pt: "Nós somos do Brasil.", answer: "We are from Brazil", extra: ["is", "in"], explain: "we + are + from." },
+      { type: "choose", line: "Are you from Recife?", options: ["No, I'm not. I'm from Natal.", "No, I amn't.", "Yes, I'm."], answer: "No, I'm not. I'm from Natal.", explain: "Resposta curta negativa: No, I'm not." },
+      { type: "match", pairs: [["Brazil", "Brasil"], ["Brazilian", "brasileiro"], ["Japan", "Japão"], ["Japanese", "japonês"]], explain: "País x nacionalidade." },
+    ],
+  },
+  {
+    title: "Verbo be: negativo e perguntas",
+    activities: [
+      { type: "fill", before: "I", after: "a teacher. I'm a student.", options: ["am not", "is not", "not am"], answer: "am not", explain: "Negativo: I am not (I'm not)." },
+      { type: "fill", before: "They", after: "from Chile. They're from Peru.", options: ["aren't", "isn't", "amn't"], answer: "aren't", explain: "they + are not = aren't." },
+      { type: "choose", line: "Is he from Mexico?", options: ["Yes, he is.", "Yes, he's.", "Yes, he are."], answer: "Yes, he is.", explain: "Resposta curta afirmativa não usa contração." },
+      { type: "build", pt: "Ela não é tímida.", answer: "She isn't shy", extra: ["aren't", "is"], explain: "she + isn't." },
+      { type: "build", pt: "Você é do Canadá?", answer: "Are you from Canada", extra: ["is", "do"], explain: "Pergunta: inverta o verbo be: Are you...?" },
+      { type: "listen", audio: "We aren't from Japan.", options: ["We aren't from Japan.", "We are from Japan.", "He isn't from Japan."], answer: "We aren't from Japan.", explain: "aren't = are not." },
+      { type: "fill", before: "", after: "your parents from Ceará?", options: ["Are", "Is", "Am"], answer: "Are", explain: "parents é plural → Are." },
+      { type: "write", prompt: "is not →", answer: ["isn't"], explain: "is not = isn't." },
+    ],
+  },
+  {
+    title: "Idade e aparência",
+    activities: [
+      { type: "write", prompt: "15", answer: ["fifteen"], explain: "15 = fifteen." },
+      { type: "write", prompt: "40", answer: ["forty"], explain: "40 = forty (sem \"u\")." },
+      { type: "listen", audio: "thirteen", options: ["thirteen", "thirty", "three"], answer: "thirteen", explain: "13 = thirteen; 30 = thirty." },
+      { type: "fill", context: "A: How old are you?", before: "B: I'm twenty-five", after: "old.", options: ["years", "year", "ages"], answer: "years", explain: "\"I'm ... years old\" = tenho ... anos." },
+      { type: "match", pairs: [["tall", "alto"], ["short", "baixo"], ["friendly", "simpático"], ["shy", "tímido"]], explain: "Adjetivos de aparência e personalidade." },
+      { type: "choose", line: "What's your brother like?", options: ["He's tall and friendly.", "He's from Brazil.", "He's twenty."], answer: "He's tall and friendly.", explain: "\"What's ... like?\" pede uma descrição." },
+      { type: "build", pt: "Minha irmã é muito engraçada.", answer: "My sister is very funny", extra: ["are", "her"], explain: "funny = engraçado; very = muito." },
+      { type: "write", prompt: "21", answer: ["twenty-one", "twenty one"], explain: "21 = twenty-one." },
+    ],
+  },
+];
+
+export const unit4: Lesson[] = [
+  {
+    title: "Roupas e cores",
+    activities: [
+      { type: "match", pairs: [["coat", "casaco"], ["shirt", "camisa"], ["shoes", "sapatos"], ["dress", "vestido"]], explain: "Peças de roupa." },
+      { type: "match", pairs: [["red", "vermelho"], ["blue", "azul"], ["black", "preto"], ["white", "branco"]], explain: "Cores." },
+      { type: "build", pt: "Eu tenho um casaco preto.", answer: "I have a black coat", extra: ["an", "coats"], explain: "Em inglês o adjetivo vem antes: a black coat." },
+      { type: "fill", before: "Her shoes", after: "brown.", options: ["are", "is", "am"], answer: "are", explain: "shoes é plural → are." },
+      { type: "listen", audio: "a green dress", options: ["a green dress", "a gray dress", "a green shirt"], answer: "a green dress", explain: "green = verde." },
+      { type: "choose", line: "What color is your bag?", options: ["It's yellow.", "It's a bag.", "They're yellow."], answer: "It's yellow.", explain: "Uma bolsa → It's + cor." },
+      { type: "write", prompt: "azul", answer: ["blue"], explain: "azul = blue." },
+      { type: "build", pt: "Ele usa camisas brancas.", answer: "He wears white shirts", extra: ["wear", "whites"], explain: "Adjetivo não vai para o plural: white shirts." },
+    ],
+  },
+  {
+    title: "De quem é?",
+    activities: [
+      { type: "fill", context: "A: Whose coat is this?", before: "B: It's", after: ".", options: ["mine", "my", "me"], answer: "mine", explain: "Sem substantivo depois, use o pronome possessivo: mine." },
+      { type: "match", pairs: [["mine", "meu (o meu)"], ["yours", "seu (o seu)"], ["ours", "nosso"], ["theirs", "deles"]], explain: "Pronomes possessivos." },
+      { type: "choose", line: "Is this umbrella yours?", options: ["No, it's not mine.", "No, it's not my.", "No, they're mine."], answer: "No, it's not mine.", explain: "mine substitui \"my umbrella\"." },
+      { type: "fill", before: "This is", after: "car. It's our car.", options: ["our", "ours", "us"], answer: "our", explain: "Antes do substantivo: our car." },
+      { type: "build", pt: "De quem são estes sapatos?", answer: "Whose shoes are these", extra: ["who", "is"], explain: "Whose = de quem." },
+      { type: "fill", before: "The shoes are", after: ". (deles)", options: ["theirs", "their", "they"], answer: "theirs", explain: "Sem substantivo depois: theirs." },
+      { type: "listen", audio: "Whose bag is this?", options: ["Whose bag is this?", "Who's bag is this?", "Where's my bag?"], answer: "Whose bag is this?", explain: "Whose (de quem) soa igual a who's (who is)." },
+      { type: "choose", line: "Is this Ana's dress?", options: ["Yes, it's hers.", "Yes, it's her.", "Yes, it's his."], answer: "Yes, it's hers.", explain: "Ana é mulher → hers." },
+    ],
+  },
+  {
+    title: "Clima e o que estou vestindo",
+    activities: [
+      { type: "match", pairs: [["sunny", "ensolarado"], ["rainy", "chuvoso"], ["cold", "frio"], ["hot", "quente"]], explain: "Clima." },
+      { type: "match", pairs: [["winter", "inverno"], ["summer", "verão"], ["spring", "primavera"], ["fall", "outono"]], explain: "Estações do ano." },
+      { type: "fill", before: "I'm", after: "a T-shirt today.", options: ["wearing", "wear", "wears"], answer: "wearing", explain: "Agora: present continuous (am + -ing)." },
+      { type: "fill", before: "It's cold,", after: "I'm wearing a coat.", options: ["so", "but", "and not"], answer: "so", explain: "so = então (consequência)." },
+      { type: "fill", before: "It's sunny,", after: "it's cold.", options: ["but", "so", "because"], answer: "but", explain: "but = mas (contraste)." },
+      { type: "choose", line: "Are you wearing a jacket?", options: ["No, I'm not.", "No, I don't.", "No, I amn't."], answer: "No, I'm not.", explain: "Resposta curta do present continuous: I'm not." },
+      { type: "listen", audio: "It's raining today.", options: ["It's raining today.", "It's sunny today.", "It's snowing today."], answer: "It's raining today.", explain: "raining = chovendo." },
+      { type: "build", pt: "Eles estão usando jeans azul.", answer: "They are wearing blue jeans", extra: ["is", "wear"], explain: "they + are + wearing." },
+    ],
+  },
+];
+
+export const unit5: Lesson[] = [
+  {
+    title: "Que horas são?",
+    activities: [
+      { type: "fill", context: "A: What time is it?", before: "B: It's five", after: ".", options: ["o'clock", "hours", "time"], answer: "o'clock", explain: "Hora cheia: o'clock." },
+      { type: "match", pairs: [["noon", "meio-dia"], ["midnight", "meia-noite"], ["a.m.", "da manhã"], ["p.m.", "da tarde/noite"]], explain: "Expressões de horário." },
+      { type: "listen", audio: "It's seven thirty.", options: ["It's seven thirty.", "It's seven thirteen.", "It's eleven thirty."], answer: "It's seven thirty.", explain: "7:30 = seven thirty." },
+      { type: "choose", line: "Qual é a forma de dizer 6:15?", options: ["six fifteen", "six fifty", "sixteen"], answer: "six fifteen", explain: "Diga a hora e depois os minutos: six fifteen." },
+      { type: "write", prompt: "meia-noite", answer: ["midnight"], explain: "midnight = meia-noite." },
+      { type: "build", pt: "São dez horas da noite.", answer: "It's ten at night", extra: ["in", "on"], explain: "\"at night\" = à noite." },
+      { type: "fill", before: "It's 9:00", after: "the morning.", options: ["in", "at", "on"], answer: "in", explain: "in the morning / afternoon / evening." },
+      { type: "listen", audio: "It's noon.", options: ["It's noon.", "It's now.", "It's nine."], answer: "It's noon.", explain: "noon = meio-dia." },
+    ],
+  },
+  {
+    title: "O que você está fazendo?",
+    activities: [
+      { type: "fill", before: "I'm", after: "dinner now.", options: ["cooking", "cook", "cooks"], answer: "cooking", explain: "Agora: am + verbo-ing." },
+      { type: "fill", context: "A: What are you doing?", before: "B: I'm", after: "TV.", options: ["watching", "watch", "watches"], answer: "watching", explain: "watching TV = assistindo TV." },
+      { type: "match", pairs: [["sleep", "dormir"], ["cook", "cozinhar"], ["study", "estudar"], ["work", "trabalhar"]], explain: "Atividades do dia a dia." },
+      { type: "choose", line: "What is Leo doing?", options: ["He's sleeping.", "He sleeps.", "He's sleep."], answer: "He's sleeping.", explain: "is + sleeping." },
+      { type: "build", pt: "O que ela está fazendo?", answer: "What is she doing", extra: ["does", "do"], explain: "What + is + she + doing?" },
+      { type: "listen", audio: "We're having lunch.", options: ["We're having lunch.", "We have lunch.", "We're having dinner."], answer: "We're having lunch.", explain: "lunch = almoço." },
+      { type: "write", prompt: "run + ing", answer: ["running"], explain: "run → running (dobra o n)." },
+      { type: "build", pt: "Eles estão estudando inglês.", answer: "They are studying English", extra: ["is", "study"], explain: "they + are + studying." },
+    ],
+  },
+  {
+    title: "Rotina do dia",
+    activities: [
+      { type: "match", pairs: [["morning", "manhã"], ["afternoon", "tarde"], ["evening", "noite (início)"], ["night", "noite"]], explain: "Períodos do dia." },
+      { type: "fill", before: "I study", after: "the evening.", options: ["in", "at", "on"], answer: "in", explain: "in the evening." },
+      { type: "fill", before: "The class is", after: "8:00.", options: ["at", "in", "on"], answer: "at", explain: "Horário exato: at." },
+      { type: "choose", line: "What time is your class?", options: ["It's at seven.", "It's in seven.", "It's seven o'clocks."], answer: "It's at seven.", explain: "at + horário." },
+      { type: "listen", audio: "I'm at work in the afternoon.", options: ["I'm at work in the afternoon.", "I'm at home in the afternoon.", "I'm at work in the morning."], answer: "I'm at work in the afternoon.", explain: "at work = no trabalho." },
+      { type: "build", pt: "Eu estou em casa à noite.", answer: "I'm at home at night", extra: ["in", "on"], explain: "at home; at night." },
+      { type: "write", prompt: "4:45", answer: ["four forty-five", "four forty five"], explain: "4:45 = four forty-five." },
+      { type: "choose", line: "Is it 10 p.m.?", options: ["Yes, it's ten at night.", "Yes, it's ten in the morning.", "Yes, it's noon."], answer: "Yes, it's ten at night.", explain: "p.m. depois das 18h = at night." },
+    ],
+  },
+];
+
+export const unit6: Lesson[] = [
+  {
+    title: "Como você vai?",
+    activities: [
+      { type: "match", pairs: [["bus", "ônibus"], ["bike", "bicicleta"], ["car", "carro"], ["train", "trem"]], explain: "Meios de transporte." },
+      { type: "fill", before: "I", after: "the bus to work.", options: ["take", "takes", "taking"], answer: "take", explain: "Rotina: present simple. I take." },
+      { type: "fill", before: "She", after: "her bike to school.", options: ["rides", "ride", "riding"], answer: "rides", explain: "he/she/it + -s: rides." },
+      { type: "choose", line: "How do you go to work?", options: ["I walk.", "I'm walk.", "I walking."], answer: "I walk.", explain: "Present simple: I walk." },
+      { type: "build", pt: "Eu dirijo para o trabalho.", answer: "I drive to work", extra: ["drives", "go"], explain: "drive = dirigir." },
+      { type: "listen", audio: "He takes the train.", options: ["He takes the train.", "He take the train.", "He takes the bus."], answer: "He takes the train.", explain: "he + takes." },
+      { type: "write", prompt: "ônibus", answer: ["bus"], explain: "ônibus = bus." },
+      { type: "fill", before: "", after: "you walk to school?", options: ["Do", "Does", "Are"], answer: "Do", explain: "Pergunta com you: Do." },
+    ],
+  },
+  {
+    title: "Família",
+    activities: [
+      { type: "match", pairs: [["mother", "mãe"], ["father", "pai"], ["brother", "irmão"], ["sister", "irmã"]], explain: "Família." },
+      { type: "match", pairs: [["parents", "pais"], ["children", "filhos"], ["husband", "marido"], ["wife", "esposa"]], explain: "Mais família." },
+      { type: "fill", before: "My father", after: "in a bank.", options: ["works", "work", "working"], answer: "works", explain: "my father = he → works." },
+      { type: "fill", before: "", after: "your sister live in Fortaleza?", options: ["Does", "Do", "Is"], answer: "Does", explain: "he/she → Does." },
+      { type: "choose", line: "Does your brother drive?", options: ["No, he doesn't.", "No, he don't.", "No, he isn't."], answer: "No, he doesn't.", explain: "Does → doesn't." },
+      { type: "build", pt: "Minha mãe não trabalha aos domingos.", answer: "My mother doesn't work on Sundays", extra: ["don't", "works"], explain: "doesn't + verbo sem -s." },
+      { type: "listen", audio: "My parents live near here.", options: ["My parents live near here.", "My parent lives near here.", "My parents leave here."], answer: "My parents live near here.", explain: "live = morar." },
+      { type: "write", prompt: "irmã", answer: ["sister"], explain: "irmã = sister." },
+    ],
+  },
+  {
+    title: "Dias da semana e rotina",
+    activities: [
+      { type: "match", pairs: [["Monday", "segunda"], ["Wednesday", "quarta"], ["Friday", "sexta"], ["Sunday", "domingo"]], explain: "Dias da semana." },
+      { type: "fill", before: "I don't work", after: "weekends.", options: ["on", "in", "at"], answer: "on", explain: "on weekends / on Sundays." },
+      { type: "fill", before: "She gets up", after: "every day.", options: ["early", "earlies", "in early"], answer: "early", explain: "early = cedo." },
+      { type: "choose", line: "What time do you get up?", options: ["At six thirty.", "On Monday.", "Yes, I do."], answer: "At six thirty.", explain: "What time → horário." },
+      { type: "build", pt: "Eu estudo inglês todo dia.", answer: "I study English every day", extra: ["studies", "all"], explain: "every day = todo dia." },
+      { type: "listen", audio: "He goes to bed late.", options: ["He goes to bed late.", "He goes to bed early.", "He go to bed late."], answer: "He goes to bed late.", explain: "go → goes; late = tarde." },
+      { type: "write", prompt: "sábado", answer: ["saturday"], explain: "sábado = Saturday (sempre com maiúscula)." },
+      { type: "write", prompt: "he + have", answer: ["has"], explain: "Irregular: he has." },
+    ],
+  },
+];
+
+export const unit7: Lesson[] = [
+  {
+    title: "Casas e cômodos",
+    activities: [
+      { type: "match", pairs: [["kitchen", "cozinha"], ["bedroom", "quarto"], ["bathroom", "banheiro"], ["living room", "sala"]], explain: "Cômodos." },
+      { type: "fill", context: "A: Does your apartment have a view?", before: "B: Yes, it", after: ".", options: ["does", "has", "is"], answer: "does", explain: "Does → does." },
+      { type: "choose", line: "Do you live in a house?", options: ["No, I don't. I live in an apartment.", "No, I'm not.", "No, I doesn't."], answer: "No, I don't. I live in an apartment.", explain: "Do → don't." },
+      { type: "build", pt: "Minha casa tem três quartos.", answer: "My house has three bedrooms", extra: ["have", "bedroom"], explain: "it/house → has." },
+      { type: "listen", audio: "The kitchen is small.", options: ["The kitchen is small.", "The kitchen is tall.", "The bedroom is small."], answer: "The kitchen is small.", explain: "small = pequeno." },
+      { type: "write", prompt: "banheiro", answer: ["bathroom"], explain: "banheiro = bathroom." },
+      { type: "fill", before: "", after: "your house have a yard?", options: ["Does", "Do", "Is"], answer: "Does", explain: "house = it → Does." },
+      { type: "match", pairs: [["view", "vista"], ["window", "janela"], ["yard", "quintal"], ["elevator", "elevador"]], explain: "Partes da casa." },
+    ],
+  },
+  {
+    title: "There is / There are",
+    activities: [
+      { type: "fill", before: "", after: "a sofa in the living room.", options: ["There's", "There are", "It's"], answer: "There's", explain: "Singular: there is (there's)." },
+      { type: "fill", before: "There", after: "two windows.", options: ["are", "is", "be"], answer: "are", explain: "Plural: there are." },
+      { type: "fill", before: "There", after: "any chairs.", options: ["aren't", "isn't", "don't"], answer: "aren't", explain: "Negativo plural: there aren't any." },
+      { type: "choose", line: "Is there an elevator?", options: ["No, there isn't.", "No, it doesn't.", "No, there aren't."], answer: "No, there isn't.", explain: "Is there → there isn't." },
+      { type: "build", pt: "Não há um elevador.", answer: "There isn't an elevator", extra: ["aren't", "a"], explain: "elevator começa com vogal → an." },
+      { type: "listen", audio: "There are no curtains.", options: ["There are no curtains.", "There are two curtains.", "There's no curtain."], answer: "There are no curtains.", explain: "there are no = não há nenhum." },
+      { type: "build", pt: "Há um tapete no quarto?", answer: "Is there a rug in the bedroom", extra: ["are", "it"], explain: "Pergunta: Is there...?" },
+      { type: "choose", line: "Are there any lamps?", options: ["Yes, there are.", "Yes, there is.", "Yes, they do."], answer: "Yes, there are.", explain: "Are there → there are." },
+    ],
+  },
+  {
+    title: "Móveis",
+    activities: [
+      { type: "match", pairs: [["sofa", "sofá"], ["bed", "cama"], ["table", "mesa"], ["lamp", "luminária"]], explain: "Móveis." },
+      { type: "match", pairs: [["mirror", "espelho"], ["rug", "tapete"], ["curtains", "cortinas"], ["dresser", "cômoda"]], explain: "Mais móveis." },
+      { type: "fill", before: "We need", after: "chairs for the kitchen.", options: ["some", "a", "an"], answer: "some", explain: "Plural afirmativo: some." },
+      { type: "fill", before: "We don't have", after: "lamps.", options: ["any", "some", "a"], answer: "any", explain: "Negativo: any." },
+      { type: "listen", audio: "There's a mirror in the bathroom.", options: ["There's a mirror in the bathroom.", "There's a mirror in the bedroom.", "There are mirrors in the bathroom."], answer: "There's a mirror in the bathroom.", explain: "mirror = espelho." },
+      { type: "build", pt: "Há um sofá azul na sala.", answer: "There's a blue sofa in the living room", extra: ["are", "an"], explain: "Adjetivo antes do substantivo." },
+      { type: "write", prompt: "cama", answer: ["bed"], explain: "cama = bed." },
+      { type: "choose", line: "What do you need for your bedroom?", options: ["I need a bed and a lamp.", "I need a stove.", "Yes, I need."], answer: "I need a bed and a lamp.", explain: "Móveis de quarto." },
+    ],
+  },
+];
+
+export const unit8: Lesson[] = [
+  {
+    title: "Profissões",
+    activities: [
+      { type: "match", pairs: [["teacher", "professor"], ["nurse", "enfermeiro"], ["doctor", "médico"], ["cashier", "caixa"]], explain: "Profissões." },
+      { type: "match", pairs: [["chef", "chef de cozinha"], ["pilot", "piloto"], ["police officer", "policial"], ["salesperson", "vendedor"]], explain: "Mais profissões." },
+      { type: "fill", before: "She's", after: "engineer.", options: ["an", "a", "the"], answer: "an", explain: "engineer começa com vogal → an." },
+      { type: "fill", context: "A: What do you do?", before: "B: I'm", after: "nurse.", options: ["a", "an", "the"], answer: "a", explain: "Profissão: a/an + profissão." },
+      { type: "choose", line: "What do you do?", options: ["I'm a teacher.", "I'm fine.", "I do homework."], answer: "I'm a teacher.", explain: "\"What do you do?\" pergunta a profissão." },
+      { type: "listen", audio: "He's a police officer.", options: ["He's a police officer.", "He's a pilot.", "He's an office worker."], answer: "He's a police officer.", explain: "police officer = policial." },
+      { type: "write", prompt: "médico", answer: ["doctor"], explain: "médico = doctor." },
+      { type: "build", pt: "Meu pai é motorista de ônibus.", answer: "My father is a bus driver", extra: ["an", "drives"], explain: "bus driver = motorista de ônibus." },
+    ],
+  },
+  {
+    title: "Onde você trabalha?",
+    activities: [
+      { type: "fill", before: "Where", after: "you work?", options: ["do", "does", "are"], answer: "do", explain: "you → do." },
+      { type: "fill", before: "Where", after: "she work?", options: ["does", "do", "is"], answer: "does", explain: "she → does." },
+      { type: "choose", line: "Where does Ana work?", options: ["She works in a hospital.", "She work in a hospital.", "She's work in a hospital."], answer: "She works in a hospital.", explain: "she + works." },
+      { type: "match", pairs: [["office", "escritório"], ["hospital", "hospital"], ["store", "loja"], ["restaurant", "restaurante"]], explain: "Locais de trabalho." },
+      { type: "build", pt: "O que ele faz?", answer: "What does he do", extra: ["doing", "is"], explain: "What + does + he + do?" },
+      { type: "listen", audio: "I work in an office downtown.", options: ["I work in an office downtown.", "I work in a store downtown.", "I walk to an office."], answer: "I work in an office downtown.", explain: "downtown = centro da cidade." },
+      { type: "build", pt: "A que horas você começa?", answer: "What time do you start", extra: ["does", "starts"], explain: "What time + do + you + verbo." },
+      { type: "write", prompt: "loja", answer: ["store", "shop"], explain: "loja = store (EUA) / shop." },
+    ],
+  },
+  {
+    title: "Opiniões sobre trabalho",
+    activities: [
+      { type: "match", pairs: [["interesting", "interessante"], ["boring", "chato"], ["easy", "fácil"], ["stressful", "estressante"]], explain: "Opiniões." },
+      { type: "fill", before: "It's an", after: "job.", options: ["interesting", "boring", "easy"], answer: "interesting", explain: "\"an\" antes de vogal: an interesting job." },
+      { type: "fill", before: "The job is", after: ".", options: ["boring", "a boring", "boringly"], answer: "boring", explain: "Depois de be o adjetivo fica sozinho." },
+      { type: "choose", line: "Do you like your job?", options: ["Yes, I do. It's exciting.", "Yes, I like.", "Yes, I'm."], answer: "Yes, I do. It's exciting.", explain: "Do → do." },
+      { type: "build", pt: "Um piloto tem um trabalho difícil.", answer: "A pilot has a difficult job", extra: ["have", "an"], explain: "Adjetivo antes do substantivo." },
+      { type: "listen", audio: "Nurses have a stressful job.", options: ["Nurses have a stressful job.", "Nurses have an easy job.", "Nurses has a stressful job."], answer: "Nurses have a stressful job.", explain: "stressful = estressante." },
+      { type: "choose", line: "Qual frase está correta?", options: ["She has a dangerous job.", "She has a job dangerous.", "She have a dangerous job."], answer: "She has a dangerous job.", explain: "she + has; adjetivo antes do substantivo." },
+      { type: "write", prompt: "fácil", answer: ["easy"], explain: "fácil = easy." },
+    ],
+  },
+];
+
+
+===== ARQUIVO: src/data/units9to16.ts =====
+// Unidades 9 a 16 do FenixInglês (ordem do livro-base; conteúdo original).
+import type { Lesson } from "./units";
+
+export const unit9: Lesson[] = [
+  {
+    title: "Comidas básicas",
+    activities: [
+      { type: "match", pairs: [["bread", "pão"], ["rice", "arroz"], ["beans", "feijão"], ["chicken", "frango"]], explain: "Comidas básicas." },
+      { type: "match", pairs: [["milk", "leite"], ["cheese", "queijo"], ["eggs", "ovos"], ["fruit", "fruta"]], explain: "Mais comidas." },
+      { type: "fill", before: "I need", after: "milk.", options: ["some", "a", "an"], answer: "some", explain: "milk é incontável → some." },
+      { type: "fill", before: "I want", after: "apple.", options: ["an", "a", "some"], answer: "an", explain: "apple é contável e começa com vogal → an." },
+      { type: "fill", before: "Do we have", after: "eggs?", options: ["any", "a", "an"], answer: "any", explain: "Em perguntas: any." },
+      { type: "choose", line: "Do you have any bread?", options: ["Yes, I have some.", "Yes, I have any.", "Yes, I have a bread."], answer: "Yes, I have some.", explain: "Afirmativo: some." },
+      { type: "listen", audio: "We don't have any cheese.", options: ["We don't have any cheese.", "We have some cheese.", "We don't have any chicken."], answer: "We don't have any cheese.", explain: "Negativo: any." },
+      { type: "write", prompt: "frango", answer: ["chicken"], explain: "frango = chicken." },
+    ],
+  },
+  {
+    title: "Café da manhã e refeições",
+    activities: [
+      { type: "match", pairs: [["breakfast", "café da manhã"], ["lunch", "almoço"], ["dinner", "jantar"], ["snack", "lanche"]], explain: "Refeições." },
+      { type: "fill", before: "I have coffee for", after: ".", options: ["breakfast", "dinner", "night"], answer: "breakfast", explain: "for breakfast = no café da manhã." },
+      { type: "choose", line: "What do you have for lunch?", options: ["I usually have rice and beans.", "I'm having lunch.", "At noon."], answer: "I usually have rice and beans.", explain: "A pergunta é \"o que\" você come." },
+      { type: "build", pt: "Eu como pão no café da manhã.", answer: "I eat bread for breakfast", extra: ["in", "eats"], explain: "for breakfast." },
+      { type: "listen", audio: "We have dinner at eight.", options: ["We have dinner at eight.", "We have lunch at eight.", "We have dinner at night."], answer: "We have dinner at eight.", explain: "have dinner = jantar." },
+      { type: "fill", before: "She", after: "a sandwich for lunch.", options: ["has", "have", "haves"], answer: "has", explain: "she + has." },
+      { type: "write", prompt: "jantar", answer: ["dinner"], explain: "jantar = dinner." },
+      { type: "choose", line: "Is fruit healthy?", options: ["Yes, it is.", "Yes, they are.", "Yes, it does."], answer: "Yes, it is.", explain: "fruit (incontável) → it is." },
+    ],
+  },
+  {
+    title: "Com que frequência?",
+    activities: [
+      { type: "match", pairs: [["always", "sempre"], ["usually", "geralmente"], ["sometimes", "às vezes"], ["never", "nunca"]], explain: "Advérbios de frequência." },
+      { type: "match", pairs: [["often", "frequentemente"], ["hardly ever", "quase nunca"], ["healthy", "saudável"], ["junk food", "porcaria"]], explain: "Mais frequência e hábitos." },
+      { type: "build", pt: "Eu sempre tomo café da manhã.", answer: "I always eat breakfast", extra: ["eats", "never"], explain: "O advérbio vem antes do verbo principal." },
+      { type: "build", pt: "Ela nunca bebe refrigerante.", answer: "She never drinks soda", extra: ["drink", "always"], explain: "she + never + drinks." },
+      { type: "fill", before: "I", after: "eat fish. (às vezes)", options: ["sometimes", "always", "never"], answer: "sometimes", explain: "sometimes = às vezes." },
+      { type: "choose", line: "Qual frase está correta?", options: ["He is always late.", "He always is late.", "Always he is late."], answer: "He is always late.", explain: "Com o verbo be, o advérbio vem depois: is always." },
+      { type: "listen", audio: "I hardly ever eat junk food.", options: ["I hardly ever eat junk food.", "I always eat junk food.", "I hardly eat good food."], answer: "I hardly ever eat junk food.", explain: "hardly ever = quase nunca." },
+      { type: "write", prompt: "sempre", answer: ["always"], explain: "sempre = always." },
+    ],
+  },
+];
+
+export const unit10: Lesson[] = [
+  {
+    title: "Esportes",
+    activities: [
+      { type: "match", pairs: [["soccer", "futebol"], ["basketball", "basquete"], ["volleyball", "vôlei"], ["swimming", "natação"]], explain: "Esportes." },
+      { type: "fill", context: "A: What sports do you like?", before: "B: I like", after: "and tennis.", options: ["soccer", "soccers", "a soccer"], answer: "soccer", explain: "Nome de esporte não leva artigo." },
+      { type: "fill", before: "What sports", after: "you play?", options: ["do", "does", "are"], answer: "do", explain: "you → do." },
+      { type: "fill", before: "Who", after: "your favorite player?", options: ["is", "are", "do"], answer: "is", explain: "Who + is (singular)." },
+      { type: "choose", line: "Do you like volleyball?", options: ["Yes, I love it!", "Yes, I love.", "Yes, I'm love it."], answer: "Yes, I love it!", explain: "love precisa de objeto: love it." },
+      { type: "build", pt: "Meu irmão joga basquete aos sábados.", answer: "My brother plays basketball on Saturdays", extra: ["play", "in"], explain: "he + plays; on Saturdays." },
+      { type: "listen", audio: "When do you go swimming?", options: ["When do you go swimming?", "Where do you go swimming?", "When do you play soccer?"], answer: "When do you go swimming?", explain: "When = quando." },
+      { type: "write", prompt: "futebol", answer: ["soccer", "football"], explain: "futebol = soccer (EUA) / football (Reino Unido)." },
+    ],
+  },
+  {
+    title: "Can: habilidades",
+    activities: [
+      { type: "fill", before: "I", after: "swim.", options: ["can", "cans", "can to"], answer: "can", explain: "can + verbo, igual para todas as pessoas." },
+      { type: "fill", before: "She", after: "drive. She doesn't know how.", options: ["can't", "doesn't", "isn't"], answer: "can't", explain: "can't = não sabe/não consegue." },
+      { type: "choose", line: "Can you play the guitar?", options: ["Yes, I can.", "Yes, I do.", "Yes, I play."], answer: "Yes, I can.", explain: "Can → can." },
+      { type: "build", pt: "Ele sabe cozinhar muito bem.", answer: "He can cook very well", extra: ["cans", "good"], explain: "\"well\" (bem) é advérbio; \"good\" é adjetivo." },
+      { type: "build", pt: "Você sabe falar espanhol?", answer: "Can you speak Spanish", extra: ["do", "speaks"], explain: "Pergunta: Can + you + verbo?" },
+      { type: "listen", audio: "I can't sing.", options: ["I can't sing.", "I can sing.", "I can't swim."], answer: "I can't sing.", explain: "Em inglês americano, \"can't\" tem som de vogal mais longo." },
+      { type: "match", pairs: [["sing", "cantar"], ["dance", "dançar"], ["draw", "desenhar"], ["fix", "consertar"]], explain: "Habilidades." },
+      { type: "choose", line: "Can she dance?", options: ["No, she can't.", "No, she doesn't.", "No, she isn't."], answer: "No, she can't.", explain: "Can → can't." },
+    ],
+  },
+  {
+    title: "Talentos",
+    activities: [
+      { type: "fill", before: "What", after: "you do? (que habilidades)", options: ["can", "are", "is"], answer: "can", explain: "What can you do? = O que você sabe fazer?" },
+      { type: "fill", before: "Who", after: "fix a car?", options: ["can", "cans", "does"], answer: "can", explain: "Who can...? = Quem sabe...?" },
+      { type: "choose", line: "What can your sister do?", options: ["She can draw and paint.", "She can draws.", "She cans draw."], answer: "She can draw and paint.", explain: "can + verbo sem -s." },
+      { type: "listen", audio: "How well can you swim?", options: ["How well can you swim?", "How often do you swim?", "Where can you swim?"], answer: "How well can you swim?", explain: "How well = quão bem." },
+      { type: "match", pairs: [["well", "bem"], ["very well", "muito bem"], ["a little", "um pouco"], ["not at all", "nem um pouco"]], explain: "Respostas sobre habilidade." },
+      { type: "build", pt: "Eu consigo tocar piano um pouco.", answer: "I can play the piano a little", extra: ["plays", "much"], explain: "play the piano; a little = um pouco." },
+      { type: "write", prompt: "dançar", answer: ["dance"], explain: "dançar = dance." },
+      { type: "choose", line: "Can you speak English?", options: ["Yes, a little.", "Yes, I speak.", "Yes, I can't."], answer: "Yes, a little.", explain: "a little = um pouco." },
+    ],
+  },
+];
+
+export const unit11: Lesson[] = [
+  {
+    title: "Meses e datas",
+    activities: [
+      { type: "match", pairs: [["January", "janeiro"], ["March", "março"], ["July", "julho"], ["December", "dezembro"]], explain: "Meses." },
+      { type: "match", pairs: [["first", "1º"], ["second", "2º"], ["third", "3º"], ["twentieth", "20º"]], explain: "Números ordinais." },
+      { type: "fill", context: "A: When is your birthday?", before: "B: It's", after: "May 5th.", options: ["on", "in", "at"], answer: "on", explain: "Data completa: on." },
+      { type: "fill", before: "My birthday is", after: "October.", options: ["in", "on", "at"], answer: "in", explain: "Só o mês: in." },
+      { type: "write", prompt: "abril", answer: ["april"], explain: "abril = April." },
+      { type: "listen", audio: "It's on June twenty-first.", options: ["It's on June twenty-first.", "It's on July twenty-first.", "It's on June twenty-third."], answer: "It's on June twenty-first.", explain: "21st = twenty-first." },
+      { type: "write", prompt: "3rd", answer: ["third"], explain: "3rd = third." },
+      { type: "choose", line: "When is Christmas?", options: ["It's on December 25th.", "It's in December 25th.", "It's at Christmas."], answer: "It's on December 25th.", explain: "on + data." },
+    ],
+  },
+  {
+    title: "Planos: be going to",
+    activities: [
+      { type: "fill", before: "I'm going", after: "have a party.", options: ["to", "for", "at"], answer: "to", explain: "be going to + verbo." },
+      { type: "fill", before: "She", after: "going to travel next week.", options: ["is", "are", "am"], answer: "is", explain: "she + is going to." },
+      { type: "build", pt: "Nós vamos comer fora hoje à noite.", answer: "We are going to eat out tonight", extra: ["is", "for"], explain: "we + are going to + verbo." },
+      { type: "choose", line: "Are you going to work tomorrow?", options: ["No, I'm not.", "No, I don't.", "No, I won't going."], answer: "No, I'm not.", explain: "Are → I'm not." },
+      { type: "build", pt: "O que você vai fazer no sábado?", answer: "What are you going to do on Saturday", extra: ["is", "in"], explain: "What + are you going to + do?" },
+      { type: "listen", audio: "He's going to visit his parents.", options: ["He's going to visit his parents.", "He's visiting his parents.", "He's going to call his parents."], answer: "He's going to visit his parents.", explain: "visit = visitar." },
+      { type: "match", pairs: [["tonight", "hoje à noite"], ["tomorrow", "amanhã"], ["next week", "semana que vem"], ["this weekend", "este fim de semana"]], explain: "Expressões de futuro." },
+      { type: "fill", before: "They", after: "going to watch a movie.", options: ["aren't", "isn't", "don't"], answer: "aren't", explain: "they + aren't going to." },
+    ],
+  },
+  {
+    title: "Feriados e festas",
+    activities: [
+      { type: "match", pairs: [["birthday", "aniversário"], ["holiday", "feriado"], ["party", "festa"], ["gift", "presente"]], explain: "Ocasiões especiais." },
+      { type: "choose", line: "How are you going to celebrate?", options: ["I'm going to have dinner with friends.", "I celebrate yesterday.", "Yes, I'm going."], answer: "I'm going to have dinner with friends.", explain: "Responda com be going to." },
+      { type: "fill", before: "We're going to", after: "New Year's Eve at the beach.", options: ["celebrate", "celebrates", "celebrating"], answer: "celebrate", explain: "going to + verbo na forma base." },
+      { type: "build", pt: "Eu vou comprar um presente para ela.", answer: "I'm going to buy a gift for her", extra: ["she", "buys"], explain: "Depois de \"for\" use o pronome objeto: her." },
+      { type: "listen", audio: "Happy birthday!", options: ["Happy birthday!", "Happy holidays!", "Happy New Year!"], answer: "Happy birthday!", explain: "Feliz aniversário!" },
+      { type: "write", prompt: "festa", answer: ["party"], explain: "festa = party." },
+      { type: "fill", before: "Who", after: "going to come to the party?", options: ["is", "are", "do"], answer: "is", explain: "Who + is going to." },
+      { type: "choose", line: "Are your friends going to come?", options: ["Yes, they are.", "Yes, they going.", "Yes, they do."], answer: "Yes, they are.", explain: "Are → they are." },
+    ],
+  },
+];
+
+export const unit12: Lesson[] = [
+  {
+    title: "Partes do corpo",
+    activities: [
+      { type: "match", pairs: [["head", "cabeça"], ["arm", "braço"], ["leg", "perna"], ["back", "costas"]], explain: "Partes do corpo." },
+      { type: "match", pairs: [["eye", "olho"], ["ear", "orelha"], ["hand", "mão"], ["foot", "pé"]], explain: "Mais partes do corpo." },
+      { type: "write", prompt: "foot → plural", answer: ["feet"], explain: "Plural irregular: foot → feet." },
+      { type: "write", prompt: "tooth → plural", answer: ["teeth"], explain: "Plural irregular: tooth → teeth." },
+      { type: "listen", audio: "My back hurts.", options: ["My back hurts.", "My head hurts.", "My bag hurts."], answer: "My back hurts.", explain: "hurt = doer." },
+      { type: "fill", before: "I have two", after: ".", options: ["hands", "hand", "handes"], answer: "hands", explain: "Plural regular: hands." },
+      { type: "build", pt: "Meus olhos estão cansados.", answer: "My eyes are tired", extra: ["is", "eye"], explain: "eyes (plural) + are." },
+      { type: "write", prompt: "cabeça", answer: ["head"], explain: "cabeça = head." },
+    ],
+  },
+  {
+    title: "Como você se sente?",
+    activities: [
+      { type: "fill", before: "I have a", after: ".", options: ["headache", "head", "hurt"], answer: "headache", explain: "headache = dor de cabeça." },
+      { type: "match", pairs: [["headache", "dor de cabeça"], ["stomachache", "dor de barriga"], ["cold", "resfriado"], ["fever", "febre"]], explain: "Problemas de saúde." },
+      { type: "fill", before: "I feel", after: ".", options: ["sick", "a sick", "sickness"], answer: "sick", explain: "feel + adjetivo." },
+      { type: "choose", line: "How do you feel?", options: ["Not so good. I have a cold.", "I feel a cold.", "I am a headache."], answer: "Not so good. I have a cold.", explain: "have + problema de saúde." },
+      { type: "build", pt: "Ele está com febre.", answer: "He has a fever", extra: ["is", "have"], explain: "Em inglês: \"tem\" febre → has a fever." },
+      { type: "listen", audio: "What's wrong?", options: ["What's wrong?", "What's long?", "What's on?"], answer: "What's wrong?", explain: "What's wrong? = O que houve?" },
+      { type: "match", pairs: [["terrible", "péssimo"], ["great", "ótimo"], ["tired", "cansado"], ["better", "melhor"]], explain: "Como você se sente." },
+      { type: "fill", before: "She", after: "a sore throat.", options: ["has", "have", "is"], answer: "has", explain: "she + has; sore throat = dor de garganta." },
+    ],
+  },
+  {
+    title: "Conselhos e remédios",
+    activities: [
+      { type: "fill", before: "", after: "some water. (beba)", options: ["Drink", "Drinks", "Drinking"], answer: "Drink", explain: "Imperativo: verbo na forma base." },
+      { type: "fill", before: "", after: "go to work today. (não vá)", options: ["Don't", "Not", "No"], answer: "Don't", explain: "Imperativo negativo: Don't + verbo." },
+      { type: "choose", line: "I have a headache.", options: ["Take some aspirin.", "Takes some aspirin.", "You taking aspirin."], answer: "Take some aspirin.", explain: "Conselho com imperativo." },
+      { type: "build", pt: "Descanse e beba chá.", answer: "Rest and drink tea", extra: ["drinks", "rests"], explain: "Imperativo: Rest; drink." },
+      { type: "match", pairs: [["medicine", "remédio"], ["cough drops", "pastilhas"], ["eye drops", "colírio"], ["pharmacy", "farmácia"]], explain: "Remédios comuns." },
+      { type: "listen", audio: "Don't eat junk food.", options: ["Don't eat junk food.", "Don't eat any food.", "Do eat junk food."], answer: "Don't eat junk food.", explain: "Don't = não (imperativo)." },
+      { type: "build", pt: "Vá ao médico.", answer: "See a doctor", extra: ["sees", "an"], explain: "see a doctor = consultar um médico." },
+      { type: "write", prompt: "remédio", answer: ["medicine"], explain: "remédio = medicine." },
+    ],
+  },
+];
+
+export const unit13: Lesson[] = [
+  {
+    title: "Lojas e lugares",
+    activities: [
+      { type: "match", pairs: [["bank", "banco"], ["pharmacy", "farmácia"], ["bookstore", "livraria"], ["supermarket", "supermercado"]], explain: "Lugares da cidade." },
+      { type: "match", pairs: [["post office", "correio"], ["gas station", "posto de gasolina"], ["museum", "museu"], ["park", "parque"]], explain: "Mais lugares." },
+      { type: "choose", line: "Where can you buy books?", options: ["At a bookstore.", "At a gas station.", "At a bank."], answer: "At a bookstore.", explain: "bookstore = livraria." },
+      { type: "fill", before: "You can buy medicine at a", after: ".", options: ["pharmacy", "museum", "park"], answer: "pharmacy", explain: "pharmacy = farmácia." },
+      { type: "listen", audio: "Is there a bank near here?", options: ["Is there a bank near here?", "Is there a park near here?", "Is the bank near here?"], answer: "Is there a bank near here?", explain: "near here = perto daqui." },
+      { type: "build", pt: "Há um supermercado perto daqui?", answer: "Is there a supermarket near here", extra: ["are", "an"], explain: "Is there...? = Há...?" },
+      { type: "write", prompt: "correio", answer: ["post office"], explain: "correio = post office." },
+      { type: "choose", line: "Where can you see paintings?", options: ["At a museum.", "At a pharmacy.", "At a post office."], answer: "At a museum.", explain: "museum = museu." },
+    ],
+  },
+  {
+    title: "Onde fica?",
+    activities: [
+      { type: "fill", before: "The bank is", after: "the pharmacy and the park.", options: ["between", "next", "across"], answer: "between", explain: "between = entre (dois lugares)." },
+      { type: "fill", before: "The café is", after: "to the bookstore.", options: ["next", "near to", "between"], answer: "next", explain: "next to = ao lado de." },
+      { type: "fill", before: "The museum is across", after: "the park.", options: ["from", "to", "of"], answer: "from", explain: "across from = em frente a (do outro lado)." },
+      { type: "fill", before: "It's on the", after: "of Main Street and 2nd Avenue.", options: ["corner", "between", "next"], answer: "corner", explain: "on the corner of = na esquina de." },
+      { type: "match", pairs: [["between", "entre"], ["next to", "ao lado de"], ["across from", "em frente a"], ["on the corner of", "na esquina de"]], explain: "Preposições de lugar." },
+      { type: "listen", audio: "It's across from the bank.", options: ["It's across from the bank.", "It's next to the bank.", "It's behind the bank."], answer: "It's across from the bank.", explain: "across from = em frente a." },
+      { type: "build", pt: "A farmácia fica na Rua Oak.", answer: "The pharmacy is on Oak Street", extra: ["in", "at"], explain: "Nome de rua: on." },
+      { type: "choose", line: "Where's the park?", options: ["It's next to the museum.", "It's next the museum.", "It's between the museum."], answer: "It's next to the museum.", explain: "next to (com \"to\")." },
+    ],
+  },
+  {
+    title: "Direções",
+    activities: [
+      { type: "match", pairs: [["turn left", "vire à esquerda"], ["turn right", "vire à direita"], ["go straight", "siga em frente"], ["block", "quarteirão"]], explain: "Direções." },
+      { type: "fill", before: "", after: "left on Pine Street.", options: ["Turn", "Turns", "Turning"], answer: "Turn", explain: "Imperativo: Turn." },
+      { type: "fill", before: "Walk up Main Street for two", after: ".", options: ["blocks", "block", "corners"], answer: "blocks", explain: "two blocks = dois quarteirões." },
+      { type: "choose", line: "How do I get to the museum?", options: ["Go straight and turn right.", "You going straight.", "It's a museum."], answer: "Go straight and turn right.", explain: "Direções com imperativo." },
+      { type: "build", pt: "Siga em frente e vire à esquerda.", answer: "Go straight and turn left", extra: ["goes", "right"], explain: "Imperativos: Go; turn." },
+      { type: "listen", audio: "It's on your right.", options: ["It's on your right.", "It's on your left.", "It's all right."], answer: "It's on your right.", explain: "on your right = à sua direita." },
+      { type: "build", pt: "Como eu chego ao banco?", answer: "How do I get to the bank", extra: ["does", "at"], explain: "How do I get to...?" },
+      { type: "write", prompt: "esquerda", answer: ["left"], explain: "esquerda = left." },
+    ],
+  },
+];
+
+export const unit14: Lesson[] = [
+  {
+    title: "Fim de semana: verbos regulares",
+    activities: [
+      { type: "write", prompt: "watch → passado", answer: ["watched"], explain: "Regular: + ed." },
+      { type: "write", prompt: "study → passado", answer: ["studied"], explain: "Consoante + y → ied." },
+      { type: "write", prompt: "stop → passado", answer: ["stopped"], explain: "Dobra a consoante: stopped." },
+      { type: "fill", before: "I", after: "my apartment yesterday.", options: ["cleaned", "clean", "cleaning"], answer: "cleaned", explain: "yesterday → passado: cleaned." },
+      { type: "build", pt: "Nós assistimos a um filme no sábado.", answer: "We watched a movie on Saturday", extra: ["watch", "in"], explain: "Passado regular: watched." },
+      { type: "listen", audio: "She visited her grandmother.", options: ["She visited her grandmother.", "She visits her grandmother.", "She invited her grandmother."], answer: "She visited her grandmother.", explain: "visited = visitou." },
+      { type: "match", pairs: [["yesterday", "ontem"], ["last night", "ontem à noite"], ["last weekend", "fim de semana passado"], ["chores", "tarefas de casa"]], explain: "Expressões de passado." },
+      { type: "fill", before: "He", after: "until 10 p.m. last night.", options: ["worked", "works", "working"], answer: "worked", explain: "last night → passado." },
+    ],
+  },
+  {
+    title: "Verbos irregulares",
+    activities: [
+      { type: "match", pairs: [["go", "went"], ["have", "had"], ["see", "saw"], ["buy", "bought"]], explain: "Passado irregular." },
+      { type: "match", pairs: [["eat", "ate"], ["get", "got"], ["make", "made"], ["do", "did"]], explain: "Mais verbos irregulares." },
+      { type: "fill", before: "I", after: "to the beach last weekend.", options: ["went", "goed", "go"], answer: "went", explain: "go → went." },
+      { type: "fill", before: "We", after: "a great time!", options: ["had", "haved", "have"], answer: "had", explain: "have → had." },
+      { type: "build", pt: "Ela comprou sapatos novos.", answer: "She bought new shoes", extra: ["buyed", "buys"], explain: "buy → bought." },
+      { type: "listen", audio: "I saw a great movie.", options: ["I saw a great movie.", "I see a great movie.", "I said a great movie."], answer: "I saw a great movie.", explain: "see → saw." },
+      { type: "write", prompt: "eat → passado", answer: ["ate"], explain: "eat → ate." },
+      { type: "build", pt: "Eu fiz o jantar ontem.", answer: "I made dinner yesterday", extra: ["maked", "did"], explain: "make (preparar) → made." },
+    ],
+  },
+  {
+    title: "Você se divertiu?",
+    activities: [
+      { type: "fill", before: "", after: "you have fun?", options: ["Did", "Do", "Were"], answer: "Did", explain: "Pergunta no passado: Did + verbo base." },
+      { type: "fill", before: "Did you", after: "to the party?", options: ["go", "went", "goes"], answer: "go", explain: "Depois de did, verbo na forma base." },
+      { type: "choose", line: "Did you go out last night?", options: ["No, I didn't. I stayed home.", "No, I don't.", "No, I didn't went."], answer: "No, I didn't. I stayed home.", explain: "Did → didn't." },
+      { type: "choose", line: "Did she enjoy her vacation?", options: ["Yes, she did.", "Yes, she enjoyed.", "Yes, she was."], answer: "Yes, she did.", explain: "Resposta curta: did." },
+      { type: "build", pt: "O que você fez no fim de semana?", answer: "What did you do last weekend", extra: ["doing", "does"], explain: "What + did + you + do?" },
+      { type: "listen", audio: "We didn't go to the beach.", options: ["We didn't go to the beach.", "We did go to the beach.", "We don't go to the beach."], answer: "We didn't go to the beach.", explain: "didn't + verbo base." },
+      { type: "match", pairs: [["vacation", "férias"], ["beach", "praia"], ["trip", "viagem"], ["stay home", "ficar em casa"]], explain: "Lazer e férias." },
+      { type: "build", pt: "Eu não trabalhei no domingo.", answer: "I didn't work on Sunday", extra: ["worked", "don't"], explain: "didn't + verbo base (work)." },
+    ],
+  },
+];
+
+export const unit15: Lesson[] = [
+  {
+    title: "Onde você nasceu?",
+    activities: [
+      { type: "fill", context: "A: Where were you born?", before: "B: I was", after: "in Fortaleza.", options: ["born", "borned", "birth"], answer: "born", explain: "I was born = eu nasci." },
+      { type: "fill", before: "They", after: "born in Japan.", options: ["were", "was", "are"], answer: "were", explain: "they + were." },
+      { type: "choose", line: "When were you born?", options: ["I was born in 1995.", "I born in 1995.", "I were born in 1995."], answer: "I was born in 1995.", explain: "I + was born." },
+      { type: "write", prompt: "1990 (ano)", answer: ["nineteen ninety"], explain: "Anos são lidos em pares: nineteen ninety." },
+      { type: "write", prompt: "2015 (ano)", answer: ["twenty fifteen", "two thousand fifteen", "two thousand and fifteen"], explain: "2015 = twenty fifteen." },
+      { type: "listen", audio: "She was born in two thousand eight.", options: ["She was born in two thousand eight.", "She was born in two thousand eighteen.", "She is born in two thousand eight."], answer: "She was born in two thousand eight.", explain: "2008 = two thousand eight." },
+      { type: "build", pt: "Onde seus pais nasceram?", answer: "Where were your parents born", extra: ["was", "did"], explain: "parents (plural) → were." },
+      { type: "fill", before: "My father", after: "born in Recife.", options: ["was", "were", "is"], answer: "was", explain: "he → was." },
+    ],
+  },
+  {
+    title: "Passado do verbo be",
+    activities: [
+      { type: "fill", before: "I", after: "at home last night.", options: ["was", "were", "am"], answer: "was", explain: "I + was." },
+      { type: "fill", before: "We", after: "tired yesterday.", options: ["were", "was", "are"], answer: "were", explain: "we + were." },
+      { type: "fill", before: "The test", after: "easy. It was difficult.", options: ["wasn't", "weren't", "didn't"], answer: "wasn't", explain: "Negativo: wasn't." },
+      { type: "choose", line: "Were you at work on Monday?", options: ["Yes, I was.", "Yes, I were.", "Yes, I did."], answer: "Yes, I was.", explain: "Were you → I was." },
+      { type: "build", pt: "O filme foi ótimo.", answer: "The movie was great", extra: ["were", "is"], explain: "movie (singular) → was." },
+      { type: "listen", audio: "They weren't at the party.", options: ["They weren't at the party.", "They were at the party.", "They aren't at the party."], answer: "They weren't at the party.", explain: "weren't = were not." },
+      { type: "match", pairs: [["I was", "eu estava"], ["we were", "nós estávamos"], ["it wasn't", "não era"], ["they weren't", "eles não estavam"]], explain: "was = I/he/she/it; were = you/we/they." },
+      { type: "fill", before: "How", after: "your weekend?", options: ["was", "were", "did"], answer: "was", explain: "weekend (singular) → was." },
+    ],
+  },
+  {
+    title: "Tempos de escola",
+    activities: [
+      { type: "match", pairs: [["school", "escola"], ["grade", "série/nota"], ["subject", "matéria"], ["graduate", "formar-se"]], explain: "Vida escolar." },
+      { type: "fill", before: "What", after: "your favorite subject?", options: ["was", "were", "did"], answer: "was", explain: "subject (singular) → was." },
+      { type: "fill", before: "When did you", after: "from high school?", options: ["graduate", "graduated", "graduates"], answer: "graduate", explain: "did + verbo base." },
+      { type: "choose", line: "Where did you grow up?", options: ["I grew up in Ceará.", "I growed up in Ceará.", "I was grow up in Ceará."], answer: "I grew up in Ceará.", explain: "grow → grew (irregular)." },
+      { type: "build", pt: "Meu professor favorito era muito gentil.", answer: "My favorite teacher was very kind", extra: ["were", "is"], explain: "teacher (singular) → was." },
+      { type: "listen", audio: "Math was my favorite subject.", options: ["Math was my favorite subject.", "Math is my favorite subject.", "Art was my favorite subject."], answer: "Math was my favorite subject.", explain: "Math = matemática." },
+      { type: "build", pt: "Como era a sua escola?", answer: "What was your school like", extra: ["were", "how"], explain: "What was ... like? = Como era...?" },
+      { type: "write", prompt: "matéria (escolar)", answer: ["subject"], explain: "matéria = subject." },
+    ],
+  },
+];
+
+export const unit16: Lesson[] = [
+  {
+    title: "Onde as pessoas estão",
+    activities: [
+      { type: "fill", before: "She's", after: "work right now.", options: ["at", "in", "on"], answer: "at", explain: "at work = no trabalho." },
+      { type: "fill", before: "He's", after: "vacation this week.", options: ["on", "in", "at"], answer: "on", explain: "on vacation = de férias." },
+      { type: "fill", before: "They're", after: "the hospital.", options: ["in", "on", "to"], answer: "in", explain: "in the hospital = no hospital." },
+      { type: "match", pairs: [["at home", "em casa"], ["at work", "no trabalho"], ["on vacation", "de férias"], ["in bed", "na cama"]], explain: "Onde as pessoas estão." },
+      { type: "choose", line: "Is Carla there?", options: ["No, she's at the gym.", "No, she's on the gym.", "No, she gyms."], answer: "No, she's at the gym.", explain: "at the gym = na academia." },
+      { type: "listen", audio: "He's out of town.", options: ["He's out of town.", "He's out of time.", "He's in town."], answer: "He's out of town.", explain: "out of town = viajando/fora da cidade." },
+      { type: "build", pt: "Minha irmã está no shopping.", answer: "My sister is at the mall", extra: ["on", "are"], explain: "at the mall = no shopping." },
+      { type: "write", prompt: "em casa", answer: ["at home"], explain: "em casa = at home." },
+    ],
+  },
+  {
+    title: "Ao telefone",
+    activities: [
+      { type: "choose", line: "Hello. May I speak to Ana, please?", options: ["I'm sorry, she's not here.", "Yes, I'm speak.", "Goodbye."], answer: "I'm sorry, she's not here.", explain: "Resposta educada ao telefone." },
+      { type: "fill", before: "Can I take a", after: "?", options: ["message", "massage", "call"], answer: "message", explain: "take a message = anotar um recado." },
+      { type: "fill", before: "Please ask her to call", after: "back.", options: ["me", "I", "my"], answer: "me", explain: "Pronome objeto: me." },
+      { type: "match", pairs: [["I", "me"], ["he", "him"], ["she", "her"], ["they", "them"]], explain: "Pronomes sujeito → objeto." },
+      { type: "build", pt: "Por favor, ligue para ele mais tarde.", answer: "Please call him later", extra: ["he", "his"], explain: "Depois do verbo: him." },
+      { type: "listen", audio: "Can I leave a message?", options: ["Can I leave a message?", "Can I take a message?", "Can I live a message?"], answer: "Can I leave a message?", explain: "leave a message = deixar recado." },
+      { type: "fill", before: "I can't hear", after: ". (eles)", options: ["them", "they", "their"], answer: "them", explain: "they → them." },
+      { type: "write", prompt: "recado", answer: ["message"], explain: "recado = message." },
+    ],
+  },
+  {
+    title: "Convites e desculpas",
+    activities: [
+      { type: "fill", before: "Would you like", after: "see a movie?", options: ["to", "for", "at"], answer: "to", explain: "Would you like to + verbo." },
+      { type: "choose", line: "Do you want to go to a concert tonight?", options: ["Sure, I'd love to!", "Sure, I'd love.", "Yes, I want go."], answer: "Sure, I'd love to!", explain: "Aceitar: I'd love to." },
+      { type: "choose", line: "Would you like to have dinner on Friday?", options: ["Sorry, I can't. I have to work.", "Sorry, I don't can.", "No, I wouldn't like."], answer: "Sorry, I can't. I have to work.", explain: "Recusar + desculpa." },
+      { type: "match", pairs: [["I'd love to", "eu adoraria"], ["I have to", "eu tenho que"], ["I need to", "eu preciso"], ["I want to", "eu quero"]], explain: "Verbo + to." },
+      { type: "build", pt: "Você quer jogar futebol amanhã?", answer: "Do you want to play soccer tomorrow", extra: ["does", "for"], explain: "Do you want to + verbo?" },
+      { type: "listen", audio: "I'm sorry, I have to study.", options: ["I'm sorry, I have to study.", "I'm sorry, I have to work.", "I'm sorry, I want to study."], answer: "I'm sorry, I have to study.", explain: "have to = ter que." },
+      { type: "build", pt: "Eu preciso visitar meus pais.", answer: "I need to visit my parents", extra: ["visits", "for"], explain: "need to + verbo." },
+      { type: "fill", before: "Maybe next", after: "!", options: ["time", "times", "hour"], answer: "time", explain: "Maybe next time = fica para a próxima." },
+    ],
+  },
+];
+
+
+===== ARQUIVO: src/lib/mistakes.ts =====
+// Registro dos erros do aluno (localStorage) e agrupamento por tipo de dificuldade.
+import type { Activity } from "@/data/units";
+
+export interface Mistake {
+  unit: number;
+  lesson: number;
+  activity: number;
+  type: Activity["type"];
+  prompt: string;   // o que foi perguntado (em inglês ou português)
+  given: string;    // o que o aluno respondeu
+  correct: string;  // resposta certa
+  explain: string;  // explicação em português
+  at: string;       // data ISO
+}
+
+const KEY = "fenixingles-mistakes-v1";
+const MAX = 2000;
+
+export function loadMistakes(): Mistake[] {
+  if (typeof window === "undefined") return [];
+  try { return JSON.parse(localStorage.getItem(KEY) || "[]") as Mistake[]; } catch { return []; }
+}
+
+export function clearMistakes() {
+  try { localStorage.removeItem(KEY); } catch { /* ignore */ }
+}
+
+export function promptOf(a: Activity): string {
+  switch (a.type) {
+    case "fill": return `${a.context ? a.context + " / " : ""}${a.before} ___ ${a.after}`.trim();
+    case "choose": return a.line;
+    case "build": return a.pt;
+    case "listen": return `(áudio) ${a.audio}`;
+    case "write": return a.prompt;
+    case "match": return "Ligar pares";
+  }
+}
+
+export function correctOf(a: Activity): string {
+  if (a.type === "match") return a.pairs.map((p) => `${p[0]} = ${p[1]}`).join("; ");
+  if (a.type === "write") return a.answer[0] ?? "";
+  return a.answer;
+}
+
+export function recordMistake(unit: number, lesson: number, activity: number, a: Activity, given: string) {
+  if (typeof window === "undefined") return;
+  const m: Mistake = {
+    unit, lesson, activity, type: a.type, prompt: promptOf(a), given: given.trim(),
+    correct: correctOf(a), explain: a.explain, at: new Date().toISOString(),
+  };
+  try {
+    const all = loadMistakes();
+    all.push(m);
+    localStorage.setItem(KEY, JSON.stringify(all.slice(-MAX)));
+  } catch { /* armazenamento cheio ou bloqueado */ }
+}
+
+/** Categorias pedagógicas (o que o tipo de erro revela) com dica em português. */
+export const CATEGORIES: Record<Activity["type"], { title: string; tip: string }> = {
+  fill: {
+    title: "Gramática no diálogo",
+    tip: "Releia a frase inteira antes de escolher. Observe quem é o sujeito (I, you, he, she, they) e se a ideia é singular ou plural — isso decide a forma do verbo e do pronome.",
+  },
+  choose: {
+    title: "Resposta adequada à situação",
+    tip: "Identifique a palavra-chave da pergunta (Where = onde, What = o que, How = como, When = quando). A resposta precisa combinar com ela.",
+  },
+  build: {
+    title: "Ordem das palavras na frase",
+    tip: "Em inglês a ordem é quase sempre: sujeito + verbo + complemento. Adjetivos vêm ANTES do substantivo (a black coat). Em perguntas, o verbo auxiliar vem primeiro (Do you...? Are you...?).",
+  },
+  listen: {
+    title: "Compreensão auditiva",
+    tip: "Ouça mais de uma vez e use o botão da tartaruga (devagar). Preste atenção no final das palavras (-teen x -ty, -s do plural) e nas contrações (I'm, isn't).",
+  },
+  write: {
+    title: "Escrita (ortografia)",
+    tip: "Confira letra por letra. Anote as palavras que você errou e escreva cada uma três vezes. Números: 13–19 terminam em -teen; 20, 30, 40... terminam em -ty (forty não tem 'u').",
+  },
+  match: {
+    title: "Vocabulário",
+    tip: "Revise as palavras em voz alta e crie uma frase curta com cada uma.",
+  },
+};
+
+export interface UnitReport {
+  unit: number;
+  total: number;
+  byCategory: { type: Activity["type"]; title: string; tip: string; count: number; items: Mistake[] }[];
+}
+
+/** Erros de uma unidade, agrupados por categoria e sem repetir a mesma questão. */
+export function unitReport(unit: number, all = loadMistakes()): UnitReport {
+  const seen = new Map<string, Mistake>();
+  const counts = new Map<string, number>();
+  for (const m of all.filter((x) => x.unit === unit)) {
+    const k = `${m.lesson}-${m.activity}`;
+    seen.set(k, m); // fica a tentativa mais recente
+    counts.set(k, (counts.get(k) ?? 0) + 1);
+  }
+  const groups = new Map<Activity["type"], Mistake[]>();
+  for (const m of seen.values()) groups.set(m.type, [...(groups.get(m.type) ?? []), m]);
+  const byCategory = [...groups.entries()]
+    .map(([type, items]) => ({
+      type, ...CATEGORIES[type],
+      count: items.reduce((n, m) => n + (counts.get(`${m.lesson}-${m.activity}`) ?? 1), 0),
+      items: items.sort((a, b) => (counts.get(`${b.lesson}-${b.activity}`) ?? 1) - (counts.get(`${a.lesson}-${a.activity}`) ?? 1)),
+    }))
+    .sort((a, b) => b.count - a.count);
+  return { unit, total: byCategory.reduce((n, c) => n + c.count, 0), byCategory };
+}
+
+
+===== ARQUIVO: src/lib/mistakesPdf.ts =====
+// Gera o PDF (em português) com os erros da unidade. Usa jsPDF no navegador.
+import type { UnitReport } from "./mistakes";
+
+// As fontes padrão do PDF não têm emoji nem alguns símbolos: troca por texto simples.
+const clean = (s: string) =>
+  s.replace(/[’‘]/g, "'").replace(/[“”]/g, '"').replace(/[→›]/g, "->").replace(/…/g, "...").replace(/[—–]/g, "-")
+   .replace(/[^\u0000-ÿ]/g, "");
+
+export async function downloadUnitPdf(report: UnitReport, unitTitle: string) {
+  const { jsPDF } = await import("jspdf");
+  const doc = new jsPDF({ unit: "mm", format: "a4" });
+  const W = 210, M = 16, maxW = W - M * 2;
+  let y = 20;
+
+  const ensure = (h: number) => { if (y + h > 280) { doc.addPage(); y = 20; } };
+  const text = (s: string, size = 11, style: "normal" | "bold" = "normal", color: [number, number, number] = [75, 75, 75]) => {
+    doc.setFont("helvetica", style); doc.setFontSize(size); doc.setTextColor(...color);
+    const lines = doc.splitTextToSize(clean(s), maxW) as string[];
+    ensure(lines.length * size * 0.45 + 2);
+    doc.text(lines, M, y);
+    y += lines.length * size * 0.45 + 2;
+  };
+
+  // Cabeçalho
+  doc.setFillColor(88, 204, 2); doc.rect(0, 0, W, 12, "F");
+  text("FenixInglês - Relatório de erros", 18, "bold", [88, 167, 0]);
+  text(`Unidade ${report.unit}: ${unitTitle}`, 13, "bold");
+  text(`Gerado em ${new Date().toLocaleDateString("pt-BR")}`, 9, "normal", [140, 140, 140]);
+  y += 2;
+
+  if (report.total === 0) {
+    text("Parabéns! Você não errou nenhuma questão nesta unidade.", 12, "bold", [88, 167, 0]);
+  } else {
+    text(`Total de erros: ${report.total}. Abaixo estão agrupados pelo tipo de dificuldade, do mais frequente para o menos frequente.`, 11);
+    y += 2;
+    for (const c of report.byCategory) {
+      ensure(20);
+      doc.setDrawColor(229, 229, 229); doc.line(M, y, W - M, y); y += 5;
+      text(`${c.title} (${c.count} ${c.count === 1 ? "erro" : "erros"})`, 13, "bold", [28, 176, 246]);
+      text(`Como melhorar: ${c.tip}`, 10, "normal", [90, 90, 90]);
+      y += 1;
+      c.items.forEach((m, i) => {
+        ensure(24);
+        text(`${i + 1}. Questão: ${m.prompt}`, 10.5, "bold");
+        if (m.given) text(`   Você respondeu: ${m.given}`, 10, "normal", [234, 43, 43]);
+        text(`   Resposta certa: ${m.correct}`, 10, "normal", [88, 167, 0]);
+        text(`   Por quê: ${m.explain}`, 10);
+        y += 1.5;
+      });
+    }
+  }
+  ensure(16); y += 4;
+  text("Dica final: refaça as lições desta unidade e tente acertar estas questões sem olhar as respostas.", 10, "normal", [255, 150, 0]);
+
+  doc.save(`FenixIngles-Unidade-${report.unit}-erros.pdf`);
+}
+
+
+===== ARQUIVO: src/routes/unit-summary.$unitId.tsx =====
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { units } from "@/data/units";
+import { unitReport, type UnitReport } from "@/lib/mistakes";
+import { downloadUnitPdf } from "@/lib/mistakesPdf";
+import { Phoenix } from "@/components/Phoenix";
+import { speak } from "@/lib/audio";
+
+export const Route = createFileRoute("/unit-summary/$unitId")({
+  head: () => ({
+    meta: [
+      { title: "Resumo da unidade — FenixInglês" },
+      { name: "description", content: "Veja onde você errou na unidade e baixe o relatório em PDF." },
+    ],
+  }),
+  component: UnitSummary,
+});
+
+function UnitSummary() {
+  const { unitId } = Route.useParams();
+  const unit = units.find((u) => u.id === Number(unitId));
+  const [report, setReport] = useState<UnitReport | null>(null);
+  const [busy, setBusy] = useState(false);
+  useEffect(() => { setReport(unitReport(Number(unitId))); }, [unitId]);
+
+  if (!unit) return <div className="p-6 text-center">Unidade não encontrada. <Link to="/" className="text-fx-blue">Voltar</Link></div>;
+  if (!report) return null;
+
+  const pdf = async () => {
+    setBusy(true);
+    try { await downloadUnitPdf(report, unit.title); } finally { setBusy(false); }
+  };
+
+  return (
+    <div className="mx-auto flex min-h-screen max-w-lg flex-col gap-5 p-5 pb-10">
+      <div className="flex items-center gap-3">
+        <Link to="/" aria-label="Voltar" className="text-3xl font-extrabold text-fx-gray-dark">✕</Link>
+        <h1 className="text-2xl font-extrabold">Resumo da Unidade {unit.id}</h1>
+      </div>
+      <div className="flex items-center gap-4 rounded-2xl border-2 border-fx-gray p-4">
+        <Phoenix size={72} className="anim-bob shrink-0" />
+        <div>
+          <p className="text-lg font-extrabold">{unit.title}</p>
+          <p className="text-muted-foreground">
+            {report.total === 0 ? "Você não errou nada nesta unidade. Incrível! 🎉"
+              : `Você teve ${report.total} ${report.total === 1 ? "erro" : "erros"}. Veja onde focar:`}
+          </p>
+        </div>
+      </div>
+
+      {report.byCategory.map((c) => (
+        <section key={c.type} className="overflow-hidden rounded-2xl border-2 border-fx-gray">
+          <div className="flex items-center justify-between bg-fx-blue px-4 py-2 text-primary-foreground">
+            <h2 className="font-extrabold">{c.title}</h2>
+            <span className="rounded-full bg-white/25 px-2 text-sm font-extrabold">{c.count}</span>
+          </div>
+          <p className="border-b-2 border-fx-gray bg-fx-gray/30 px-4 py-3 text-sm">💡 {c.tip}</p>
+          <ul className="divide-y-2 divide-fx-gray">
+            {c.items.map((m) => (
+              <li key={`${m.lesson}-${m.activity}`} className="px-4 py-3 text-sm">
+                <p className="font-extrabold">{m.prompt}</p>
+                {m.given && <p className="text-fx-red-dark">✗ Você: {m.given}</p>}
+                <p className="flex items-center gap-2 text-fx-green-dark">✓ Certo: {m.correct}
+                  {m.type !== "match" && m.type !== "build" && (
+                    <button aria-label="Ouvir" className="text-base" onClick={() => speak(m.correct)}>🔊</button>
+                  )}
+                </p>
+                <p className="mt-1 text-muted-foreground">{m.explain}</p>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+
+      <button className="btn3d btn-blue w-full" onClick={pdf} disabled={busy}>
+        {busy ? "Gerando PDF…" : "📄 Baixar PDF com explicações"}
+      </button>
+      <Link to="/" className="btn3d btn-green w-full text-center">Continuar</Link>
+    </div>
+  );
+}

@@ -1,6 +1,7 @@
+import * as Z from "./src/data/units1to2.ts";
 import * as A from "./src/data/units3to8.ts";
 import * as B from "./src/data/units9to16.ts";
-const U = { ...A, ...B };
+const U = { ...Z, ...A, ...B };
 let errs = 0, n = 0;
 const err = (m: string) => { errs++; console.log("ERRO:", m); };
 for (const [name, lessons] of Object.entries(U)) {
