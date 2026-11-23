@@ -32,6 +32,6 @@ Fonte Nunito, botões arredondados "3D". Não usar a coruja nem a marca do Duoli
 
 ## Próximos pedidos (um por vez, para economizar crédito)
 1. ✅ Unidades 3 a 16 (336 atividades) — no app desde 23/11.
-3. "Progress Check" a cada 2 unidades (revisão).
-5. Login e progresso na nuvem.
-6. App Android nativo (Kotlin + Compose) depois de validado.
+2. "Progress Check" a cada 2 unidades (revisão).
+3. Login e progresso na nuvem.
+4. App Android nativo (Kotlin + Compose) depois de validado.
