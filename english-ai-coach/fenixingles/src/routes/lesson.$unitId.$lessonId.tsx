@@ -5,6 +5,7 @@ import { completeLesson, lessonKey, MAX_HEARTS, update, useProgress } from "@/li
 import { playCorrect, playFinish, playWrong, speak } from "@/lib/audio";
 import { recordMistake } from "@/lib/mistakes";
 import { Phoenix } from "@/components/Phoenix";
+import { Capi, Uni } from "@/components/Characters";
 
 export const Route = createFileRoute("/lesson/$unitId/$lessonId")({
   head: () => ({
@@ -87,7 +88,7 @@ function LessonPage() {
     const unitDone = unit.lessons.every((_, i) => p.completed.includes(lessonKey(unit.id, i)));
     return (
       <div className="mx-auto flex min-h-screen max-w-lg flex-col items-center justify-center gap-6 p-6 text-center">
-        <Phoenix size={170} className="anim-bob" />
+        <div className="flex items-end gap-2"><Phoenix size={150} className="anim-bob" /><Capi size={110} /></div>
         <h1 className="anim-pop text-3xl font-extrabold text-fx-orange">Lição concluída!</h1>
         <div className="grid w-full grid-cols-2 gap-3">
           <div className="anim-pop overflow-hidden rounded-2xl border-2 border-fx-yellow"><div className="bg-fx-yellow py-1 text-sm font-extrabold text-primary-foreground">XP GANHO</div><div className="py-3 text-2xl font-extrabold text-fx-orange">💎 +10</div></div>
@@ -177,11 +178,12 @@ function LessonPage() {
       ) : (
         <div className={`anim-up p-4 ${status === "correct" ? "bg-fx-green-light" : "bg-fx-red-light"}`}>
           <div className="mb-3 flex items-start gap-3">
-            {status === "correct" && <Phoenix size={56} className="anim-pop shrink-0" />}
+            {status === "correct" ? <Capi size={72} className="anim-pop shrink-0" /> : <Uni size={84} className="anim-pop shrink-0" />}
             <div className="flex-1">
               <p className={`text-xl font-extrabold ${status === "correct" ? "text-fx-green-dark" : "text-fx-red-dark"}`}>
                 {status === "correct" ? (retry ? "Isso! Agora você acertou." : "Muito bem!") : `Resposta correta: ${correctText(act)}`}
               </p>
+              {status === "wrong" && <p className="text-sm font-extrabold text-fx-red-dark">O Uni está dançando para te animar — bora repetir! 🦄</p>}
               <p className={status === "correct" ? "text-fx-green-dark" : "text-fx-red-dark"}>{act.explain}</p>
             </div>
             {status === "wrong" && spokenAnswer(act) && (
