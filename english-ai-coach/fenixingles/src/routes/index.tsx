@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useStudent } from "@/lib/student";
-import { CastImage } from "@/components/CastImage";
+import { Buddy } from "@/components/Buddy";
 import { UNIT_BUDDY } from "@/lib/cast";
 import { units } from "@/data/units";
 import { lessonKey, useProgress } from "@/lib/progress";
@@ -66,7 +66,7 @@ function Trail() {
           return (
             <section key={u.id} className="mt-10">
               <div className={`relative rounded-2xl border-3 border-fx-ink p-4 pr-28 text-white ${soon ? "bg-fx-gray-dark" : headerBg[u.color]}`} style={{ boxShadow: "0 5px 0 #1b1530" }}>
-                <CastImage id={UNIT_BUDDY[(u.id - 1) % UNIT_BUDDY.length] ?? "fenix-exploradora"} size={112} className="anim-float pointer-events-none absolute -top-8 right-1 drop-shadow-[0_4px_0_rgba(27,21,48,.35)]" />
+                <Buddy id={u.id === 3 ? "juba" : u.id === 9 ? "lili" : (UNIT_BUDDY[(u.id - 1) % UNIT_BUDDY.length] ?? "fenix-exploradora")} size={112} className="anim-float pointer-events-none absolute -top-8 right-1 drop-shadow-[0_4px_0_rgba(27,21,48,.35)]" />
                 <div className="flex items-start justify-between gap-2">
                   <p className="text-sm font-extrabold uppercase opacity-90">Unidade {u.id}{soon && " · Em breve"}</p>
                   {unitDone && (

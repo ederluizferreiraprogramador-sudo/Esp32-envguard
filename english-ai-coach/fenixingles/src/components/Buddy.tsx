@@ -2,11 +2,14 @@
 import { Kitten, type KittenName } from "./Kittens";
 import { UniFront } from "./Characters";
 import { CastImage } from "./CastImage";
+import { Juba, Lili } from "./Lions";
 import type { CastId } from "@/lib/cast";
 
 export const KITTENS = ["charlotte", "mingau", "luna"];
 export function Buddy({ id, size = 120, className = "" }: { id: string; size?: number; className?: string }) {
   if (KITTENS.includes(id)) return <Kitten name={id as KittenName} size={size} className={className} />;
   if (id === "uni") return <UniFront size={size} className={className} />;
+  if (id === "juba") return <Juba size={size} className={className} />;
+  if (id === "lili") return <Lili size={size} className={className} />;
   return <CastImage id={id as CastId} size={size} className={className} />;
 }

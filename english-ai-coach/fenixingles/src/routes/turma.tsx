@@ -18,6 +18,8 @@ const ALL = [
   { id: "mingau", name: "Mingau", role: "colega de diálogo", hi: "Hello! I'm Mingau. Let's talk!" },
   { id: "luna", name: "Luna", role: "gatinha curiosa", hi: "Hi, I'm Luna. I love the moon!" },
   { id: "uni", name: "Uni", role: "rebola nos erros", hi: "Hi! I'm Uni. Mistakes are okay!" },
+  { id: "juba", name: "Juba", role: "leão que adora rir", hi: "Roar! I'm Juba. Let's laugh and learn!" },
+  { id: "lili", name: "Lili", role: "filhotinha curiosa", hi: "Hi! I'm Lili. I love new words!" },
   ...CAST.map((c) => ({ id: c.id, name: c.name, role: c.role, hi: `Hi! I'm ${c.name.replace("Fê, a Fênix", "Fê the phoenix")}. Nice to meet you!` })),
 ];
 
