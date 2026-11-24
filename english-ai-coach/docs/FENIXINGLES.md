@@ -36,3 +36,6 @@ Fonte Nunito, botões arredondados "3D". Não usar a coruja nem a marca do Duoli
 2. "Progress Check" a cada 2 unidades (revisão).
 3. Login e progresso na nuvem.
 4. App Android nativo (Kotlin + Compose) depois de validado.
+
+## Histórico de publicações no app oficial
+- 24/11 — rev5 no Lovable: resumo de erros + PDF, autocorreção, áudio reforçado, turma ilustrada (Fê a Fênix e animais), Charlotte e gatinhos, Uni rebolando nos erros, criador de avatar, abertura personalizada, conquistas e conversa guiada com a Charlotte. Versão de teste com IA: https://claude.ai/artifact/JeQ5brUjYbPYf7mXvXLpf4
