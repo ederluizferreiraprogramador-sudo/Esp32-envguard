@@ -1,3 +1,4 @@
+import { Pet } from "./Pet";
 import type { ReactNode } from "react";
 // Turma "zoiuda" do FenixInglês (SVG próprio): olhos grandes e brilhantes, corpo fofinho.
 // Charlotte: gatinha cinza rajada com laço rosa (professora). Mingau: laranja. Luna: preta.
@@ -35,7 +36,7 @@ export function BigEye({ cx, cy, r, iris }: { cx: number; cy: number; r: number;
   );
 }
 
-export function Kitten({ name = "charlotte", size = 80, animated = true, className = "" }: { name?: KittenName; size?: number; animated?: boolean; className?: string }) {
+export function KittenSvg({ name = "charlotte", size = 80, animated = true, className = "" }: { name?: KittenName; size?: number; animated?: boolean; className?: string }) {
   const k = KITTENS[name];
   const a = animated;
   return (
@@ -105,4 +106,9 @@ export function CharlotteSays({ children, name = "charlotte" }: { children: Reac
       </div>
     </div>
   );
+}
+
+/** Gatinho 3D (imagem) — o desenho antigo continua em KittenSvg. */
+export function Kitten({ name = "charlotte", size = 80, animated = true, className = "" }: { name?: KittenName; size?: number; animated?: boolean; className?: string }) {
+  return <Pet id={name} size={size} anim={animated ? "breathe" : "none"} className={className} />;
 }

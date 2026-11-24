@@ -1,3 +1,4 @@
+import { Pet } from "./Pet";
 // Personagens originais do FenixInglês (SVG próprio, sem imagens de terceiros).
 import { BigEye } from "./Kittens";
 // Capi (capivara): comemora acertos. Uni (unicórnio): aparece nos erros com uma dancinha.
@@ -24,7 +25,7 @@ const CSS = `
 const Style = () => <style>{CSS}</style>;
 
 /** Capi, a capivara que comemora acertos. */
-export function Capi({ size = 80, dancing = true, className = "" }: { size?: number; dancing?: boolean; className?: string }) {
+export function CapiSvg({ size = 80, dancing = true, className = "" }: { size?: number; dancing?: boolean; className?: string }) {
   return (
     <svg viewBox="0 0 200 200" width={size} height={size} className={className} role="img" aria-label="Capi, a capivara, comemorando">
       <Style />
@@ -66,7 +67,7 @@ export function Capi({ size = 80, dancing = true, className = "" }: { size?: num
 }
 
 /** Uni de costas, rebolando a bundinha para animar o aluno depois de um erro. */
-export function Uni({ size = 80, dancing = true, className = "" }: { size?: number; dancing?: boolean; className?: string }) {
+export function UniSvg({ size = 80, dancing = true, className = "" }: { size?: number; dancing?: boolean; className?: string }) {
   const d = dancing;
   return (
     <svg viewBox="0 0 200 200" width={size} height={size} className={className} role="img" aria-label="Uni, o unicórnio, rebolando de costas">
@@ -113,7 +114,7 @@ export function Uni({ size = 80, dancing = true, className = "" }: { size?: numb
 }
 
 /** Uni de frente (estilo pelúcia zoiuda) para a turma e a trilha. */
-export function UniFront({ size = 80, className = "" }: { size?: number; className?: string }) {
+export function UniFrontSvg({ size = 80, className = "" }: { size?: number; className?: string }) {
   return (
     <svg viewBox="0 0 200 200" width={size} height={size} className={className} role="img" aria-label="Uni, o unicórnio">
       <ellipse cx="100" cy="158" rx="42" ry="34" fill="#F7A8D8" stroke="#D9539E" strokeWidth="3" />
@@ -158,4 +159,18 @@ export function AppIcon({ size = 48 }: { size?: number }) {
       <text x="100" y="188" textAnchor="middle" fontFamily="Nunito, Arial, sans-serif" fontWeight="800" fontSize="30" fill="#FFFFFF">EN</text>
     </svg>
   );
+}
+
+/** Capi 3D comemorando (pula) nos acertos. */
+export function Capi({ size = 80, dancing = true, className = "" }: { size?: number; dancing?: boolean; className?: string }) {
+  return <Pet id="capi" size={size} anim={dancing ? "hop" : "breathe"} className={className} />;
+}
+
+/** Uni 3D de costas rebolando nos erros. */
+export function Uni({ size = 80, dancing = true, className = "" }: { size?: number; dancing?: boolean; className?: string }) {
+  return <Pet id="uni-danca" size={size} anim={dancing ? "wiggle" : "none"} className={className} />;
+}
+
+export function UniFront({ size = 80, className = "" }: { size?: number; className?: string }) {
+  return <Pet id="uni" size={size} anim="breathe" className={className} />;
 }

@@ -1,3 +1,4 @@
+import { Pet } from "./Pet";
 // Leões originais do FenixInglês, no estilo desenho animado (contorno marrom, cores chapadas).
 // Juba: leão com juba espetada. Lili: filhotinha de leão.
 const O = "#5a3410"; // contorno
@@ -36,7 +37,7 @@ function Body({ fur, belly, tuft }: { fur: string; belly: string; tuft: string }
 }
 
 /** Juba, o leão: juba laranja espetada e risada aberta. */
-export function Juba({ size = 120, className = "" }: { size?: number; className?: string }) {
+export function JubaSvg({ size = 120, className = "" }: { size?: number; className?: string }) {
   const fur = "#f6b13b", mane = "#d9691f", maneDark = "#b4501a", belly = "#fde3a7";
   const tufts = Array.from({ length: 12 }, (_, i) => {
     const ang = (i / 12) * Math.PI * 2 - Math.PI / 2;
@@ -69,7 +70,7 @@ export function Juba({ size = 120, className = "" }: { size?: number; className?
 }
 
 /** Lili, a filhotinha de leão: sem juba, bochechas rosadas e laço de folha. */
-export function Lili({ size = 120, className = "" }: { size?: number; className?: string }) {
+export function LiliSvg({ size = 120, className = "" }: { size?: number; className?: string }) {
   const fur = "#f8c35a", belly = "#fff0c9", tuft = "#c9742e";
   return (
     <svg viewBox="0 0 200 212" width={size} height={size} className={className} role="img" aria-label="Lili, a filhotinha de leão">
@@ -94,4 +95,12 @@ export function Lili({ size = 120, className = "" }: { size?: number; className?
       <path d="M95 113 q5 4 10 0" stroke="#ff8aa0" strokeWidth="3" fill="none" strokeLinecap="round" />
     </svg>
   );
+}
+
+export function Juba({ size = 120, className = "" }: { size?: number; className?: string }) {
+  return <Pet id="juba" size={size} anim="breathe" className={className} />;
+}
+
+export function Lili({ size = 120, className = "" }: { size?: number; className?: string }) {
+  return <Pet id="lili" size={size} anim="breathe" className={className} />;
 }

@@ -20,8 +20,12 @@ export const CAST: { id: CastId; name: string; role: string }[] = [
   { id: "preguica", name: "Soneca", role: "lembra de descansar" },
 ];
 
+/** Personagens 3D gerados no Figma. */
+export type PetId = "charlotte" | "mingau" | "luna" | "uni" | "uni-danca" | "capi" | "juba" | "lili";
+export type ArtId = CastId | PetId;
+
 /** Base dos arquivos de imagem: "/characters/" no app; a versão de teste define window.__FX_ASSETS__. */
-export function castSrc(id: CastId) {
+export function castSrc(id: ArtId) {
   const base = (typeof window !== "undefined" && (window as unknown as { __FX_ASSETS__?: string }).__FX_ASSETS__) || "/characters/";
   return `${base}${id}.webp`;
 }
