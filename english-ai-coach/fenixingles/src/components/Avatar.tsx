@@ -1,5 +1,7 @@
 // Avatar do aluno, desenhado em SVG a partir das escolhas do criador de avatar.
-import type { AvatarConfig } from "@/lib/student";
+import { HEROES, type AvatarConfig } from "@/lib/student";
+import { castSrc } from "@/lib/cast";
+import { Pet } from "./Pet";
 
 const darker = (hex: string, f = 0.75) => {
   const n = parseInt(hex.slice(1), 16);
@@ -87,7 +89,21 @@ function Accessory({ a }: { a: AvatarConfig }) {
   }
 }
 
+/** Rosto do herói 3D recortado num círculo (para tamanhos pequenos). */
+export function HeroFace({ hero, size = 40, className = "" }: { hero: (typeof HEROES)[number]; size?: number; className?: string }) {
+  const Z = 2.6, [cx, cy] = hero.face;
+  return (
+    <span role="img" aria-label={`Seu avatar: ${hero.name}`} className={`relative inline-block shrink-0 overflow-hidden rounded-full ${className}`}
+      style={{ width: size, height: size, background: `radial-gradient(circle at 50% 35%, #fff, ${hero.color})` }}>
+      <img src={castSrc(`heroi-${hero.id}`)} alt="" draggable={false} className="absolute max-w-none select-none"
+        style={{ width: size * Z, height: size * Z, left: size / 2 - size * Z * cx, top: size / 2 - size * Z * cy }} />
+    </span>
+  );
+}
+
 export function Avatar({ a, size = 96, className = "" }: { a: AvatarConfig; size?: number; className?: string }) {
+  const hero = HEROES.find((h) => h.id === a.hero);
+  if (hero) return size <= 110 ? <HeroFace hero={hero} size={size} className={className} /> : <Pet id={`heroi-${hero.id}`} size={size} anim="float" className={className} />;
   const hood = a.costume !== "nenhuma";
   return (
     <svg viewBox="0 0 200 200" width={size} height={size} className={className} role="img" aria-label="Seu avatar">

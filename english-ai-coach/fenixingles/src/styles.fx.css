@@ -100,3 +100,13 @@ h1, h2, .font-display { font-family: var(--font-display); letter-spacing: .01em;
 .pet-wiggle { transform-origin: 50% 92%; animation: pet-wiggle .7s ease-in-out infinite }
 .pet-float { animation: pet-float 2.4s ease-in-out infinite }
 @media (prefers-reduced-motion: reduce) { .pet-breathe, .pet-hop, .pet-wiggle, .pet-float, .pet-shadow-pulse { animation: none } }
+
+/* Cartão de herói futurista do perfil */
+.hero-card { background: radial-gradient(120% 90% at 20% 0%, color-mix(in srgb, var(--hero) 45%, #2a1b5e), #120c2a 70%); box-shadow: 0 6px 0 var(--fx-ink), inset 0 0 40px color-mix(in srgb, var(--hero) 35%, transparent); }
+.hero-grid { background-image: linear-gradient(rgba(255,255,255,.07) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.07) 1px, transparent 1px); background-size: 22px 22px; mask-image: linear-gradient(180deg, transparent, #000 40%, transparent); animation: hero-scan 6s linear infinite; }
+.hero-ring { border: 3px solid var(--hero); box-shadow: 0 0 18px var(--hero), inset 0 0 12px var(--hero); animation: hero-ring 2.4s ease-in-out infinite; }
+.hero-beam { background: linear-gradient(0deg, color-mix(in srgb, var(--hero) 55%, transparent), transparent); clip-path: polygon(20% 100%, 80% 100%, 100% 0, 0 0); opacity: .55; filter: blur(2px); }
+.hero-bar { background: linear-gradient(90deg, var(--hero), #fff); box-shadow: 0 0 10px var(--hero); }
+@keyframes hero-scan { from { background-position: 0 0 } to { background-position: 0 44px } }
+@keyframes hero-ring { 0%,100% { transform: translateX(-50%) scale(1); opacity: 1 } 50% { transform: translateX(-50%) scale(1.12); opacity: .6 } }
+@media (prefers-reduced-motion: reduce) { .hero-grid, .hero-ring { animation: none } }

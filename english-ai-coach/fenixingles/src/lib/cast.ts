@@ -21,7 +21,8 @@ export const CAST: { id: CastId; name: string; role: string }[] = [
 ];
 
 /** Personagens 3D gerados no Figma. */
-export type PetId = "charlotte" | "mingau" | "luna" | "uni" | "uni-danca" | "capi" | "juba" | "lili";
+export type PetId = "charlotte" | "mingau" | "luna" | "uni" | "uni-danca" | "capi" | "juba" | "lili"
+  | "heroi-nova" | "heroi-tita" | "heroi-raio" | "heroi-fenix" | "heroi-astra" | "heroi-onda";
 export type ArtId = CastId | PetId;
 
 /** Base dos arquivos de imagem: "/characters/" no app; a versão de teste define window.__FX_ASSETS__. */

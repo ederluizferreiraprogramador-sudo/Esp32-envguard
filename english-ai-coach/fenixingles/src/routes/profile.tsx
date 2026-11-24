@@ -4,7 +4,7 @@ import { lessonKey, reset, update, useProgress, type Progress } from "@/lib/prog
 import { TopBar, BottomNav } from "@/components/TopBar";
 import { UniFront } from "@/components/Characters";
 import { Kitten } from "@/components/Kittens";
-import { Avatar } from "@/components/Avatar";
+import { HeroCard } from "@/components/HeroCard";
 import { CastImage } from "@/components/CastImage";
 import { CAST, type CastId } from "@/lib/cast";
 import { clearStudent, useStudent } from "@/lib/student";
@@ -59,14 +59,7 @@ function Profile() {
     <div className="min-h-screen pb-28">
       <TopBar p={p} />
       <main className="mx-auto max-w-lg px-4 py-6">
-        <div className="flex items-center gap-4">
-          <Avatar a={st.avatar} size={96} />
-          <div className="min-w-0">
-            <h1 className="text-2xl font-extrabold">{st.name || "Seu perfil"}</h1>
-            <p className="text-muted-foreground">{st.age && `${st.age} · `}meta de {st.goal} min/dia</p>
-            <Link to="/avatar" className="mt-1 inline-block rounded-xl bg-fx-blue-light px-3 py-1 text-sm font-extrabold text-fx-blue-dark">🎨 Editar avatar</Link>
-          </div>
-        </div>
+        <HeroCard st={st} xp={p.xp} />
         <div className="mt-6 grid grid-cols-2 gap-3">
           {stats.map((s) => (
             <div key={s.label} className="rounded-2xl border-2 border-fx-gray p-4">

@@ -4,7 +4,8 @@ import { castSrc, type ArtId } from "@/lib/cast";
 export type PetAnim = "breathe" | "hop" | "wiggle" | "float" | "none";
 const LABEL: Record<string, string> = {
   charlotte: "Charlotte", mingau: "Mingau", luna: "Luna", uni: "Uni", "uni-danca": "Uni dançando",
-  capi: "Capi", juba: "Juba", lili: "Lili",
+  capi: "Capi", juba: "Juba", lili: "Lili", "heroi-nova": "Nova Tech", "heroi-tita": "Titã", "heroi-raio": "Raio",
+  "heroi-fenix": "Fênix", "heroi-astra": "Astra", "heroi-onda": "Onda",
 };
 
 export function Pet({ id, size = 120, anim = "breathe", className = "" }: { id: ArtId; size?: number; anim?: PetAnim; className?: string }) {

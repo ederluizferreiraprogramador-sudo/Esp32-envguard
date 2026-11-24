@@ -2,15 +2,17 @@ import type { ReactNode } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Avatar } from "@/components/Avatar";
-import { DEFAULT_AVATAR, updateStudent, useStudent, type AvatarConfig } from "@/lib/student";
+import { DEFAULT_AVATAR, HEROES, updateStudent, useStudent, type AvatarConfig } from "@/lib/student";
+import { castSrc } from "@/lib/cast";
 
 export const Route = createFileRoute("/avatar")({
   head: () => ({ meta: [{ title: "Criar avatar — FenixInglês" }, { name: "description", content: "Monte seu avatar: roupa, olhos, cabelo, bigode e fantasias." }] }),
   component: AvatarEditor,
 });
 
-type Tab = "pele" | "olhos" | "cabelo" | "bigode" | "roupa" | "fantasia" | "acessorio";
+type Tab = "heroi" | "pele" | "olhos" | "cabelo" | "bigode" | "roupa" | "fantasia" | "acessorio";
 const TABS: { id: Tab; label: string }[] = [
+  { id: "heroi", label: "⚡ Herói 3D" },
   { id: "pele", label: "Pele" }, { id: "olhos", label: "Olhos" }, { id: "cabelo", label: "Cabelo" }, { id: "bigode", label: "Bigode" },
   { id: "roupa", label: "Roupa" }, { id: "fantasia", label: "Fantasia" }, { id: "acessorio", label: "Acessório" },
 ];
@@ -36,7 +38,7 @@ function Swatches({ colors, value, onPick }: { colors: string[]; value: string; 
 function AvatarEditor() {
   const [s] = useStudent();
   const [draft, setDraft] = useState<AvatarConfig | null>(null);
-  const [tab, setTab] = useState<Tab>("cabelo");
+  const [tab, setTab] = useState<Tab>("heroi");
   const [saved, setSaved] = useState(false);
   const a = draft ?? s.avatar;
   const set = (p: Partial<AvatarConfig>) => { setDraft({ ...a, ...p }); setSaved(false); };
@@ -58,6 +60,21 @@ function AvatarEditor() {
         ))}
       </div>
       <section className="flex flex-col gap-3 rounded-2xl border-2 border-fx-gray p-4">
+        {tab === "heroi" && <>
+          <p className="text-sm text-muted-foreground">Escolha seu super-herói. Para voltar ao desenho, toque em “Meu desenho”.</p>
+          <div className="grid grid-cols-3 gap-2">
+            {HEROES.map((h) => (
+              <button key={h.id} onClick={() => set({ hero: h.id })} aria-pressed={a.hero === h.id}
+                className={`flex flex-col items-center rounded-2xl border-[3px] p-1 pb-2 text-xs font-extrabold ${a.hero === h.id ? "border-fx-ink" : "border-fx-gray"}`}
+                style={{ background: a.hero === h.id ? `linear-gradient(180deg, ${h.color}55, #fff)` : "#fff" }}>
+                <img src={castSrc(`heroi-${h.id}`)} alt="" className="h-24 w-24 object-contain" loading="lazy" />{h.name}
+                <span className="font-bold text-muted-foreground">{h.power}</span>
+              </button>
+            ))}
+          </div>
+          <button className={`tile text-sm ${a.hero === "nenhum" ? "tile-selected" : ""}`} onClick={() => set({ hero: "nenhum" })}>🎨 Meu desenho</button>
+        </>}
+        {tab !== "heroi" && a.hero !== "nenhum" && <p className="text-sm font-bold text-fx-blue-dark">Você está usando um herói. As opções abaixo mudam o seu desenho — toque em “Meu desenho” na aba Herói para usá-lo.</p>}
         {tab === "pele" && <Swatches colors={SKINS} value={a.skin} onPick={(skin) => set({ skin })} />}
         {tab === "olhos" && <>{opts([["zoiudo", "Zoiudos"], ["feliz", "Felizes"], ["estrela", "Estrelas"], ["piscando", "Piscadinha"]], "eyes")}<Swatches colors={EYE_COLORS} value={a.eyeColor} onPick={(eyeColor) => set({ eyeColor })} /></>}
         {tab === "cabelo" && <>{opts([["curto", "Curto"], ["longo", "Longo"], ["cacheado", "Cacheado"], ["rabo", "Rabo de cavalo"], ["moicano", "Moicano"], ["careca", "Careca"]], "hair")}<Swatches colors={HAIR_COLORS} value={a.hairColor} onPick={(hairColor) => set({ hairColor })} /></>}
