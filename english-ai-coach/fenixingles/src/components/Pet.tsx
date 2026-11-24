@@ -8,11 +8,11 @@ const LABEL: Record<string, string> = {
   "heroi-fenix": "Fênix", "heroi-astra": "Astra", "heroi-onda": "Onda",
 };
 
-export function Pet({ id, size = 120, anim = "breathe", className = "" }: { id: ArtId; size?: number; anim?: PetAnim; className?: string }) {
+export function Pet({ id, size = 120, anim = "breathe", className = "", src }: { id: ArtId; size?: number; anim?: PetAnim; className?: string; src?: string }) {
   return (
     <span className={`relative inline-block shrink-0 ${className}`} style={{ width: size, height: size }} role="img" aria-label={LABEL[id] ?? id}>
       <span aria-hidden className={`pet-shadow absolute bottom-[2%] left-1/2 h-[7%] w-[56%] -translate-x-1/2 rounded-[50%] ${anim === "hop" || anim === "float" ? "pet-shadow-pulse" : ""}`} />
-      <img src={castSrc(id)} alt="" width={size} height={size} draggable={false} loading="lazy"
+      <img src={src ?? castSrc(id)} alt="" width={size} height={size} draggable={false} loading="lazy"
         className={`relative block h-full w-full select-none object-contain ${anim === "none" ? "" : `pet-${anim}`}`} />
     </span>
   );

@@ -1,5 +1,6 @@
 // Perfil do aluno (nome, idade, meta) e avatar personalizado — salvos no aparelho.
 import { useEffect, useState } from "react";
+import type { HeroTint } from "./heroTint";
 
 export interface AvatarConfig {
   skin: string; eyes: "zoiudo" | "feliz" | "estrela" | "piscando"; eyeColor: string;
@@ -10,6 +11,8 @@ export interface AvatarConfig {
   accessory: "nenhum" | "oculos" | "bone" | "laco" | "fones" | "visor" | "goggles" | "capacete" | "mascara";
   /** Herói 3D escolhido (substitui o desenho quando diferente de "nenhum"). */
   hero: HeroId;
+  /** Cores escolhidas para o herói 3D (traje, cabelo, olhos, pele); vazio = cores originais. */
+  heroTint: HeroTint;
 }
 export type SuitId = "traje-nova" | "traje-tita" | "traje-raio" | "traje-fenix" | "traje-astra" | "traje-onda";
 export type HeroId = "nenhum" | "nova" | "tita" | "raio" | "fenix" | "astra" | "onda";
@@ -25,7 +28,7 @@ export interface Student { name: string; age: string; goal: number; avatar: Avat
 
 export const DEFAULT_AVATAR: AvatarConfig = {
   skin: "#E8B48A", eyes: "zoiudo", eyeColor: "#1CB0F6", hair: "curto", hairColor: "#4A2C1A",
-  mustache: "nenhum", outfit: "camiseta", outfitColor: "#58CC02", costume: "nenhuma", accessory: "nenhum", hero: "nenhum",
+  mustache: "nenhum", outfit: "camiseta", outfitColor: "#58CC02", costume: "nenhuma", accessory: "nenhum", hero: "nenhum", heroTint: {},
 };
 const KEY = "fenixingles-student-v1";
 const empty: Student = { name: "", age: "", goal: 10, avatar: DEFAULT_AVATAR };

@@ -1,8 +1,7 @@
 // Cartão futurista do perfil: holograma, nível e barra de energia.
 import { Link } from "@tanstack/react-router";
 import { HEROES, type Student } from "@/lib/student";
-import { Avatar } from "./Avatar";
-import { Pet } from "./Pet";
+import { Avatar, HeroBody } from "./Avatar";
 
 export function HeroCard({ st, xp }: { st: Student; xp: number }) {
   const hero = HEROES.find((h) => h.id === st.avatar.hero);
@@ -16,7 +15,7 @@ export function HeroCard({ st, xp }: { st: Student; xp: number }) {
         <div className="relative flex h-[170px] w-[150px] shrink-0 items-end justify-center">
           <span aria-hidden className="hero-ring absolute bottom-1 left-1/2 h-8 w-36 -translate-x-1/2 rounded-[50%]" />
           <span aria-hidden className="hero-beam absolute bottom-4 left-1/2 h-36 w-28 -translate-x-1/2" />
-          {hero ? <Pet id={`heroi-${hero.id}`} size={160} anim="float" className="relative" /> : <Avatar a={st.avatar} size={120} className="relative mb-6" />}
+          {hero ? <HeroBody hero={hero} tint={st.avatar.heroTint} size={160} className="relative" /> : <Avatar a={st.avatar} size={120} className="relative mb-6" />}
         </div>
         <div className="min-w-0 flex-1">
           <p className="font-mono text-[11px] uppercase tracking-[.2em] text-white/60">Agente FenixInglês</p>

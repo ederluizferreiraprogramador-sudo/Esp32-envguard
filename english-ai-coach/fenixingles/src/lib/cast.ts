@@ -26,9 +26,11 @@ export type PetId = "charlotte" | "mingau" | "luna" | "uni" | "uni-danca" | "cap
 export type ArtId = CastId | PetId;
 
 /** Base dos arquivos de imagem: "/characters/" no app; a versão de teste define window.__FX_ASSETS__. */
+export function assetBase() {
+  return (typeof window !== "undefined" && (window as unknown as { __FX_ASSETS__?: string }).__FX_ASSETS__) || "/characters/";
+}
 export function castSrc(id: ArtId) {
-  const base = (typeof window !== "undefined" && (window as unknown as { __FX_ASSETS__?: string }).__FX_ASSETS__) || "/characters/";
-  return `${base}${id}.webp`;
+  return `${assetBase()}${id}.webp`;
 }
 
 /** Personagem que acompanha cada unidade na trilha (ordem do livro). */
