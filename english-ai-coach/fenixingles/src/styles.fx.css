@@ -1,0 +1,88 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@theme inline {
+  --radius-lg: var(--radius); --radius-xl: calc(var(--radius) + 4px); --radius-2xl: calc(var(--radius) + 8px);
+  --color-background: var(--background); --color-foreground: var(--foreground);
+  --color-primary: var(--primary); --color-primary-foreground: var(--primary-foreground);
+  --color-muted-foreground: var(--muted-foreground); --color-border: var(--border);
+}
+@layer base { * { border-color: var(--color-border); } body { background-color: var(--color-background); color: var(--color-foreground); } }
+
+:root {
+  /* Paleta "planeta" do FenixInglês: lavanda, turquesa, rosa, moeda dourada e tinta escura */
+  --fx-ink: #1b1530;
+  --fx-green: #3ccf6e; --fx-green-dark: #1f9e4c; --fx-green-light: #d9fbe5;
+  --fx-blue: #9b6bff; --fx-blue-dark: #6a3fe6; --fx-blue-light: #efe6ff;
+  --fx-teal: #36e0c4; --fx-teal-dark: #13a892;
+  --fx-pink: #ff6fd0; --fx-pink-dark: #d93fa8;
+  --fx-red: #ff5a6e; --fx-red-dark: #e0344b; --fx-red-light: #ffe0e5;
+  --fx-yellow: #ffc93c; --fx-yellow-dark: #e5a500;
+  --fx-orange: #ff9a3c; --fx-gray: #e6e0f2; --fx-gray-dark: #a99fc2;
+  --fx-text: #2a2340;
+  --background: #fbf8ff; --foreground: var(--fx-text);
+  --primary: var(--fx-blue); --primary-foreground: #ffffff;
+  --border: var(--fx-gray); --muted-foreground: #6f6688;
+  --radius: 1rem;
+  color-scheme: light;
+}
+@theme inline {
+  --font-sans: "Nunito", system-ui, sans-serif;
+  --font-display: "Fredoka", "Nunito", system-ui, sans-serif;
+  --color-fx-ink: var(--fx-ink);
+  --color-fx-green: var(--fx-green); --color-fx-green-dark: var(--fx-green-dark); --color-fx-green-light: var(--fx-green-light);
+  --color-fx-blue: var(--fx-blue); --color-fx-blue-dark: var(--fx-blue-dark); --color-fx-blue-light: var(--fx-blue-light);
+  --color-fx-teal: var(--fx-teal); --color-fx-teal-dark: var(--fx-teal-dark);
+  --color-fx-pink: var(--fx-pink); --color-fx-pink-dark: var(--fx-pink-dark);
+  --color-fx-red: var(--fx-red); --color-fx-red-dark: var(--fx-red-dark); --color-fx-red-light: var(--fx-red-light);
+  --color-fx-yellow: var(--fx-yellow); --color-fx-orange: var(--fx-orange);
+  --color-fx-gray: var(--fx-gray); --color-fx-gray-dark: var(--fx-gray-dark); --color-fx-text: var(--fx-text);
+}
+body { font-family: var(--font-sans); font-weight: 700; -webkit-tap-highlight-color: transparent;
+  background: linear-gradient(180deg, #f6f0ff 0%, #fff7ef 100%) fixed; }
+h1, h2, .font-display { font-family: var(--font-display); letter-spacing: .01em; }
+
+/* Botões no estilo desenho animado: contorno escuro e sombra deslocada */
+@utility btn3d {
+  display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+  border-radius: 1.1rem; padding: .8rem 1.2rem; font-weight: 800; font-family: var(--font-display);
+  letter-spacing: .02em; border: 3px solid var(--fx-ink);
+  transition: transform .08s, box-shadow .08s, filter .15s;
+  box-shadow: 0 5px 0 var(--fx-ink);
+  &:active:not(:disabled) { transform: translateY(5px); box-shadow: 0 0 0 var(--fx-ink); }
+  &:hover:not(:disabled) { filter: brightness(1.06); }
+  &:disabled { background: var(--fx-gray); color: var(--fx-gray-dark); border-color: var(--fx-gray-dark); box-shadow: 0 5px 0 var(--fx-gray-dark); cursor: not-allowed; }
+}
+@utility btn-green { background: var(--fx-green); color: var(--fx-ink); }
+@utility btn-blue { background: var(--fx-blue); color: #fff; }
+@utility btn-purple { background: #a77bff; color: var(--fx-ink); }
+@utility btn-teal { background: var(--fx-teal); color: var(--fx-ink); }
+@utility btn-red { background: var(--fx-red); color: #fff; }
+@utility btn-outline { background: #fff; color: var(--fx-ink); }
+@utility tile {
+  background: #fff; border: 2.5px solid var(--fx-gray); border-radius: 1rem; padding: .7rem 1rem;
+  box-shadow: 0 3px 0 var(--fx-gray); font-weight: 700; transition: transform .08s, box-shadow .08s, background .15s;
+  &:active { transform: translateY(3px); box-shadow: none; }
+}
+@utility tile-selected { border-color: var(--fx-blue); background: var(--fx-blue-light); color: var(--fx-blue-dark); box-shadow: 0 3px 0 var(--fx-blue); }
+@utility tile-wrong { border-color: var(--fx-red); background: var(--fx-red-light); color: var(--fx-red-dark); box-shadow: 0 3px 0 var(--fx-red); }
+@utility tile-done { opacity: .35; pointer-events: none; }
+@utility pill { display: inline-flex; align-items: center; gap: .35rem; border: 3px solid var(--fx-ink); border-radius: 999px; padding: .15rem .7rem; background: #a77bff; color: var(--fx-ink); font-weight: 800; font-family: var(--font-display); }
+@utility card { background: #fff; border: 2.5px solid var(--fx-gray); border-radius: 1.5rem; }
+
+@keyframes fx-pulse { 0%,100% { box-shadow: 0 6px 0 var(--fx-ink), 0 0 0 0 color-mix(in srgb, var(--fx-teal) 60%, transparent); } 50% { box-shadow: 0 6px 0 var(--fx-ink), 0 0 0 14px transparent; } }
+@keyframes fx-pop { 0% { transform: scale(.6); opacity: 0 } 70% { transform: scale(1.08) } 100% { transform: scale(1); opacity: 1 } }
+@keyframes fx-up { from { transform: translateY(100%) } to { transform: translateY(0) } }
+@keyframes fx-bob { 0%,100% { transform: translateY(0) rotate(-3deg) } 50% { transform: translateY(-10px) rotate(3deg) } }
+@keyframes fx-float { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-12px) } }
+@keyframes fx-shake { 0%,100% { transform: translateX(0) } 25% { transform: translateX(-6px) } 75% { transform: translateX(6px) } }
+@keyframes fx-twinkle { 0%,100% { opacity: .25 } 50% { opacity: 1 } }
+@utility anim-pulse-node { animation: fx-pulse 1.8s infinite; }
+@utility anim-pop { animation: fx-pop .35s ease-out both; }
+@utility anim-up { animation: fx-up .25s ease-out both; }
+@utility anim-bob { animation: fx-bob 1.6s ease-in-out infinite; }
+@utility anim-float { animation: fx-float 2.4s ease-in-out infinite; }
+@utility anim-shake { animation: fx-shake .3s; }
+@utility anim-twinkle { animation: fx-twinkle 2s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .anim-pulse-node, .anim-pop, .anim-up, .anim-bob, .anim-float, .anim-shake, .anim-twinkle { animation: none } }

@@ -7,30 +7,39 @@ import { CastImage } from "./CastImage";
 export function TopBar({ p }: { p: Progress }) {
   const [s] = useStudent();
   return (
-    <header className="sticky top-0 z-20 border-b-2 border-fx-gray bg-background">
-      <div className="mx-auto flex max-w-lg items-center justify-between gap-2 px-4 py-2">
-        <Link to="/" className="flex items-center gap-1.5 text-xl font-extrabold text-fx-orange">
-          <CastImage id="fenix-selo" size={36} alt="" />FenixInglês
+    <header className="sticky top-0 z-20 border-b-3 border-fx-ink bg-[#2a2340] text-white">
+      <div className="mx-auto flex max-w-lg items-center justify-between gap-2 px-3 py-2">
+        <Link to="/" className="flex items-center gap-1.5 font-display text-xl">
+          <CastImage id="fenix-selo" size={38} alt="" />FenixInglês
         </Link>
-        <div className="flex items-center gap-3 text-base font-extrabold">
-          <span className="text-fx-orange" title="Sequência de dias">🔥 {p.streak}</span>
-          <span className="text-fx-blue" title="XP total">💎 {p.xp}</span>
-          <span className="text-fx-red" title="Vidas">❤️ {p.hearts}</span>
-          <Link to="/profile" aria-label="Perfil"><Avatar a={s.avatar} size={36} /></Link>
+        <div className="flex items-center gap-2 text-sm font-extrabold">
+          <span className="rounded-full bg-white/10 px-2 py-1" title="Sequência de dias">🔥 {p.streak}</span>
+          <span className="rounded-full bg-white/10 px-2 py-1" title="Vidas">❤️ {p.hearts}</span>
+          <span className="pill" title="Moedas (XP)">{p.xp} <span aria-hidden>🪙</span></span>
+          <Link to="/profile" aria-label="Perfil" className="rounded-full border-2 border-fx-teal"><Avatar a={s.avatar} size={34} /></Link>
         </div>
       </div>
     </header>
   );
 }
 
-export function BottomNav({ active }: { active: "trail" | "profile" }) {
-  const cls = (a: boolean) => `flex flex-1 flex-col items-center gap-0.5 rounded-xl py-2 text-xs font-extrabold ${a ? "bg-fx-blue-light text-fx-blue-dark" : "text-fx-gray-dark"}`;
+type Tab = "trail" | "casa" | "turma" | "profile";
+export function BottomNav({ active }: { active: Tab }) {
+  const items: { to: string; tab: Tab | "chat"; icon: string; label: string }[] = [
+    { to: "/", tab: "trail", icon: "🗺️", label: "Trilha" },
+    { to: "/casa", tab: "casa", icon: "🏠", label: "Casa" },
+    { to: "/conversa", tab: "chat", icon: "💬", label: "Conversar" },
+    { to: "/turma", tab: "turma", icon: "🐾", label: "Turma" },
+    { to: "/profile", tab: "profile", icon: "👤", label: "Perfil" },
+  ];
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-20 border-t-2 border-fx-gray bg-background">
-      <div className="mx-auto flex max-w-lg gap-2 p-2">
-        <Link to="/" className={cls(active === "trail")}><span className="text-2xl">🏠</span>Trilha</Link>
-        <Link to="/avatar" className={cls(false)}><span className="text-2xl">🎨</span>Avatar</Link>
-        <Link to="/profile" className={cls(active === "profile")}><span className="text-2xl">👤</span>Perfil</Link>
+    <nav className="fixed inset-x-0 bottom-0 z-20 p-2" style={{ paddingBottom: "max(.5rem, env(safe-area-inset-bottom))" }}>
+      <div className="mx-auto flex max-w-lg gap-1 rounded-2xl border-3 border-fx-ink bg-[#a77bff] p-1.5 shadow-[0_5px_0_#1b1530]">
+        {items.map((it) => (
+          <Link key={it.to} to={it.to} className={`flex flex-1 flex-col items-center rounded-xl py-1.5 text-[11px] font-extrabold text-fx-ink ${active === it.tab ? "bg-fx-teal" : ""}`}>
+            <span className="text-xl">{it.icon}</span>{it.label}
+          </Link>
+        ))}
       </div>
     </nav>
   );

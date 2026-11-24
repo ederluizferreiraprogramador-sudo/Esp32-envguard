@@ -25,7 +25,8 @@ export const Route = createFileRoute("/")({
 
 const OFFSETS = [0, 56, 84, 56, 0, -56, -84, -56];
 const headerBg: Record<string, string> = {
-  green: "bg-fx-green btn-green", blue: "bg-fx-blue btn-blue", orange: "bg-fx-orange", red: "bg-fx-red btn-red",
+  green: "bg-gradient-to-r from-[#9b6bff] to-[#c39bff]", blue: "bg-gradient-to-r from-[#13a892] to-[#36e0c4]",
+  orange: "bg-gradient-to-r from-[#d93fa8] to-[#ff8bdc]", red: "bg-gradient-to-r from-[#ff7a2f] to-[#ffb35c]",
 };
 
 function Trail() {
@@ -47,7 +48,7 @@ function Trail() {
     <div className="min-h-screen pb-28">
       <TopBar p={p} />
       <main className="mx-auto max-w-lg px-4">
-        <section className="mt-5 flex items-center gap-3 rounded-2xl border-2 border-fx-gray p-3" aria-label="Boas-vindas da Charlotte">
+        <section className="card mt-5 flex items-center gap-3 p-3" aria-label="Boas-vindas da Charlotte">
           <div className="flex shrink-0 flex-col items-center gap-1"><Kitten name="charlotte" size={84} /><NameTag name="charlotte" /></div>
           <div className="min-w-0">
             <p className="font-extrabold">Oi{first ? `, ${first}` : ""}! Eu sou a Charlotte, sua professora de inglês. 🐾</p>
@@ -63,8 +64,9 @@ function Trail() {
           const nodes = soon ? [0, 1, 2] : u.lessons.map((_, i) => i);
           const unitDone = !soon && u.lessons.every((_, i) => p.completed.includes(lessonKey(u.id, i)));
           return (
-            <section key={u.id} className="mt-6">
-              <div className={`rounded-2xl p-4 text-primary-foreground ${soon ? "bg-fx-gray-dark" : headerBg[u.color]}`} style={{ boxShadow: "0 4px 0 rgb(0 0 0 / .15)" }}>
+            <section key={u.id} className="mt-10">
+              <div className={`relative rounded-2xl border-3 border-fx-ink p-4 pr-28 text-white ${soon ? "bg-fx-gray-dark" : headerBg[u.color]}`} style={{ boxShadow: "0 5px 0 #1b1530" }}>
+                <CastImage id={UNIT_BUDDY[(u.id - 1) % UNIT_BUDDY.length] ?? "fenix-exploradora"} size={112} className="anim-float pointer-events-none absolute -top-8 right-1 drop-shadow-[0_4px_0_rgba(27,21,48,.35)]" />
                 <div className="flex items-start justify-between gap-2">
                   <p className="text-sm font-extrabold uppercase opacity-90">Unidade {u.id}{soon && " · Em breve"}</p>
                   {unitDone && (
@@ -73,7 +75,7 @@ function Trail() {
                     </Link>
                   )}
                 </div>
-                <h2 className="text-xl font-extrabold">{u.title}</h2>
+                <h2 className="font-display text-2xl">{u.title}</h2>
               </div>
               <div className="relative flex flex-col items-center gap-5 py-8">
                 {nodes.map((i) => {
@@ -86,8 +88,8 @@ function Trail() {
                     <div className={`${base} bg-fx-gray text-fx-gray-dark`} style={{ boxShadow: "0 6px 0 var(--fx-gray-dark)" }}>🔒</div>
                   ) : (
                     <Link to="/lesson/$unitId/$lessonId" params={{ unitId: String(u.id), lessonId: String(i) }}
-                      className={`${base} ${isCur ? "bg-fx-green anim-pulse-node" : "bg-fx-yellow"}`}
-                      style={isCur ? undefined : { boxShadow: "0 6px 0 var(--fx-yellow-dark)" }}
+                      className={`${base} border-3 border-fx-ink ${isCur ? "bg-fx-teal anim-pulse-node" : "bg-fx-yellow"}`}
+                      style={isCur ? undefined : { boxShadow: "0 6px 0 #1b1530" }}
                       aria-label={`Lição ${i + 1}: ${u.lessons[i]?.title}`}>
                       {done ? "👑" : "⭐"}
                     </Link>
@@ -100,7 +102,7 @@ function Trail() {
                     </div>
                   );
                 })}
-                <CastImage id={UNIT_BUDDY[(u.id - 1) % UNIT_BUDDY.length]!} size={104} className={`absolute ${u.id % 2 === 0 ? "left-0" : "right-0"} top-12 ${u.id % 3 === 0 ? "anim-bob" : ""}`} />
+
               </div>
             </section>
           );

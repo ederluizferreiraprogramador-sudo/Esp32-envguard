@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { Kitten } from "@/components/Kittens";
-import { Avatar } from "@/components/Avatar";
+import { Scene, type SceneName } from "@/components/Scene";
 import { units } from "@/data/units";
 import { lessonKey, useProgress } from "@/lib/progress";
 import { useStudent } from "@/lib/student";
@@ -53,7 +53,7 @@ function Chat() {
     });
     return () => offs.forEach((f) => f());
   }, []);
-  useEffect(() => { listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: "smooth" }); }, [turns, busy]);
+  useEffect(() => { listRef.current?.scrollTo({ top: listRef.current.scrollHeight }); });
 
   const send = async (msg: string) => {
     const m = msg.trim();
@@ -80,60 +80,77 @@ function Chat() {
     d.start({ language: "en" }).catch(() => setMic("idle"));
   };
 
-  return (
-    <div className="mx-auto flex h-[100dvh] max-w-lg flex-col">
-      <header className="flex items-center gap-3 border-b-2 border-fx-gray px-4 py-2">
-        <Link to="/" aria-label="Voltar" className="text-3xl font-extrabold text-fx-gray-dark">✕</Link>
-        <Kitten name="charlotte" size={52} animated={busy} />
-        <div className="min-w-0 flex-1">
-          <h1 className="font-extrabold">Charlotte</h1>
-          <p className="text-xs text-muted-foreground">
-            {busy ? "digitando…" : ai === "on" ? "🟢 Conversa com IA" : ai === "off" ? "Conversa guiada" : "conectando…"} · Unidade {cur.id}
-          </p>
-        </div>
-      </header>
+  const lastIdx = turns.map((t) => t.from).lastIndexOf("charlotte");
+  const last = turns[lastIdx];
+  const scenes: SceneName[] = ["espaco", "campo", "quarto"];
+  const scene = scenes[Math.floor(turns.length / 4) % scenes.length] ?? "espaco";
+  const [log, setLog] = useState(false);
+  const [kbd, setKbd] = useState(false);
 
-      <div ref={listRef} className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
-        {turns.map((t, i) => t.from === "charlotte" ? (
-          <div key={i} className="flex items-end gap-2">
-            <Kitten name="charlotte" size={40} animated={false} className="shrink-0" />
-            <div className="min-w-0 max-w-[80%] rounded-2xl rounded-bl-sm border-2 border-fx-gray bg-white p-3">
-              <p className="text-lg">{t.en}</p>
-              <div className="mt-1 flex flex-wrap items-center gap-3 text-sm">
-                <button className="font-extrabold text-fx-blue-dark" onClick={() => speak(t.en)}>🔊 Ouvir</button>
-                <button className="font-extrabold text-fx-blue-dark" onClick={() => speak(t.en, true)}>🐢 Devagar</button>
-                {t.pt && <button className="font-extrabold text-muted-foreground" onClick={() => setShowPt((s) => ({ ...s, [i]: !s[i] }))}>🇧🇷 {showPt[i] ? "Esconder" : "Tradução"}</button>}
-              </div>
-              {showPt[i] && t.pt && <p className="mt-1 text-sm text-muted-foreground">{t.pt}</p>}
-              {t.tip && <p className="mt-2 rounded-xl bg-fx-yellow/30 p-2 text-sm">💡 {t.tip}</p>}
-            </div>
-          </div>
-        ) : (
-          <div key={i} className="flex items-end justify-end gap-2">
-            <div className="min-w-0 max-w-[80%] rounded-2xl rounded-br-sm bg-fx-blue p-3 text-lg text-white">{t.en}</div>
-            <Avatar a={st.avatar} size={36} className="shrink-0" />
-          </div>
-        ))}
-        {busy && <p className="pl-12 text-sm text-muted-foreground">Charlotte está pensando… 🐾</p>}
+  return (
+    <div className="flex h-[100dvh] flex-col bg-[#2a2340] p-2 text-white sm:p-4">
+      <div className="mx-auto flex w-full max-w-3xl items-center gap-2">
+        <Link to="/" aria-label="Voltar" className="btn3d btn-purple h-11 w-11 p-0 text-2xl">‹</Link>
+        <div className="min-w-0 flex-1">
+          <p className="font-display text-lg leading-tight">Charlotte</p>
+          <p className="text-xs text-white/70">{busy ? "pensando…" : ai === "on" ? "conversa com IA" : ai === "off" ? "conversa guiada" : "conectando…"} · Unidade {cur?.id}</p>
+        </div>
+        <span className="pill text-base" title="Moedas (XP)">{p.xp} <span aria-hidden>🪙</span></span>
+        <button onClick={() => setLog((v) => !v)} aria-label="Ver conversa escrita" className="btn3d h-11 w-11 bg-fx-pink p-0 text-xl">💬</button>
       </div>
 
-      <div className="border-t-2 border-fx-gray p-3">
-        {sugg.length > 0 && (
-          <div className="mb-2 flex gap-2 overflow-x-auto pb-1">
-            {sugg.map((s) => <button key={s} onClick={() => send(s)} disabled={busy} className="tile shrink-0 text-sm">{s}</button>)}
+      <div className="relative mx-auto mt-2 w-full max-w-3xl flex-1 overflow-hidden rounded-[2rem] border-4 border-[#4a3f6b]">
+        <Scene name={scene} className="absolute inset-0 h-full w-full" />
+        <div className="absolute inset-x-0 bottom-[6%] flex justify-center">
+          <div className={busy ? "anim-bob" : "anim-float"}><Kitten name="charlotte" size={200} animated={busy} /></div>
+        </div>
+        {log && (
+          <div ref={listRef} className="absolute inset-0 space-y-2 overflow-y-auto bg-[#1b1530]/92 p-4">
+            <p className="font-display text-lg">Conversa escrita</p>
+            {turns.map((t, i) => (
+              <p key={i} className={`max-w-[85%] rounded-2xl p-2 ${t.from === "charlotte" ? "bg-white/10" : "ml-auto bg-fx-blue text-right"}`}>
+                <span className="block text-xs text-white/60">{t.from === "charlotte" ? "Charlotte" : first || "Você"}</span>{t.en}
+              </p>
+            ))}
           </div>
         )}
-        {partial && <p className="mb-1 text-sm italic text-muted-foreground">{partial}…</p>}
-        <form className="flex items-center gap-2" onSubmit={(e) => { e.preventDefault(); void send(text); }}>
+      </div>
+
+      {last && (
+          <div className="mx-auto mt-2 w-full max-w-3xl rounded-2xl border-3 border-[#4a3f6b] bg-[#1b1530] p-3">
+            <p className="font-display text-xl leading-snug">{last.en}</p>
+            <div className="mt-1 flex flex-wrap items-center gap-3 text-sm">
+              <button className="font-extrabold text-fx-teal" onClick={() => speak(last.en)}>🔊 Ouvir</button>
+              <button className="font-extrabold text-fx-teal" onClick={() => speak(last.en, true)}>🐢 Devagar</button>
+              {last.pt && <button className="font-extrabold text-white/80" onClick={() => setShowPt((s) => ({ ...s, [lastIdx]: !s[lastIdx] }))}>🇧🇷 {showPt[lastIdx] ? "Esconder" : "Tradução"}</button>}
+            </div>
+            {showPt[lastIdx] && last.pt && <p className="mt-1 text-sm text-white/80">{last.pt}</p>}
+            {last.tip && <p className="mt-2 rounded-xl bg-fx-yellow/90 p-2 text-sm text-fx-ink">💡 {last.tip}</p>}
+          </div>
+        )}
+      <div className="mx-auto mt-2 w-full max-w-3xl">
+        {sugg.length > 0 && (
+          <div className="mb-2 flex gap-2 overflow-x-auto pb-1">
+            {sugg.map((s) => <button key={s} onClick={() => send(s)} disabled={busy} className="shrink-0 rounded-2xl border-2 border-white/30 bg-white/10 px-3 py-2 text-sm font-extrabold">{s}</button>)}
+          </div>
+        )}
+        {partial && <p className="mb-1 text-sm italic text-white/70">{partial}…</p>}
+        <div className="flex items-end gap-2">
+          {(kbd || mic === "none") ? (
+            <form className="flex min-w-0 flex-1 items-center gap-2" onSubmit={(e) => { e.preventDefault(); void send(text); }}>
+              <label htmlFor="fx-chat" className="sr-only">Sua mensagem em inglês</label>
+              <input id="fx-chat" value={text} onChange={(e) => setText(e.target.value)} placeholder="Write in English…" autoComplete="off"
+                className="min-w-0 flex-1 rounded-2xl border-3 border-[#4a3f6b] bg-white p-3 text-lg text-fx-ink outline-none focus:border-fx-teal" />
+              <button type="submit" disabled={!text.trim() || busy} className="btn3d btn-teal h-12 shrink-0 px-4">Enviar</button>
+            </form>
+          ) : (
+            <button onClick={() => setKbd(true)} className="btn3d h-12 flex-1 bg-white/90 text-fx-ink">⌨️ Escrever</button>
+          )}
           {mic !== "none" && (
             <button type="button" onClick={toggleMic} aria-label={mic === "listening" ? "Parar de ouvir" : "Falar"}
-              className={`btn3d h-12 w-12 shrink-0 p-0 text-xl ${mic === "listening" ? "btn-red" : "btn-blue"}`}>{mic === "listening" ? "⏹" : "🎤"}</button>
+              className={`h-20 w-20 shrink-0 rounded-full border-4 border-[#1b1530] text-4xl shadow-[0_6px_0_#1b1530] ${mic === "listening" ? "bg-fx-red anim-pulse-node" : "bg-gradient-to-br from-fx-teal to-fx-blue"}`}>{mic === "listening" ? "⏹" : "🎤"}</button>
           )}
-          <label htmlFor="fx-chat" className="sr-only">Sua mensagem em inglês</label>
-          <input id="fx-chat" value={text} onChange={(e) => setText(e.target.value)} placeholder="Write in English…" autoComplete="off"
-            className="min-w-0 flex-1 rounded-2xl border-2 border-fx-gray bg-fx-gray/30 p-3 text-lg outline-none focus:border-fx-blue" />
-          <button type="submit" disabled={!text.trim() || busy} className="btn3d btn-green h-12 shrink-0 px-4">Enviar</button>
-        </form>
+        </div>
       </div>
     </div>
   );
