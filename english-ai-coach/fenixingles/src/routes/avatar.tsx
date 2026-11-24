@@ -38,10 +38,10 @@ function Swatches({ colors, value, onPick }: { colors: string[]; value: string; 
 function AvatarEditor() {
   const [s] = useStudent();
   const [draft, setDraft] = useState<AvatarConfig | null>(null);
-  const [tab, setTab] = useState<Tab>("heroi");
+  const [tab, setTab] = useState<Tab>(() => (s.avatar.hero !== "nenhum" ? "heroi" : "cabelo"));
   const [saved, setSaved] = useState(false);
   const a = draft ?? s.avatar;
-  const set = (p: Partial<AvatarConfig>) => { setDraft({ ...a, ...p }); setSaved(false); };
+  const set = (p: Partial<AvatarConfig>) => { setDraft({ ...a, ...("hero" in p ? {} : { hero: "nenhum" as const }), ...p }); setSaved(false); };
   const opts = <T extends string>(list: [T, string][], key: keyof AvatarConfig) => (
     <div className="flex flex-wrap gap-2">{list.map(([v, l]) => <Chip key={v} on={a[key] === v} onClick={() => set({ [key]: v } as Partial<AvatarConfig>)}>{l}</Chip>)}</div>
   );
@@ -73,15 +73,25 @@ function AvatarEditor() {
             ))}
           </div>
           <button className={`tile text-sm ${a.hero === "nenhum" ? "tile-selected" : ""}`} onClick={() => set({ hero: "nenhum" })}>🎨 Meu desenho</button>
+          <h3 className="mt-2 font-extrabold">👕 Vestir o traje no meu desenho</h3>
+          <p className="text-sm text-muted-foreground">Seu desenho (cabelo, olhos, pele) com a roupa de um herói.</p>
+          <div className="flex flex-wrap gap-2">
+            {HEROES.map((h) => (
+              <Chip key={h.id} on={a.hero === "nenhum" && a.outfit === h.wear.outfit} onClick={() => set({ hero: "nenhum", ...h.wear, costume: "nenhuma" })}>
+                <span className="inline-block h-3 w-3 rounded-full align-middle" style={{ background: h.color }} /> {h.name}
+              </Chip>
+            ))}
+          </div>
         </>}
-        {tab !== "heroi" && a.hero !== "nenhum" && <p className="text-sm font-bold text-fx-blue-dark">Você está usando um herói. As opções abaixo mudam o seu desenho — toque em “Meu desenho” na aba Herói para usá-lo.</p>}
         {tab === "pele" && <Swatches colors={SKINS} value={a.skin} onPick={(skin) => set({ skin })} />}
         {tab === "olhos" && <>{opts([["zoiudo", "Zoiudos"], ["feliz", "Felizes"], ["estrela", "Estrelas"], ["piscando", "Piscadinha"]], "eyes")}<Swatches colors={EYE_COLORS} value={a.eyeColor} onPick={(eyeColor) => set({ eyeColor })} /></>}
         {tab === "cabelo" && <>{opts([["curto", "Curto"], ["longo", "Longo"], ["cacheado", "Cacheado"], ["rabo", "Rabo de cavalo"], ["moicano", "Moicano"], ["careca", "Careca"]], "hair")}<Swatches colors={HAIR_COLORS} value={a.hairColor} onPick={(hairColor) => set({ hairColor })} /></>}
         {tab === "bigode" && opts([["nenhum", "Sem bigode"], ["classico", "Clássico"], ["enrolado", "Enrolado"], ["fino", "Fininho"]], "mustache")}
-        {tab === "roupa" && <>{opts([["camiseta", "Camiseta"], ["moletom", "Moletom"], ["vestido", "Vestido"], ["jaqueta", "Jaqueta"]], "outfit")}<Swatches colors={OUTFIT_COLORS} value={a.outfitColor} onPick={(outfitColor) => set({ outfitColor })} /></>}
+        {tab === "roupa" && <>{opts([["camiseta", "Camiseta"], ["moletom", "Moletom"], ["vestido", "Vestido"], ["jaqueta", "Jaqueta"]], "outfit")}<Swatches colors={OUTFIT_COLORS} value={a.outfitColor} onPick={(outfitColor) => set({ outfitColor, ...(a.outfit.startsWith("traje-") ? { outfit: "camiseta" as const } : {}) })} />
+          <h3 className="font-extrabold">🦸 Trajes de herói</h3>
+          {opts([["traje-nova", "Nova Tech"], ["traje-tita", "Titã"], ["traje-raio", "Raio (capa)"], ["traje-fenix", "Fênix (asas)"], ["traje-astra", "Astra"], ["traje-onda", "Onda"]], "outfit")}</>}
         {tab === "fantasia" && opts([["nenhuma", "Sem fantasia"], ["dino", "🦖 Dino"], ["gatinho", "🐱 Gatinho"], ["unicornio", "🦄 Unicórnio"], ["fenix", "🔥 Fênix"]], "costume")}
-        {tab === "acessorio" && opts([["nenhum", "Nenhum"], ["oculos", "Óculos"], ["bone", "Boné"], ["laco", "Laço"], ["fones", "Fones"]], "accessory")}
+        {tab === "acessorio" && opts([["nenhum", "Nenhum"], ["oculos", "Óculos"], ["bone", "Boné"], ["laco", "Laço"], ["fones", "Fones"], ["visor", "Visor (Nova)"], ["goggles", "Óculos de voo (Raio)"], ["capacete", "Capacete (Astra)"], ["mascara", "Máscara (Onda)"]], "accessory")}
       </section>
       <div className="flex gap-3">
         <button className="btn3d btn-outline flex-1" onClick={() => { setDraft(DEFAULT_AVATAR); setSaved(false); }}>Recomeçar</button>

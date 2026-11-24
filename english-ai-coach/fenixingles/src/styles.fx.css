@@ -110,3 +110,4 @@ h1, h2, .font-display { font-family: var(--font-display); letter-spacing: .01em;
 @keyframes hero-scan { from { background-position: 0 0 } to { background-position: 0 44px } }
 @keyframes hero-ring { 0%,100% { transform: translateX(-50%) scale(1); opacity: 1 } 50% { transform: translateX(-50%) scale(1.12); opacity: .6 } }
 @media (prefers-reduced-motion: reduce) { .hero-grid, .hero-ring { animation: none } }
+.avatar-glow { filter: drop-shadow(0 0 4px #7ff5ff) }

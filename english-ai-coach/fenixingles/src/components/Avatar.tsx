@@ -45,7 +45,48 @@ function Mustache({ a }: { a: AvatarConfig }) {
   }
 }
 
+
+const BODY = "M40 200 C42 164 66 148 100 148 C134 148 158 164 160 200 Z";
+/** Trajes dos heróis 3D desenhados no avatar (dá para misturar com cabelo, olhos etc.). */
+function Suit({ outfit }: { outfit: string }) {
+  switch (outfit) {
+    case "traje-nova": return <g><path d={BODY} fill="#F4F7FA" stroke="#2B3A44" strokeWidth="3" />
+      <path d="M70 152 L86 200 M130 152 L114 200" stroke="#2B3A44" strokeWidth="6" opacity=".8" />
+      <ellipse cx="56" cy="172" rx="16" ry="12" fill="#2BB5A8" stroke="#1B7F76" strokeWidth="3" /><ellipse cx="144" cy="172" rx="16" ry="12" fill="#2BB5A8" stroke="#1B7F76" strokeWidth="3" />
+      <path d="M100 166 l10 6 v12 l-10 6 l-10 -6 v-12 Z" fill="#7FF5FF" stroke="#36E0C4" strokeWidth="3" className="avatar-glow" /></g>;
+    case "traje-tita": return <g><path d={BODY} fill="#1F2A6B" stroke="#121848" strokeWidth="3" />
+      <path d="M66 156 C80 150 120 150 134 156 L118 200 L82 200 Z" fill="#FF7A45" stroke="#C94D1E" strokeWidth="3" />
+      <ellipse cx="52" cy="176" rx="18" ry="14" fill="#FF7A45" stroke="#C94D1E" strokeWidth="3" /><ellipse cx="148" cy="176" rx="18" ry="14" fill="#FF7A45" stroke="#C94D1E" strokeWidth="3" />
+      <path d="M100 160 l5 10 11 1 -8 7 3 11 -11 -6 -11 6 3 -11 -8 -7 11 -1 Z" fill="#FFD43B" stroke="#1F2A6B" strokeWidth="2" /></g>;
+    case "traje-raio": return <g><path d={BODY} fill="#6B3FC9" stroke="#3E1F8A" strokeWidth="3" />
+      <path d="M78 150 Q100 166 122 150" stroke="#D7D9E6" strokeWidth="6" fill="none" />
+      <path d="M58 168 L74 200 M142 168 L126 200" stroke="#D7D9E6" strokeWidth="5" />
+      <path d="M104 162 L92 180 H101 L96 196 L110 174 H101 Z" fill="#FFD43B" stroke="#E0A800" strokeWidth="1.5" /></g>;
+    case "traje-fenix": return <g><path d={BODY} fill="#D9341E" stroke="#8E1E0F" strokeWidth="3" />
+      <path d="M66 156 L100 182 L134 156" stroke="#FFB020" strokeWidth="6" fill="none" strokeLinejoin="round" />
+      <path d="M100 168 C108 176 112 184 106 194 C104 188 100 186 100 186 C100 186 96 188 94 194 C88 184 92 176 100 168 Z" fill="#FFD43B" stroke="#E07A00" strokeWidth="2" /></g>;
+    case "traje-astra": return <g><path d={BODY} fill="#FBF7FC" stroke="#B9A9C6" strokeWidth="3" />
+      <ellipse cx="56" cy="174" rx="14" ry="11" fill="#FF6FD0" /><ellipse cx="144" cy="174" rx="14" ry="11" fill="#FF6FD0" />
+      <rect x="60" y="188" width="80" height="8" rx="4" fill="#FF6FD0" opacity=".85" />
+      <circle cx="100" cy="172" r="8" fill="#B07CFF" /><ellipse cx="100" cy="172" rx="14" ry="4" fill="none" stroke="#FF6FD0" strokeWidth="2.5" /></g>;
+    case "traje-onda": return <g><path d={BODY} fill="#1E5FD6" stroke="#123E91" strokeWidth="3" />
+      <path d="M46 186 C60 176 70 196 84 186 M116 186 C130 176 140 196 154 186 M60 166 C70 158 78 172 88 164 M112 164 C122 172 130 158 140 166" stroke="#7FE3FF" strokeWidth="5" fill="none" strokeLinecap="round" />
+      <circle cx="100" cy="176" r="11" fill="#7FE3FF" /><path d="M92 178 C94 168 106 166 108 174 C104 172 100 174 100 180" stroke="#1E5FD6" strokeWidth="3" fill="none" /></g>;
+    default: return null;
+  }
+}
+/** Capa (Raio) e asas (Fênix) ficam atrás do corpo. */
+function SuitBack({ outfit }: { outfit: string }) {
+  if (outfit === "traje-raio") return <path d="M14 200 L62 150 L138 150 L186 200 Z" fill="#B79CFF" stroke="#7D5BD6" strokeWidth="3" />;
+  if (outfit === "traje-fenix") return <g fill="#FFB020" stroke="#E0600A" strokeWidth="2.5" strokeLinejoin="round">
+    <path d="M74 158 C40 150 14 118 10 80 C26 104 40 112 54 116 C38 100 30 82 32 62 C46 90 64 104 84 150 Z" />
+    <path d="M126 158 C160 150 186 118 190 80 C174 104 160 112 146 116 C162 100 170 82 168 62 C154 90 136 104 116 150 Z" />
+    <path d="M70 150 C48 140 34 124 30 104 C44 120 58 128 72 132 Z M130 150 C152 140 166 124 170 104 C156 120 142 128 128 132 Z" fill="#FFE27A" /></g>;
+  return null;
+}
+
 function Outfit({ a }: { a: AvatarConfig }) {
+  if (a.outfit.startsWith("traje-")) return <Suit outfit={a.outfit} />;
   const c = a.outfitColor, d = darker(c);
   switch (a.outfit) {
     case "moletom": return <g><path d="M38 200 C40 162 64 146 100 146 C136 146 160 162 162 200 Z" fill={c} stroke={d} strokeWidth="3" /><path d="M76 150 C84 166 116 166 124 150" stroke={d} strokeWidth="5" fill="none" /><rect x="80" y="178" width="40" height="18" rx="6" fill={d} opacity=".5" /></g>;
@@ -84,6 +125,16 @@ function Accessory({ a }: { a: AvatarConfig }) {
     case "oculos": return <g fill="none" stroke="#2B2B3A" strokeWidth="4"><circle cx="80" cy="96" r="17" /><circle cx="120" cy="96" r="17" /><path d="M97 96 H103 M63 94 L50 90 M137 94 L150 90" /></g>;
     case "bone": return <g><path d="M50 80 C50 44 150 44 150 80 Z" fill="#1CB0F6" stroke="#1899D6" strokeWidth="3" /><path d="M140 78 C160 76 176 82 178 90 L144 88 Z" fill="#1899D6" /><circle cx="100" cy="48" r="5" fill="#FFC800" /></g>;
     case "laco": return <g><path d="M130 52 L108 40 L110 66 Z M130 52 L152 40 L150 66 Z" fill="#FF4FA3" stroke="#C2307A" strokeWidth="2" /><circle cx="130" cy="53" r="7" fill="#FF86C8" stroke="#C2307A" strokeWidth="2" /></g>;
+    case "visor": return <g><path d="M48 98 C44 40 156 40 152 98" stroke="#F4F7FA" strokeWidth="10" fill="none" /><path d="M48 98 C44 40 156 40 152 98" stroke="#2BB5A8" strokeWidth="3" fill="none" />
+      <path d="M60 66 C80 50 120 50 140 66 L138 78 C120 66 80 66 62 78 Z" fill="#7FF5FF" stroke="#36E0C4" strokeWidth="3" opacity=".9" className="avatar-glow" />
+      <circle cx="48" cy="100" r="13" fill="#F4F7FA" stroke="#2BB5A8" strokeWidth="4" /><circle cx="152" cy="100" r="13" fill="#F4F7FA" stroke="#2BB5A8" strokeWidth="4" /></g>;
+    case "goggles": return <g><path d="M52 66 C70 56 130 56 148 66" stroke="#6B3FC9" strokeWidth="6" fill="none" />
+      <circle cx="82" cy="62" r="13" fill="#B79CFF" stroke="#D7D9E6" strokeWidth="4" /><circle cx="118" cy="62" r="13" fill="#B79CFF" stroke="#D7D9E6" strokeWidth="4" />
+      <circle cx="78" cy="58" r="4" fill="#fff" opacity=".8" /><circle cx="114" cy="58" r="4" fill="#fff" opacity=".8" /></g>;
+    case "capacete": return <g><circle cx="100" cy="94" r="66" fill="#CFE8FF" fillOpacity=".22" stroke="#E6F3FF" strokeWidth="5" />
+      <path d="M58 60 C70 42 88 36 104 36" stroke="#fff" strokeWidth="7" fill="none" strokeLinecap="round" opacity=".8" />
+      <rect x="62" y="150" width="76" height="10" rx="5" fill="#FF6FD0" /></g>;
+    case "mascara": return <path fillRule="evenodd" d="M50 84 C70 74 130 74 150 84 L148 108 C132 114 112 110 100 104 C88 110 68 114 52 108 Z M66 96 a14 14 0 1 0 28 0 a14 14 0 1 0 -28 0 Z M106 96 a14 14 0 1 0 28 0 a14 14 0 1 0 -28 0 Z" fill="#1E5FD6" stroke="#123E91" strokeWidth="2.5" />;
     case "fones": return <g><path d="M50 96 C48 40 152 40 150 96" stroke="#9C7BFF" strokeWidth="8" fill="none" /><rect x="38" y="86" width="18" height="30" rx="8" fill="#9C7BFF" /><rect x="144" y="86" width="18" height="30" rx="8" fill="#9C7BFF" /></g>;
     default: return null;
   }
@@ -110,6 +161,7 @@ export function Avatar({ a, size = 96, className = "" }: { a: AvatarConfig; size
       <defs><clipPath id="fx-av-circle"><circle cx="100" cy="100" r="100" /></clipPath></defs>
       <g clipPath="url(#fx-av-circle)">
         <circle cx="100" cy="100" r="100" fill="#DDF4FF" />
+        <SuitBack outfit={a.outfit} />
         {!hood && <Hair a={a} back />}
         <Outfit a={a} />
         <rect x="88" y="132" width="24" height="20" fill={a.skin} />

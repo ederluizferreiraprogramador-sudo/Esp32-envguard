@@ -6,7 +6,8 @@ import { Pet } from "./Pet";
 
 export function HeroCard({ st, xp }: { st: Student; xp: number }) {
   const hero = HEROES.find((h) => h.id === st.avatar.hero);
-  const color = hero?.color ?? "#36e0c4";
+  const suit = HEROES.find((h) => h.wear.outfit === st.avatar.outfit);
+  const color = (hero ?? suit)?.color ?? "#36e0c4";
   const level = Math.floor(xp / 100) + 1, pct = xp % 100;
   return (
     <section className="hero-card relative overflow-hidden rounded-3xl border-[3px] border-fx-ink p-4 text-white" style={{ ["--hero" as string]: color }}>
@@ -20,7 +21,7 @@ export function HeroCard({ st, xp }: { st: Student; xp: number }) {
         <div className="min-w-0 flex-1">
           <p className="font-mono text-[11px] uppercase tracking-[.2em] text-white/60">Agente FenixInglês</p>
           <h1 className="truncate text-2xl font-extrabold">{st.name || "Seu perfil"}</h1>
-          <p className="text-sm font-bold" style={{ color }}>{hero ? `${hero.name} · ${hero.power}` : "Escolha um herói!"}</p>
+          <p className="text-sm font-bold" style={{ color }}>{hero ? `${hero.name} · ${hero.power}` : suit ? `Traje ${suit.name} · ${suit.power}` : "Escolha um herói!"}</p>
           <p className="mt-2 text-xs font-bold text-white/70">Nível {level} · {st.age && `${st.age} · `}meta {st.goal} min/dia</p>
           <div className="mt-1 h-3 overflow-hidden rounded-full bg-white/15" role="progressbar" aria-label="Energia até o próximo nível" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100}>
             <div className="hero-bar h-full rounded-full" style={{ width: `${Math.max(6, pct)}%` }} />

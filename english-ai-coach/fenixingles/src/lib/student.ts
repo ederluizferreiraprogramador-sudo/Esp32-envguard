@@ -5,20 +5,21 @@ export interface AvatarConfig {
   skin: string; eyes: "zoiudo" | "feliz" | "estrela" | "piscando"; eyeColor: string;
   hair: "curto" | "longo" | "cacheado" | "rabo" | "moicano" | "careca"; hairColor: string;
   mustache: "nenhum" | "classico" | "enrolado" | "fino";
-  outfit: "camiseta" | "moletom" | "vestido" | "jaqueta"; outfitColor: string;
+  outfit: "camiseta" | "moletom" | "vestido" | "jaqueta" | SuitId; outfitColor: string;
   costume: "nenhuma" | "dino" | "gatinho" | "unicornio" | "fenix";
-  accessory: "nenhum" | "oculos" | "bone" | "laco" | "fones";
+  accessory: "nenhum" | "oculos" | "bone" | "laco" | "fones" | "visor" | "goggles" | "capacete" | "mascara";
   /** Herói 3D escolhido (substitui o desenho quando diferente de "nenhum"). */
   hero: HeroId;
 }
+export type SuitId = "traje-nova" | "traje-tita" | "traje-raio" | "traje-fenix" | "traje-astra" | "traje-onda";
 export type HeroId = "nenhum" | "nova" | "tita" | "raio" | "fenix" | "astra" | "onda";
-export const HEROES: { id: Exclude<HeroId, "nenhum">; name: string; power: string; color: string; face: [number, number] }[] = [
-  { id: "nova", name: "Nova Tech", power: "armadura robô", color: "#36e0c4", face: [0.49, 0.2] },
-  { id: "tita", name: "Titã", power: "super força", color: "#ff7a45", face: [0.49, 0.15] },
-  { id: "raio", name: "Raio", power: "energia elétrica", color: "#9b6bff", face: [0.52, 0.16] },
-  { id: "fenix", name: "Fênix", power: "asas de fogo", color: "#ffb020", face: [0.5, 0.15] },
-  { id: "astra", name: "Astra", power: "poder das estrelas", color: "#ff6fd0", face: [0.48, 0.19] },
-  { id: "onda", name: "Onda", power: "controla a água", color: "#3aa0ff", face: [0.54, 0.16] },
+export const HEROES: { id: Exclude<HeroId, "nenhum">; name: string; power: string; color: string; face: [number, number]; wear: Pick<AvatarConfig, "outfit" | "accessory"> }[] = [
+  { id: "nova", name: "Nova Tech", power: "armadura robô", color: "#36e0c4", face: [0.49, 0.2], wear: { outfit: "traje-nova", accessory: "visor" } },
+  { id: "tita", name: "Titã", power: "super força", color: "#ff7a45", face: [0.49, 0.15], wear: { outfit: "traje-tita", accessory: "nenhum" } },
+  { id: "raio", name: "Raio", power: "energia elétrica", color: "#9b6bff", face: [0.52, 0.16], wear: { outfit: "traje-raio", accessory: "goggles" } },
+  { id: "fenix", name: "Fênix", power: "asas de fogo", color: "#ffb020", face: [0.5, 0.15], wear: { outfit: "traje-fenix", accessory: "nenhum" } },
+  { id: "astra", name: "Astra", power: "poder das estrelas", color: "#ff6fd0", face: [0.48, 0.19], wear: { outfit: "traje-astra", accessory: "capacete" } },
+  { id: "onda", name: "Onda", power: "controla a água", color: "#3aa0ff", face: [0.54, 0.16], wear: { outfit: "traje-onda", accessory: "mascara" } },
 ];
 export interface Student { name: string; age: string; goal: number; avatar: AvatarConfig }
 
