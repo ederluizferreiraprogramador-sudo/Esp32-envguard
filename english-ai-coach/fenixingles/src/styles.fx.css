@@ -111,3 +111,19 @@ h1, h2, .font-display { font-family: var(--font-display); letter-spacing: .01em;
 @keyframes hero-ring { 0%,100% { transform: translateX(-50%) scale(1); opacity: 1 } 50% { transform: translateX(-50%) scale(1.12); opacity: .6 } }
 @media (prefers-reduced-motion: reduce) { .hero-grid, .hero-ring { animation: none } }
 .avatar-glow { filter: drop-shadow(0 0 4px #7ff5ff) }
+
+/* Revisão visual (documento técnico): onboarding de nível, painel de progresso, estados da trilha */
+@utility tile-correct { border-color: var(--fx-green); background: var(--fx-green-light); color: var(--fx-green-dark); box-shadow: 0 3px 0 var(--fx-green); }
+.level-screen { background: radial-gradient(120% 70% at 50% 0%, #8a5cff, #4b2aa8 70%); color: #fff; }
+.level-screen .text-muted-foreground { color: rgba(255,255,255,.8); }
+.level-card { border-color: rgba(255,255,255,.35); background: rgba(255,255,255,.1); color: #fff; transition: transform .12s, background .15s, border-color .15s; }
+.level-card:active { transform: scale(.98); }
+.level-card:focus-visible { outline: 3px solid var(--fx-yellow); outline-offset: 3px; }
+.level-on { border-color: #fff; background: rgba(255,255,255,.24); box-shadow: 0 5px 0 rgba(27,21,48,.45); }
+.dash { background: linear-gradient(135deg, #6a3fe6, #9b6bff 60%, #c39bff); box-shadow: 0 5px 0 var(--fx-ink); }
+.dash-ring { transition: stroke-dasharray .8s ease-out; }
+.node-tag { margin-top: .25rem; border-radius: 999px; padding: .05rem .5rem; font-size: 10px; font-weight: 800; border: 2px solid; }
+.node-done { color: var(--fx-green-dark); border-color: var(--fx-green); background: var(--fx-green-light); }
+.node-cur { color: var(--fx-blue-dark); border-color: var(--fx-blue); background: var(--fx-blue-light); }
+.node-lock { color: #6f6688; border-color: var(--fx-gray); background: #fff; }
+@media (prefers-reduced-motion: reduce) { .dash-ring, .level-card { transition: none } }

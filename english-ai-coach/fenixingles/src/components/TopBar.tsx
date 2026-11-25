@@ -23,21 +23,21 @@ export function TopBar({ p }: { p: Progress }) {
   );
 }
 
-type Tab = "trail" | "casa" | "turma" | "profile";
+type Tab = "trail" | "casa" | "turma" | "profile" | "revisar";
 export function BottomNav({ active }: { active: Tab }) {
   const items: { to: string; tab: Tab | "chat"; icon: string; label: string }[] = [
     { to: "/", tab: "trail", icon: "🗺️", label: "Trilha" },
-    { to: "/casa", tab: "casa", icon: "🏠", label: "Casa" },
+    { to: "/revisar", tab: "revisar", icon: "🔁", label: "Revisar" },
     { to: "/conversa", tab: "chat", icon: "💬", label: "Conversar" },
-    { to: "/turma", tab: "turma", icon: "🐾", label: "Turma" },
+    { to: "/casa", tab: "casa", icon: "🏠", label: "Casa" },
     { to: "/profile", tab: "profile", icon: "👤", label: "Perfil" },
   ];
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-20 p-2" style={{ paddingBottom: "max(.5rem, env(safe-area-inset-bottom))" }}>
+    <nav aria-label="Navegação principal" className="fixed inset-x-0 bottom-0 z-20 p-2" style={{ paddingBottom: "max(.5rem, env(safe-area-inset-bottom))" }}>
       <div className="mx-auto flex max-w-lg gap-1 rounded-2xl border-3 border-fx-ink bg-[#a77bff] p-1.5 shadow-[0_5px_0_#1b1530]">
         {items.map((it) => (
-          <Link key={it.to} to={it.to} className={`flex flex-1 flex-col items-center rounded-xl py-1.5 text-[11px] font-extrabold text-fx-ink ${active === it.tab ? "bg-fx-teal" : ""}`}>
-            <span className="text-xl">{it.icon}</span>{it.label}
+          <Link key={it.to} to={it.to} aria-current={active === it.tab ? "page" : undefined} className={`flex flex-1 flex-col items-center rounded-xl py-1.5 text-[11px] font-extrabold text-fx-ink ${active === it.tab ? "bg-fx-teal" : ""}`}>
+            <span className="text-xl" aria-hidden>{it.icon}</span>{it.label}
           </Link>
         ))}
       </div>

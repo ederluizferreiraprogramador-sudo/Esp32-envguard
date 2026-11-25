@@ -83,7 +83,7 @@ function Profile() {
         </section>
 
         <section className="mt-6 rounded-2xl border-2 border-fx-gray p-4">
-          <h2 className="font-extrabold">Turma do FenixInglês</h2>
+          <div className="flex items-center justify-between gap-2"><h2 className="font-extrabold">Turma do FenixInglês</h2><Link to="/turma" className="text-sm font-extrabold text-fx-blue-dark underline">🐾 Ver a turma toda</Link></div>
           <div className="mt-3 grid grid-cols-3 gap-3 text-center text-xs">
             <div><Kitten name="charlotte" size={72} className="mx-auto" />Charlotte<br /><span className="text-muted-foreground">professora</span></div>
             <div><Kitten name="mingau" size={72} className="mx-auto" />Mingau<br /><span className="text-muted-foreground">colega de diálogo</span></div>

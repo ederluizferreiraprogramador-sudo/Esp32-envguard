@@ -24,14 +24,20 @@ export const HEROES: { id: Exclude<HeroId, "nenhum">; name: string; power: strin
   { id: "astra", name: "Astra", power: "poder das estrelas", color: "#ff6fd0", face: [0.48, 0.19], wear: { outfit: "traje-astra", accessory: "capacete" } },
   { id: "onda", name: "Onda", power: "controla a água", color: "#3aa0ff", face: [0.54, 0.16], wear: { outfit: "traje-onda", accessory: "mascara" } },
 ];
-export interface Student { name: string; age: string; goal: number; avatar: AvatarConfig }
+export type Level = "" | "iniciante" | "basico" | "conversa";
+export const LEVELS: { id: Exclude<Level, "">; icon: string; title: string; desc: string }[] = [
+  { id: "iniciante", icon: "🌱", title: "Estou começando agora", desc: "Nunca estudei inglês ou sei bem pouquinho." },
+  { id: "basico", icon: "🌿", title: "Sei algumas palavras", desc: "Cores, números, cumprimentos e frases curtas." },
+  { id: "conversa", icon: "🌳", title: "Consigo conversar um pouco", desc: "Me apresento e entendo perguntas simples." },
+];
+export interface Student { name: string; age: string; goal: number; level: Level; avatar: AvatarConfig }
 
 export const DEFAULT_AVATAR: AvatarConfig = {
   skin: "#E8B48A", eyes: "zoiudo", eyeColor: "#1CB0F6", hair: "curto", hairColor: "#4A2C1A",
   mustache: "nenhum", outfit: "camiseta", outfitColor: "#58CC02", costume: "nenhuma", accessory: "nenhum", hero: "nenhum", heroTint: {},
 };
 const KEY = "fenixingles-student-v1";
-const empty: Student = { name: "", age: "", goal: 10, avatar: DEFAULT_AVATAR };
+const empty: Student = { name: "", age: "", goal: 10, level: "", avatar: DEFAULT_AVATAR };
 
 export function loadStudent(): Student {
   if (typeof window === "undefined") return empty;

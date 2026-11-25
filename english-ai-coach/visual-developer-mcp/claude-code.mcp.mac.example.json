@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "visual-developer": {
+      "command": "node",
+      "args": ["/Users/SEU_USUARIO/Tools/visual-developer-mcp/dist/index.js"],
+      "env": {
+        "VISUAL_PROJECT_ROOT": "/Users/SEU_USUARIO/Projects/FenixIngles"
+      }
+    }
+  }
+}

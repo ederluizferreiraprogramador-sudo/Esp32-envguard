@@ -66,7 +66,7 @@ function Turma() {
           </div>
         </div>
       )}
-      <BottomNav active="turma" />
+      <BottomNav active="casa" />
     </div>
   );
 }

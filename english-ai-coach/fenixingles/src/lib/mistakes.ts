@@ -109,3 +109,20 @@ export function unitReport(unit: number, all = loadMistakes()): UnitReport {
     .sort((a, b) => b.count - a.count);
   return { unit, total: byCategory.reduce((n, c) => n + c.count, 0), byCategory };
 }
+
+const REVIEWED = "fenixingles-reviewed-v1";
+const qKey = (m: Pick<Mistake, "unit" | "lesson" | "activity">) => `${m.unit}-${m.lesson}-${m.activity}`;
+function loadReviewed(): Record<string, string> {
+  if (typeof window === "undefined") return {};
+  try { return JSON.parse(localStorage.getItem(REVIEWED) || "{}") as Record<string, string>; } catch { return {}; }
+}
+/** Marca uma questão como revisada (acertou no treino). Se errar de novo na lição, volta para a lista. */
+export function markReviewed(m: Mistake) {
+  try { const r = loadReviewed(); r[qKey(m)] = new Date().toISOString(); localStorage.setItem(REVIEWED, JSON.stringify(r)); } catch { /* */ }
+}
+/** Erros ainda não revisados: uma entrada por questão (a tentativa mais recente). */
+export function pendingReview(all = loadMistakes()): Mistake[] {
+  const r = loadReviewed(), latest = new Map<string, Mistake>();
+  for (const m of all) latest.set(qKey(m), m);
+  return [...latest.values()].filter((m) => !r[qKey(m)] || r[qKey(m)]! < m.at).reverse();
+}
