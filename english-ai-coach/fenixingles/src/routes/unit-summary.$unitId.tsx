@@ -21,6 +21,7 @@ function UnitSummary() {
   const unit = units.find((u) => u.id === Number(unitId));
   const [report, setReport] = useState<UnitReport | null>(null);
   const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
   useEffect(() => { setReport(unitReport(Number(unitId))); }, [unitId]);
 
   if (!unit) return <div className="p-6 text-center">Unidade não encontrada. <Link to="/" className="text-fx-blue">Voltar</Link></div>;
@@ -28,7 +29,15 @@ function UnitSummary() {
 
   const pdf = async () => {
     setBusy(true);
-    try { await downloadUnitPdf(report, unit.title); } finally { setBusy(false); }
+    setMsg(null);
+    try {
+      const r = await downloadUnitPdf(report, unit.title);
+      setMsg(r === "saved" ? { ok: true, text: "PDF salvo! ✅" }
+        : r === "declined" ? { ok: false, text: "Download cancelado. Toque de novo quando quiser." }
+        : r === "busy" ? { ok: false, text: "Já existe um download esperando confirmação. Aguarde e tente de novo." }
+        : { ok: false, text: "Não foi possível baixar o PDF aqui. Tente abrir o app no navegador (Chrome)." });
+    } catch { setMsg({ ok: false, text: "Não foi possível gerar o PDF. Tente de novo." }); }
+    finally { setBusy(false); }
   };
 
   return (
@@ -75,6 +84,7 @@ function UnitSummary() {
       <button className="btn3d btn-blue w-full" onClick={pdf} disabled={busy}>
         {busy ? "Gerando PDF…" : "📄 Baixar PDF com explicações"}
       </button>
+      {msg && <p role="status" className={`rounded-2xl p-3 text-center font-extrabold ${msg.ok ? "bg-fx-green-light text-fx-green-dark" : "bg-fx-red-light text-fx-red-dark"}`}>{msg.text}</p>}
       <Link to="/" className="btn3d btn-green w-full text-center">Continuar</Link>
     </div>
   );

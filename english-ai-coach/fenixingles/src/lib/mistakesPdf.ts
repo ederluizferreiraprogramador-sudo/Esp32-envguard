@@ -6,7 +6,13 @@ const clean = (s: string) =>
   s.replace(/[’‘]/g, "'").replace(/[“”]/g, '"').replace(/[→›]/g, "->").replace(/…/g, "...").replace(/[—–]/g, "-")
    .replace(/[^\u0000-ÿ]/g, "");
 
-export async function downloadUnitPdf(report: UnitReport, unitTitle: string) {
+export type SaveResult = "saved" | "declined" | "busy" | "error";
+/** Quem entrega o arquivo ao usuário. Padrão: download do navegador. A versão de teste troca pelo "downloads" da plataforma. */
+export type FileSaver = (filename: string, data: Blob) => Promise<SaveResult>;
+let saver: FileSaver | null = null;
+export function setFileSaver(s: FileSaver | null) { saver = s; }
+
+export async function downloadUnitPdf(report: UnitReport, unitTitle: string): Promise<SaveResult> {
   const { jsPDF } = await import("jspdf");
   const doc = new jsPDF({ unit: "mm", format: "a4" });
   const W = 210, M = 16, maxW = W - M * 2;
@@ -52,5 +58,8 @@ export async function downloadUnitPdf(report: UnitReport, unitTitle: string) {
   ensure(16); y += 4;
   text("Dica final: refaça as lições desta unidade e tente acertar estas questões sem olhar as respostas.", 10, "normal", [255, 150, 0]);
 
-  doc.save(`FenixIngles-Unidade-${report.unit}-erros.pdf`);
+  const filename = `FenixIngles-Unidade-${report.unit}-erros.pdf`;
+  if (saver) return saver(filename, doc.output("blob"));
+  doc.save(filename);
+  return "saved";
 }
