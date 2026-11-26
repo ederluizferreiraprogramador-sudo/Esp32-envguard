@@ -175,3 +175,9 @@ h1, h2, .font-display { font-family: var(--font-display); letter-spacing: .01em;
 @keyframes gift-spin { to { transform: scale(1.25) rotate(360deg) } }
 @keyframes imortal-float { 0%,100% { transform: translateY(0) scale(1) } 50% { transform: translateY(-6px) scale(1.04) } }
 @media (prefers-reduced-motion: reduce) { .gift-egg, .gift-bird, .gift-rays-on, .imortal-bird, .imortal-halo { animation: none } }
+
+/* Tela de login (alunos no aparelho) */
+.entrar-page { background: radial-gradient(120% 70% at 50% 0%, #8a5cff, #4b2aa8 60%, #2b1a6e); }
+.entrar-card { background: #fff; box-shadow: 0 5px 0 var(--fx-ink); transition: transform .1s; }
+.entrar-card:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--fx-ink); }
+.entrar-card:focus-visible { outline: 4px solid #ffe27a; outline-offset: 3px; }

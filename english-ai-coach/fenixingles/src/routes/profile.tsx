@@ -8,7 +8,8 @@ import { HeroCard } from "@/components/HeroCard";
 import { Nest } from "@/components/Nest";
 import { CastImage } from "@/components/CastImage";
 import { CAST, type CastId } from "@/lib/cast";
-import { clearStudent, useStudent } from "@/lib/student";
+import { useStudent } from "@/lib/student";
+import { logout } from "@/lib/accounts";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { getAudioDiagnostics, speak } from "@/lib/audio";
@@ -122,7 +123,7 @@ function Profile() {
         ) : (
           <button className="btn3d btn-red mt-8 w-full" onClick={() => setConfirmReset(true)}>Zerar progresso</button>
         )}
-        <button className="btn3d btn-outline mt-3 w-full" onClick={() => { clearStudent(); nav({ to: "/bem-vindo" }); }}>Trocar aluno</button>
+        <button className="btn3d btn-outline mt-3 w-full" onClick={() => logout()}>🔄 Sair / trocar de aluno</button>
       </main>
       <BottomNav active="profile" />
     </div>

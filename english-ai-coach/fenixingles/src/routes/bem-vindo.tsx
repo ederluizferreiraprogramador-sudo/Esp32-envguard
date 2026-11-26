@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Phoenix } from "@/components/Phoenix";
 import { Kitten } from "@/components/Kittens";
 import { CastImage } from "@/components/CastImage";
@@ -22,6 +22,7 @@ function Welcome() {
   const [age, setAge] = useState("");
   const [goal, setGoal] = useState(10);
   const [level, setLevel] = useState<Level>("");
+  useEffect(() => { if (s.name && !name) setName(s.name); }, [s.name]); // eslint-disable-line react-hooks/exhaustive-deps
   const first = (name || s.name).trim().split(" ")[0] ?? "";
   const steps = 5;
   const canNext = step === 0 ? true : step === 1 ? name.trim().length > 0 : step === 2 ? !!age : step === 3 ? !!level : true;

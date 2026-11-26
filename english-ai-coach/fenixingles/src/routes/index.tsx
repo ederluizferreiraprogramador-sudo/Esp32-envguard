@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { pendingReview } from "@/lib/mistakes";
 import { LEVELS } from "@/lib/student";
 import { useStudent } from "@/lib/student";
+import { loadAccounts } from "@/lib/accounts";
 import { IslandTrail } from "@/components/IslandTrail";
 import { units } from "@/data/units";
 import { lessonKey, useProgress } from "@/lib/progress";
@@ -30,7 +31,9 @@ function Trail() {
   const nav = useNavigate();
   useEffect(() => {
     if (!stReady) return;
-    if (!st.name) { nav({ to: "/bem-vindo" }); return; }
+    const acc = loadAccounts();
+    if (!acc.current) { nav({ to: "/entrar" }); return; }
+    if (!st.name || !st.age) { nav({ to: "/bem-vindo" }); return; }
     try {
       if (!sessionStorage.getItem("fx-chat-greeted")) { sessionStorage.setItem("fx-chat-greeted", "1"); nav({ to: "/conversa" }); }
     } catch { /* sem sessionStorage: segue na trilha */ }
