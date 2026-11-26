@@ -3,9 +3,12 @@ import type { Progress } from "@/lib/progress";
 import { useStudent } from "@/lib/student";
 import { Avatar } from "./Avatar";
 import { CastImage } from "./CastImage";
+import { PremiumSide } from "./PremiumSide";
+import { usePremium } from "@/lib/rewards";
 
 export function TopBar({ p }: { p: Progress }) {
   const [s] = useStudent();
+  const prem = usePremium();
   return (
     <header className="sticky top-0 z-20 border-b-3 border-fx-ink bg-[#2a2340] text-white">
       <div className="mx-auto flex max-w-lg items-center justify-between gap-2 px-3 py-2">
@@ -14,7 +17,7 @@ export function TopBar({ p }: { p: Progress }) {
         </Link>
         <div className="flex items-center gap-2 text-sm font-extrabold">
           <span className="rounded-full bg-white/10 px-2 py-1" title="Sequência de dias">🔥 {p.streak}</span>
-          <span className="rounded-full bg-white/10 px-2 py-1" title="Vidas">❤️ {p.hearts}</span>
+          <Link to="/imortal" className={`rounded-full px-2 py-1 ${prem.active ? "imortal-hearts" : "bg-white/10"}`} title={prem.active ? "Vidas infinitas (Fênix Imortal)" : "Vidas"} aria-label={prem.active ? "Vidas infinitas" : `${p.hearts} vidas`}>❤️ {prem.active ? "∞" : p.hearts}</Link>
           <span className="pill" title="Moedas (XP)">{p.xp} <span aria-hidden>🪙</span></span>
           <Link to="/profile" aria-label="Perfil" className="rounded-full border-2 border-fx-teal"><Avatar a={s.avatar} size={34} /></Link>
         </div>
@@ -33,6 +36,8 @@ export function BottomNav({ active }: { active: Tab }) {
     { to: "/profile", tab: "profile", icon: "👤", label: "Perfil" },
   ];
   return (
+    <>
+    <PremiumSide />
     <nav aria-label="Navegação principal" className="fixed inset-x-0 bottom-0 z-20 p-2" style={{ paddingBottom: "max(.5rem, env(safe-area-inset-bottom))" }}>
       <div className="mx-auto flex max-w-lg gap-1 rounded-2xl border-3 border-fx-ink bg-[#a77bff] p-1.5 shadow-[0_5px_0_#1b1530]">
         {items.map((it) => (
@@ -42,5 +47,6 @@ export function BottomNav({ active }: { active: Tab }) {
         ))}
       </div>
     </nav>
+    </>
   );
 }

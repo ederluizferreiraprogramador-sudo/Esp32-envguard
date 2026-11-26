@@ -4,6 +4,10 @@ import { units, type Activity } from "@/data/units";
 import { completeLesson, lessonKey, MAX_HEARTS, update, useProgress } from "@/lib/progress";
 import { playCorrect, playFinish, playWrong, speak } from "@/lib/audio";
 import { recordMistake } from "@/lib/mistakes";
+import { castSrc } from "@/lib/cast";
+import { awardForLesson, usePremium, type PhoenixId } from "@/lib/rewards";
+import { Fireworks } from "@/components/Fireworks";
+import { PhoenixGift } from "@/components/PhoenixGift";
 import { Phoenix } from "@/components/Phoenix";
 import { Capi, Uni } from "@/components/Characters";
 import { CastImage } from "@/components/CastImage";
@@ -77,6 +81,8 @@ function LessonPage() {
   const [attempts, setAttempts] = useState(0);
   const [mistakes, setMistakes] = useState(0);
   const [finished, setFinished] = useState(false);
+  const [gift, setGift] = useState<PhoenixId | null>(null);
+  const prem = usePremium();
 
   if (!unit || !lesson) {
     return <div className="flex min-h-screen flex-col items-center justify-center gap-4 p-6 text-center"><Phoenix /><p>Lição não encontrada.</p><Link to="/" className="btn3d btn-green">Voltar</Link></div>;
@@ -90,12 +96,14 @@ function LessonPage() {
     const unitDone = unit.lessons.every((_, i) => p.completed.includes(lessonKey(unit.id, i)));
     return (
       <div className="mx-auto flex min-h-screen max-w-lg flex-col items-center justify-center gap-6 p-6 text-center">
+        <Fireworks bursts={unitDone ? 12 : 7} />
         <div className="flex items-end gap-1">{unitDone ? <Phoenix pose="guerreira" size={160} className="anim-bob" /> : <Phoenix pose="voando" size={160} className="anim-bob" />}<Capi size={120} /></div>
         <h1 className="anim-pop text-3xl font-extrabold text-fx-orange">Lição concluída!</h1>
         <div className="grid w-full grid-cols-2 gap-3">
           <div className="anim-pop overflow-hidden rounded-2xl border-2 border-fx-yellow"><div className="bg-fx-yellow py-1 text-sm font-extrabold text-primary-foreground">XP GANHO</div><div className="py-3 text-2xl font-extrabold text-fx-orange">💎 +10</div></div>
           <div className="anim-pop overflow-hidden rounded-2xl border-2 border-fx-green"><div className="bg-fx-green py-1 text-sm font-extrabold text-primary-foreground">ACERTOS</div><div className="py-3 text-2xl font-extrabold text-fx-green">🎯 {pct}%</div></div>
         </div>
+        {gift && <PhoenixGift id={gift} />}
         <p className="text-muted-foreground">🔥 Sequência: {p.streak} {p.streak === 1 ? "dia" : "dias"}</p>
         {unitDone && <p className="font-extrabold text-fx-blue">Unidade concluída! Veja onde você pode melhorar.</p>}
         <button className="btn3d btn-green w-full" onClick={() =>
@@ -105,12 +113,16 @@ function LessonPage() {
     );
   }
 
-  if (ready && p.hearts <= 0 && status === "idle" && !retry) {
+  if (ready && !prem.active && p.hearts <= 0 && status === "idle" && !retry) {
     return (
       <div className="mx-auto flex min-h-screen max-w-lg flex-col items-center justify-center gap-5 p-6 text-center">
         <Phoenix pose="meditando" size={150} />
         <h1 className="text-2xl font-extrabold">Suas vidas acabaram</h1>
         <p className="text-muted-foreground">Elas recarregam amanhã — ou recarregue agora para continuar praticando.</p>
+        <Link to="/imortal" className="imortal-offer flex w-full items-center gap-3 rounded-3xl border-3 border-fx-ink p-3 text-left text-white">
+          <img src={castSrc("fenix-imortal")} alt="" className="imortal-bird h-20 w-20 shrink-0 object-contain" />
+          <span><b className="block font-display text-xl">Fênix Imortal</b><span className="text-sm">Vidas infinitas ❤️ ∞ — nunca mais pare no meio da lição.</span></span>
+        </Link>
         <button className="btn3d btn-blue w-full" onClick={() => update((x) => ({ ...x, hearts: MAX_HEARTS }))}>Recarregar vidas</button>
         <Link to="/" className="btn3d btn-outline w-full">Sair</Link>
       </div>
@@ -132,7 +144,7 @@ function LessonPage() {
     else {
       setStatus("wrong"); setMistakes((n) => n + 1); playWrong();
       recordMistake(unit.id, Number(lessonId), idx, act, value);
-      update((x) => ({ ...x, hearts: Math.max(0, x.hearts - 1), heartsDay: new Date().toISOString().slice(0, 10) }));
+      if (!prem.active) update((x) => ({ ...x, hearts: Math.max(0, x.hearts - 1), heartsDay: new Date().toISOString().slice(0, 10) }));
       setQueue((q) => [...q, idx]);
       // lê a resposta certa em inglês logo após o som de erro
       setTimeout(sayAnswer, 600);
@@ -143,6 +155,7 @@ function LessonPage() {
     setRetry(false);
     if (pos + 1 >= queue.length) {
       update((x) => completeLesson(x, lessonKey(unit.id, Number(lessonId)), 10));
+      setGift(awardForLesson(lessonKey(unit.id, Number(lessonId))));
       playFinish(); setFinished(true); return;
     }
     setPos(pos + 1); setValue(""); setStatus("idle");
@@ -160,7 +173,7 @@ function LessonPage() {
         <div className="h-4 flex-1 overflow-hidden rounded-full bg-fx-gray">
           <div className="h-full rounded-full bg-fx-green transition-all duration-500" style={{ width: `${(solved / total) * 100}%` }} />
         </div>
-        <span className="font-extrabold text-fx-red">❤️ {p.hearts}</span>
+        <span className="font-extrabold text-fx-red" aria-label={prem.active ? "Vidas infinitas" : `${p.hearts} vidas`}>❤️ {prem.active ? "∞" : p.hearts}</span>
       </div>
 
       <main key={`${pos}-${retry ? "r" : "n"}`} className="anim-pop flex-1 px-5 py-6">

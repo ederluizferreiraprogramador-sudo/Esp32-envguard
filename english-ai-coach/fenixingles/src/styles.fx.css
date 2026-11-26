@@ -155,3 +155,23 @@ h1, h2, .font-display { font-family: var(--font-display); letter-spacing: .01em;
 @keyframes isle-glow { 0%,100% { opacity: .55; transform: scale(.95) } 50% { opacity: 1; transform: scale(1.08) } }
 @keyframes isle-fly { 0%,100% { transform: translate(0,0) rotate(-6deg) } 50% { transform: translate(6px,-10px) rotate(6deg) } }
 @media (prefers-reduced-motion: reduce) { .isle, .isle-aura, .isle-phoenix, .isle-float { animation: none } }
+
+/* Recompensas: presente da fênix, ninho e Fênix Imortal (vidas infinitas) */
+.gift-card { background: radial-gradient(120% 90% at 50% 0%, color-mix(in srgb, var(--ph) 70%, #2b1a6e), #1b1530 85%); box-shadow: 0 6px 0 var(--fx-ink); }
+.gift-rays { background: conic-gradient(from 0deg, transparent 0 8%, color-mix(in srgb, var(--ph) 55%, transparent) 10% 14%, transparent 16% 33%, color-mix(in srgb, var(--ph) 55%, transparent) 35% 39%, transparent 41% 58%, color-mix(in srgb, var(--ph) 55%, transparent) 60% 64%, transparent 66% 83%, color-mix(in srgb, var(--ph) 55%, transparent) 85% 89%, transparent 91%); opacity: 0; transform: scale(.6); }
+.gift-rays-on { opacity: 1; transform: scale(1.25); transition: opacity .4s, transform .6s; animation: gift-spin 9s linear infinite; }
+.gift-egg { animation: gift-wobble .4s ease-in-out infinite; filter: drop-shadow(0 0 14px rgba(255,170,40,.8)); }
+.gift-bird { animation: gift-hatch .7s cubic-bezier(.2,1.4,.4,1) both, isle-bob 3.5s ease-in-out .7s infinite; filter: drop-shadow(0 0 18px color-mix(in srgb, var(--ph) 80%, white)); }
+.nest { background: linear-gradient(160deg, #2b1a6e, #5a3bc4); box-shadow: 0 5px 0 var(--fx-ink); }
+.nest-locked { filter: brightness(0) opacity(.35); }
+.imortal-panel, .imortal-offer, .imortal-page { background: radial-gradient(120% 80% at 50% 0%, #ffb020 0%, #ff6a2b 30%, #8a1f4a 70%, #2a1030 100%); }
+.imortal-panel, .imortal-offer { box-shadow: 0 6px 0 var(--fx-ink); }
+.imortal-tab { background: linear-gradient(180deg, #ffe27a, #ff9a3c); box-shadow: -3px 4px 0 var(--fx-ink); }
+.imortal-bird { animation: imortal-float 3.2s ease-in-out infinite; filter: drop-shadow(0 0 12px rgba(255,200,60,.9)); }
+.imortal-halo { background: radial-gradient(circle, rgba(255,230,140,.85), rgba(255,150,40,0) 65%); animation: isle-glow 2.4s ease-in-out infinite; }
+.imortal-hearts { background: linear-gradient(90deg, #ffb020, #ff6a2b); color: #1b1530; }
+@keyframes gift-wobble { 0%,100% { transform: rotate(-6deg) } 50% { transform: rotate(6deg) scale(1.03) } }
+@keyframes gift-hatch { from { transform: scale(.2) translateY(30px); opacity: 0 } to { transform: scale(1) translateY(0); opacity: 1 } }
+@keyframes gift-spin { to { transform: scale(1.25) rotate(360deg) } }
+@keyframes imortal-float { 0%,100% { transform: translateY(0) scale(1) } 50% { transform: translateY(-6px) scale(1.04) } }
+@media (prefers-reduced-motion: reduce) { .gift-egg, .gift-bird, .gift-rays-on, .imortal-bird, .imortal-halo { animation: none } }

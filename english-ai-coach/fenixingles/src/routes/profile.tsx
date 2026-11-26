@@ -5,6 +5,7 @@ import { TopBar, BottomNav } from "@/components/TopBar";
 import { UniFront } from "@/components/Characters";
 import { Kitten } from "@/components/Kittens";
 import { HeroCard } from "@/components/HeroCard";
+import { Nest } from "@/components/Nest";
 import { CastImage } from "@/components/CastImage";
 import { CAST, type CastId } from "@/lib/cast";
 import { clearStudent, useStudent } from "@/lib/student";
@@ -60,6 +61,7 @@ function Profile() {
       <TopBar p={p} />
       <main className="mx-auto max-w-lg px-4 py-6">
         <HeroCard st={st} xp={p.xp} />
+        <Nest />
         <div className="mt-6 grid grid-cols-2 gap-3">
           {stats.map((s) => (
             <div key={s.label} className="rounded-2xl border-2 border-fx-gray p-4">
