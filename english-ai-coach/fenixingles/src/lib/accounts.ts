@@ -1,122 +1,106 @@
-// Vários alunos no mesmo aparelho (versão de teste). Os dados do aluno ativo ficam nas chaves
-// normais do app; os dos outros ficam guardados em "gavetas" e trocam de lugar no login.
-// Não é uma conta na nuvem: serve para testar com várias crianças no mesmo celular/computador.
+// Contas na nuvem (Lovable Cloud / Supabase): cadastro por e-mail, recuperação de senha
+// e progresso individual. O app continua lendo/escrevendo o localStorage; este módulo
+// troca esses dados pelos da conta ao entrar e envia as mudanças para a nuvem.
 import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 export const DATA_KEYS = [
   "fenixingles-student-v1", "fenixingles-progress-v1", "fenixingles-mistakes-v1", "fenixingles-reviewed-v1",
   "fenixingles-nest-v1", "fenixingles-premium-v1", "fenixingles-home-v1",
 ] as const;
-const ACC = "fenixingles-accounts-v1";
-export interface Account { id: string; name: string; pin: string | null; createdAt: string; test?: boolean }
-interface Store { users: Account[]; current: string | null }
+const OWNER = "fenixingles-owner-v1"; // de qual conta são os dados que estão no aparelho
+const TABLE = "progresso_alunos";
+type Snapshot = Partial<Record<(typeof DATA_KEYS)[number], unknown>>;
 
-const slot = (id: string, key: string) => `fenixingles-u-${id}-${key.replace("fenixingles-", "")}`;
-const ls = () => (typeof window === "undefined" ? null : window.localStorage);
-const get = (k: string) => { try { return ls()?.getItem(k) ?? null; } catch { return null; } };
-const put = (k: string, v: string | null) => { try { if (v === null) ls()?.removeItem(k); else ls()?.setItem(k, v); } catch { /* bloqueado */ } };
+const get = (k: string) => { try { return localStorage.getItem(k); } catch { return null; } };
+const put = (k: string, v: string | null) => { try { if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch { /* */ } };
 
-export function loadAccounts(): Store {
-  let s: Store = { users: [], current: null };
-  try { s = { ...s, ...JSON.parse(get(ACC) || "{}") }; } catch { /* */ }
-  // Migração: quem já usava o app vira o primeiro aluno.
-  if (!s.users.length) {
-    const st = get("fenixingles-student-v1");
-    const name = st ? (JSON.parse(st) as { name?: string }).name : "";
-    if (name) { const a: Account = { id: newId(), name, pin: null, createdAt: new Date().toISOString() }; s = { users: [a], current: a.id }; saveStore(s); }
-  }
+export function snapshot(): Snapshot {
+  const s: Snapshot = {};
+  for (const k of DATA_KEYS) { const v = get(k); if (v !== null) { try { s[k] = JSON.parse(v); } catch { /* ignora valor quebrado */ } } }
   return s;
 }
-function saveStore(s: Store) { put(ACC, JSON.stringify(s)); }
-const newId = () => Math.random().toString(36).slice(2, 10);
+export function applySnapshot(s: Snapshot | null) {
+  for (const k of DATA_KEYS) put(k, s && s[k] !== undefined ? JSON.stringify(s[k]) : null);
+}
+function clearLocal() { applySnapshot(null); put(OWNER, null); try { sessionStorage.removeItem("fx-chat-greeted"); } catch { /* */ } }
 
-/** Lê um dado de qualquer aluno (o ativo está nas chaves normais). */
-export function userData<T>(id: string, key: (typeof DATA_KEYS)[number]): T | null {
-  const raw = loadAccounts().current === id ? get(key) : get(slot(id, key));
-  try { return raw ? (JSON.parse(raw) as T) : null; } catch { return null; }
-}
-
-function stash(id: string) { for (const k of DATA_KEYS) { put(slot(id, k), get(k)); put(k, null); } }
-function restore(id: string) { for (const k of DATA_KEYS) { put(k, get(slot(id, k))); put(slot(id, k), null); } }
-function reloadHome() { try { sessionStorage.removeItem("fx-chat-greeted"); } catch { /* */ } window.location.reload(); }
-
-/** PIN de 4 números guardado só como resumo (SHA-256), nunca o número em si. */
-export async function hashPin(id: string, pin: string): Promise<string> {
-  const data = new TextEncoder().encode(`fenixingles:${id}:${pin}`);
-  try { const h = await crypto.subtle.digest("SHA-256", data); return Array.from(new Uint8Array(h), (b) => b.toString(16).padStart(2, "0")).join(""); }
-  catch { let h = 0; for (const b of data) h = (h * 31 + b) >>> 0; return `x${h.toString(16)}`; }
-}
-export async function checkPin(a: Account, pin: string) { return !a.pin || a.pin === (await hashPin(a.id, pin)); }
-
-export function switchTo(id: string, reload = true) {
-  const s = loadAccounts();
-  if (s.current === id) { if (reload) reloadHome(); return; }
-  if (s.current) stash(s.current); else for (const k of DATA_KEYS) put(k, null);
-  restore(id); saveStore({ ...s, current: id });
-  if (reload) reloadHome();
-}
-export function logout() {
-  const s = loadAccounts();
-  if (s.current) stash(s.current);
-  saveStore({ ...s, current: null }); reloadHome();
-}
-export async function createAccount(name: string, pin: string | null, reload = true): Promise<Account> {
-  const s = loadAccounts();
-  const a: Account = { id: newId(), name: name.trim().slice(0, 30), pin: null, createdAt: new Date().toISOString() };
-  if (pin) a.pin = await hashPin(a.id, pin);
-  saveStore({ ...s, users: [...s.users, a] });
-  for (const k of DATA_KEYS) put(slot(a.id, k), null);
-  put(slot(a.id, "fenixingles-student-v1"), JSON.stringify({ name: a.name }));
-  switchTo(a.id, reload);
-  return a;
-}
-export function deleteAccount(id: string) {
-  const s = loadAccounts();
-  for (const k of DATA_KEYS) put(slot(id, k), null);
-  if (s.current === id) for (const k of DATA_KEYS) put(k, null);
-  saveStore({ users: s.users.filter((u) => u.id !== id), current: s.current === id ? null : s.current });
+/** Traz o progresso da conta para o aparelho. Nunca mistura com dados de outra conta. */
+export async function pullProgress(userId: string) {
+  const { data, error } = await supabase.from(TABLE).select("dados").eq("user_id", userId).maybeSingle();
+  if (error) throw error;
+  clearLocal();
+  applySnapshot((data?.dados as Snapshot) ?? null);
+  put(OWNER, userId);
 }
 
-/** Cria 3 alunos de teste com situações diferentes (sem dados reais de ninguém). */
-export async function createTestUsers() {
-  const s = loadAccounts();
-  const today = new Date().toISOString().slice(0, 10);
-  const mk = async (name: string, pin: string | null, data: Partial<Record<(typeof DATA_KEYS)[number], unknown>>) => {
-    const a: Account = { id: newId(), name, pin: null, createdAt: new Date().toISOString(), test: true };
-    if (pin) a.pin = await hashPin(a.id, pin);
-    for (const k of DATA_KEYS) put(slot(a.id, k), data[k] === undefined ? null : JSON.stringify(data[k]));
-    return a;
-  };
-  const m = (unit: number, lesson: number, activity: number, type: string, prompt: string, given: string, correct: string, explain: string) =>
-    ({ unit, lesson, activity, type, prompt, given, correct, explain, at: new Date().toISOString() });
-  const users = [
-    await mk("Ana (teste)", null, {
-      "fenixingles-student-v1": { name: "Ana (teste)", age: "4 a 6 anos", goal: 5, level: "iniciante", avatar: { hair: "longo", hairColor: "#F2C14E", outfit: "vestido", outfitColor: "#FF86C8" } },
-    }),
-    await mk("Davi (teste)", null, {
-      "fenixingles-student-v1": { name: "Davi (teste)", age: "7 a 9 anos", goal: 10, level: "basico", avatar: { hero: "nova" } },
-      "fenixingles-progress-v1": { xp: 60, streak: 3, lastDay: today, hearts: 3, heartsDay: today, completed: ["1-0", "1-1", "1-2", "2-0", "2-1", "2-2"], sound: true },
-      "fenixingles-mistakes-v1": [
-        m(1, 0, 1, "fill", "Good ___ ! How are you?", "night", "morning", '"Good morning" = "Bom dia".'),
-        m(2, 0, 2, "fill", "Where ___ my umbrella?", "are", "is", 'umbrella é singular → "Where is...?".'),
-        m(2, 1, 3, "build", "A carteira está embaixo da cadeira.", "The wallet is under on chair", "The wallet is under the chair", "under = embaixo de."),
-        m(2, 2, 1, "write", 'Plural de "chair"', "chaires", "chairs", "A maioria dos plurais ganha -s: chairs."),
-      ],
-      "fenixingles-nest-v1": { counts: { fogo: 1, esmeralda: 2, azul: 1, dourada: 1 }, gifted: ["1-0", "1-1", "1-2", "2-0", "2-1"] },
-    }),
-    await mk("Bia (teste)", "1234", {
-      "fenixingles-student-v1": { name: "Bia (teste)", age: "10 a 12 anos", goal: 15, level: "conversa", avatar: { hero: "raio", heroTint: { suit: "#FF4FA3" } } },
-      "fenixingles-progress-v1": { xp: 160, streak: 7, lastDay: today, hearts: 5, heartsDay: today, completed: ["1-0", "1-1", "1-2", "2-0", "2-1", "2-2", "3-0", "3-1", "3-2", "4-0", "4-1", "4-2", "5-0"], sound: true },
-      "fenixingles-premium-v1": { active: true, since: new Date().toISOString() },
-      "fenixingles-nest-v1": { counts: { fogo: 3, esmeralda: 2, azul: 2, ametista: 1, dourada: 2, cristal: 1, aurora: 1, imortal: 1 }, gifted: ["1-0", "1-1", "1-2", "2-0", "2-1", "2-2", "3-0", "3-1", "3-2", "4-0", "4-1", "4-2", "5-0"] },
-    }),
-  ];
-  saveStore({ ...s, users: [...s.users, ...users] });
+let lastSent = "";
+export async function pushProgress(userId: string) {
+  if (get(OWNER) !== userId) return; // dados no aparelho não são desta conta
+  const dados = snapshot(), body = JSON.stringify(dados);
+  if (body === lastSent) return;
+  const { error } = await supabase.from(TABLE).upsert({ user_id: userId, dados, atualizado_em: new Date().toISOString() });
+  if (!error) lastSent = body;
 }
 
-const subs = new Set<() => void>();
-export function useAccounts(): [Store, () => void] {
-  const [s, setS] = useState<Store>({ users: [], current: null });
-  useEffect(() => { const f = () => setS(loadAccounts()); f(); subs.add(f); return () => { subs.delete(f); }; }, []);
-  return [s, () => subs.forEach((f) => f())];
+/** Liga o envio automático (a cada 5 s, se mudou, e ao sair da página). */
+export function startSync(userId: string) {
+  const t = window.setInterval(() => { void pushProgress(userId); }, 5000);
+  const flush = () => { void pushProgress(userId); };
+  window.addEventListener("pagehide", flush);
+  document.addEventListener("visibilitychange", flush);
+  return () => { window.clearInterval(t); window.removeEventListener("pagehide", flush); document.removeEventListener("visibilitychange", flush); };
+}
+
+export async function signUp(email: string, password: string) {
+  return supabase.auth.signUp({ email, password, options: { emailRedirectTo: `${window.location.origin}/` } });
+}
+export async function signIn(email: string, password: string) {
+  const r = await supabase.auth.signInWithPassword({ email, password });
+  if (!r.error && r.data.user) { await pullProgress(r.data.user.id); }
+  return r;
+}
+export async function sendReset(email: string) {
+  return supabase.auth.resetPasswordForEmail(email, { redirectTo: `${window.location.origin}/redefinir-senha` });
+}
+export async function updatePassword(password: string) { return supabase.auth.updateUser({ password }); }
+
+export async function logout() {
+  const { data } = await supabase.auth.getUser();
+  if (data.user) { try { await pushProgress(data.user.id); } catch { /* sem internet: fica salvo na próxima vez */ } }
+  await supabase.auth.signOut();
+  clearLocal();
+  window.location.assign("/entrar");
+}
+
+/** Estado de login; garante que os dados no aparelho são da conta logada. */
+export function useAuth(): { ready: boolean; signedIn: boolean; email?: string } {
+  const [s, setS] = useState<{ ready: boolean; signedIn: boolean; email?: string }>({ ready: false, signedIn: false });
+  useEffect(() => {
+    let stop: (() => void) | undefined;
+    const handle = async (user: { id: string; email?: string } | null) => {
+      stop?.(); stop = undefined;
+      if (!user) { if (get(OWNER)) clearLocal(); setS({ ready: true, signedIn: false }); return; }
+      if (get(OWNER) !== user.id) { try { await pullProgress(user.id); window.location.reload(); return; } catch { /* tenta de novo depois */ } }
+      stop = startSync(user.id);
+      setS({ ready: true, signedIn: true, email: user.email });
+    };
+    supabase.auth.getSession().then(({ data }) => handle(data.session?.user ?? null));
+    const { data: sub } = supabase.auth.onAuthStateChange((ev, session) => { if (ev === "SIGNED_OUT" || ev === "SIGNED_IN") void handle(session?.user ?? null); });
+    return () => { stop?.(); sub.subscription.unsubscribe(); };
+  }, []);
+  return s;
+}
+
+/** Mensagens do Supabase em português. */
+export function authMessage(err: { message?: string } | null | undefined): string {
+  const m = (err?.message ?? "").toLowerCase();
+  if (!m) return "";
+  if (m.includes("invalid login")) return "E-mail ou senha incorretos.";
+  if (m.includes("email not confirmed")) return "Confirme seu e-mail: abra o link que enviamos para a sua caixa de entrada.";
+  if (m.includes("already registered") || m.includes("already exists")) return "Este e-mail já tem cadastro. Use \"Entrar\" ou \"Esqueci minha senha\".";
+  if (m.includes("password") && (m.includes("6") || m.includes("short") || m.includes("weak"))) return "A senha precisa ter pelo menos 8 caracteres, com letras e números.";
+  if (m.includes("rate") || m.includes("too many")) return "Muitas tentativas. Espere um pouco e tente de novo.";
+  if (m.includes("network") || m.includes("fetch")) return "Sem conexão com a internet. Tente de novo.";
+  return "Não foi possível concluir. Tente de novo.";
 }

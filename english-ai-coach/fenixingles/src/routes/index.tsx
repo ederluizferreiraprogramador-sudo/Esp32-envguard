@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { pendingReview } from "@/lib/mistakes";
 import { LEVELS } from "@/lib/student";
 import { useStudent } from "@/lib/student";
-import { loadAccounts } from "@/lib/accounts";
+import { useAuth } from "@/lib/accounts";
 import { IslandTrail } from "@/components/IslandTrail";
 import { units } from "@/data/units";
 import { lessonKey, useProgress } from "@/lib/progress";
@@ -29,15 +29,15 @@ function Trail() {
   const [p] = useProgress();
   const [st, stReady] = useStudent();
   const nav = useNavigate();
+  const auth = useAuth();
   useEffect(() => {
-    if (!stReady) return;
-    const acc = loadAccounts();
-    if (!acc.current) { nav({ to: "/entrar" }); return; }
+    if (!stReady || !auth.ready) return;
+    if (!auth.signedIn) { nav({ to: "/entrar" }); return; }
     if (!st.name || !st.age) { nav({ to: "/bem-vindo" }); return; }
     try {
       if (!sessionStorage.getItem("fx-chat-greeted")) { sessionStorage.setItem("fx-chat-greeted", "1"); nav({ to: "/conversa" }); }
     } catch { /* sem sessionStorage: segue na trilha */ }
-  }, [stReady, st.name]);
+  }, [stReady, auth.ready, auth.signedIn, st.name]);
   const first = st.name.split(" ")[0];
   const flat = units.flatMap((u) => u.lessons.map((_, i) => lessonKey(u.id, i)));
   const current = flat.find((k) => !p.completed.includes(k));

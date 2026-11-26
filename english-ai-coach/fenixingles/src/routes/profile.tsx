@@ -123,7 +123,7 @@ function Profile() {
         ) : (
           <button className="btn3d btn-red mt-8 w-full" onClick={() => setConfirmReset(true)}>Zerar progresso</button>
         )}
-        <button className="btn3d btn-outline mt-3 w-full" onClick={() => logout()}>🔄 Sair / trocar de aluno</button>
+        <button className="btn3d btn-outline mt-3 w-full" onClick={() => { void logout(); }}>🚪 Sair da conta</button>
       </main>
       <BottomNav active="profile" />
     </div>
