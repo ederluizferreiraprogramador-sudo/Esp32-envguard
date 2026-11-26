@@ -32,3 +32,15 @@ Observação: o app oficial é React (TanStack/Lovable), não HTML solto — o M
 - Aplicar estas mudanças (e as das revisões 6–11) no app do Lovable quando houver crédito.
 - Pasta `references/` com as telas de referência não foi enviada ao repositório (são de app de terceiros); manter só localmente.
 - Remover o nome da criança do prompt da IA e revisar direitos dos títulos do livro (ver documento de arquitetura e segurança).
+
+## Trilha "Ilhas da Fênix" (rev13, nov/2026)
+
+Base: *Referência Visual e Funcional — Mondly* (documento enviado). Usamos só os padrões funcionais (trilha curva rolável, marcos alternando lados, progresso por marco, detalhe com Começar/Continuar) e criamos uma identidade própria, sem o zigue-zague de círculos (estilo Duolingo) nem os pins com foto/objetos roxos (estilo Mondly):
+
+- Cada unidade é uma **ilha flutuante 3D** com o tema da unidade (16 ilustrações geradas no Figma, em `public/characters/ilha-01..16.webp`, ~30 KB cada).
+- As ilhas ficam num **céu ao entardecer** e são ligadas pelo **rastro de voo da Fênix** (SVG): pontilhado branco no que falta e trilha dourada no que já foi feito; a Fênix voa ao lado da ilha atual.
+- Estados escritos: ✓ Concluída, ⏳ Em andamento, ★ Comece aqui, 🔒 Bloqueada; anel de progresso x/3 em cada ilha.
+- Tocar numa ilha abre o **painel de detalhe** (lições com estado, botão Começar/Continuar, resumo de erros). Fecha com ✕, toque fora ou Esc.
+- Animações leves (flutuar, brilho, voo) desligadas com "reduzir movimento".
+
+Código: `fenixingles/src/components/IslandTrail.tsx` (dados → posições → caminho SVG). Aplicado também no app oficial pelo Lovable (15 testes passando, build ok) e publicado.
