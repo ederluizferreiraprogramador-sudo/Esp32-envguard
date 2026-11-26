@@ -1,42 +1,31 @@
-// Versão de teste (link do Claude): login com as MESMAS contas do app no Base44
-// (https://fenix-ingles-c5968695.base44.app) e progresso completo salvo na conta,
-// na tabela ProgressoCompleto (cada pessoa só lê o que é dela).
+// Versão de teste (link do Claude): a página não pode falar com servidores de fora
+// (a plataforma bloqueia), então o "login" é a própria conta Claude de quem abre o link.
+// Cada pessoa tem uma área privada no banco do link (data/users/<id>/), invisível
+// para as outras — inclusive para o dono do link.
 import { useEffect, useState } from "react";
 
-const APP_ID = "6b03f9395666f1f1c5968695";
-const API = `https://base44.app/api/apps/${APP_ID}`;
 export const BASE44_SITE = "https://fenix-ingles-c5968695.base44.app";
+export const canLogout = false; // a conta é a do Claude: para trocar, saia do Claude
 export const DATA_KEYS = [
   "fenixingles-student-v1", "fenixingles-progress-v1", "fenixingles-mistakes-v1", "fenixingles-reviewed-v1",
   "fenixingles-nest-v1", "fenixingles-premium-v1", "fenixingles-home-v1",
 ] as const;
-const TOKEN = "fenixingles-b44-token", OWNER = "fenixingles-owner-v1", RECORD = "fenixingles-b44-record", GUEST = "fenixingles-guest-v1";
+const OWNER = "fenixingles-owner-v1", GUEST = "fenixingles-guest-v1";
 type Snapshot = Partial<Record<(typeof DATA_KEYS)[number], unknown>>;
+
+type DocSnap = { exists: boolean; data(): Record<string, unknown> | undefined };
+type DocRef = { get(): Promise<DocSnap>; set(d: Record<string, unknown>): Promise<void> };
+type DB = { doc(path: string): DocRef };
+type UserNS = { id(): Promise<string | null>; me(): Promise<{ id: string | null; name: string }> };
+type ClaudeWin = { claude?: { use(n: string): Promise<unknown> } };
+const use = async <T,>(name: string): Promise<T | null> => {
+  const c = (window as unknown as ClaudeWin).claude;
+  if (!c) return null;
+  try { return (await c.use(name)) as T | null; } catch { return null; }
+};
 
 const get = (k: string) => { try { return localStorage.getItem(k); } catch { return null; } };
 const put = (k: string, v: string | null) => { try { if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch { /* */ } };
-
-export class AuthError extends Error { constructor(public status: number, public detail: string, public offline = false) { super(detail); } }
-
-async function api<T>(method: string, path: string, body?: unknown): Promise<T> {
-  const token = get(TOKEN);
-  let res: Response;
-  try {
-    res = await fetch(`${API}${path}`, {
-      method,
-      headers: { "X-App-Id": APP_ID, "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
-      body: body === undefined ? undefined : JSON.stringify(body),
-    });
-  } catch { throw new AuthError(0, "offline", true); }
-  const text = await res.text();
-  let data: unknown = null; try { data = text ? JSON.parse(text) : null; } catch { data = text; }
-  if (!res.ok) {
-    const d = data as { detail?: unknown; message?: string } | string | null;
-    const detail = typeof d === "string" ? d : typeof d?.detail === "string" ? d.detail : d?.message ?? JSON.stringify(d?.detail ?? "");
-    throw new AuthError(res.status, detail || `HTTP ${res.status}`);
-  }
-  return data as T;
-}
 
 export function snapshot(): Snapshot {
   const s: Snapshot = {};
@@ -44,91 +33,64 @@ export function snapshot(): Snapshot {
   return s;
 }
 function applySnapshot(s: Snapshot | null) { for (const k of DATA_KEYS) put(k, s && s[k] !== undefined ? JSON.stringify(s[k]) : null); }
-function clearLocal() { applySnapshot(null); put(OWNER, null); put(RECORD, null); try { sessionStorage.removeItem("fx-chat-greeted"); } catch { /* */ } }
+function clearLocal() { applySnapshot(null); put(OWNER, null); try { sessionStorage.removeItem("fx-chat-greeted"); } catch { /* */ } }
 
-type Me = { id: string; email?: string; full_name?: string };
-type Rec = { id: string; dados: string; created_by_id?: string };
-const me = () => api<Me>("GET", "/entities/User/me");
-
-/** Traz o progresso da conta para o aparelho, sem misturar com dados de outra pessoa. */
-async function pullProgress(user: Me) {
-  const q = encodeURIComponent(JSON.stringify({ created_by_id: user.id }));
-  const rows = await api<Rec[]>("GET", `/entities/ProgressoCompleto?q=${q}&sort=-updated_date&limit=1`);
-  clearLocal();
-  const r = rows?.[0];
-  if (r) { try { applySnapshot(JSON.parse(r.dados) as Snapshot); } catch { /* registro vazio */ } put(RECORD, r.id); }
-  put(OWNER, user.id);
+/** Corpo salvo: JSON em texto, sempre abaixo do limite de 256 KiB por documento. */
+function body(): string {
+  const s = snapshot();
+  let txt = JSON.stringify(s);
+  const m = s["fenixingles-mistakes-v1"];
+  if (txt.length > 230_000 && Array.isArray(m)) { s["fenixingles-mistakes-v1"] = m.slice(-300); txt = JSON.stringify(s); }
+  return txt;
 }
 
 let lastSent = "";
-async function pushProgress(userId: string) {
-  if (get(OWNER) !== userId) return;
-  const dados = JSON.stringify(snapshot());
+async function push(ref: DocRef, uid: string) {
+  if (get(OWNER) !== uid) return;
+  const dados = body();
   if (dados === lastSent) return;
-  const body = { dados, atualizado_em: new Date().toISOString() };
-  const id = get(RECORD);
-  if (id) await api("PUT", `/entities/ProgressoCompleto/${id}`, body);
-  else { const r = await api<Rec>("POST", "/entities/ProgressoCompleto", body); put(RECORD, r.id); }
+  await ref.set({ dados, atualizado_em: new Date().toISOString() });
   lastSent = dados;
 }
-function startSync(userId: string) {
-  const tick = () => { void pushProgress(userId).catch(() => { /* tenta de novo no próximo ciclo */ }); };
-  const t = window.setInterval(tick, 5000);
-  window.addEventListener("pagehide", tick); document.addEventListener("visibilitychange", tick);
-  return () => { window.clearInterval(t); window.removeEventListener("pagehide", tick); document.removeEventListener("visibilitychange", tick); };
-}
 
-export async function signIn(email: string, password: string) {
-  const r = await api<{ access_token?: string }>("POST", "/auth/login", { email, password });
-  if (!r?.access_token) throw new AuthError(401, "no token");
-  put(TOKEN, r.access_token); put(GUEST, null);
-  await pullProgress(await me());
-}
-export const register = (email: string, password: string) => api("POST", "/auth/register", { email, password });
-export const verifyOtp = (email: string, otpCode: string) => api("POST", "/auth/verify-otp", { email, otp_code: otpCode });
-export const resendOtp = (email: string) => api("POST", "/auth/resend-otp", { email });
-export const sendReset = (email: string) => api("POST", "/auth/reset-password-request", { email });
-
-export async function logout() {
-  try { const u = await me(); await pushProgress(u.id); } catch { /* sem conexão */ }
-  put(TOKEN, null); put(GUEST, null); clearLocal();
-  window.location.reload();
-}
-/** Sem conexão com o servidor: deixa usar o app só neste aparelho. */
 export function continueAsGuest() { clearLocal(); put(GUEST, "1"); window.location.reload(); }
-export const isGuest = () => get(GUEST) === "1";
+export async function logout() { /* não usado no link de teste (canLogout = false) */ }
 
-export function useAuth(): { ready: boolean; signedIn: boolean; email?: string; guest?: boolean } {
-  const [s, setS] = useState<{ ready: boolean; signedIn: boolean; email?: string; guest?: boolean }>({ ready: false, signedIn: false });
+export function useAuth(): { ready: boolean; signedIn: boolean; name?: string; guest?: boolean } {
+  const [s, setS] = useState<{ ready: boolean; signedIn: boolean; name?: string; guest?: boolean }>({ ready: false, signedIn: false });
   useEffect(() => {
-    let stop: (() => void) | undefined, alive = true;
+    let alive = true, timer = 0, busy = false;
+    const onHide = () => { void tick(); };
+    let tick = async () => { /* definido abaixo */ };
     (async () => {
-      if (isGuest()) { setS({ ready: true, signedIn: true, guest: true }); return; }
-      if (!get(TOKEN)) { if (get(OWNER)) clearLocal(); setS({ ready: true, signedIn: false }); return; }
-      try {
-        const u = await me();
-        if (get(OWNER) !== u.id) { await pullProgress(u); window.location.reload(); return; }
-        stop = startSync(u.id);
-        if (alive) setS({ ready: true, signedIn: true, email: u.email });
-      } catch (e) {
-        if (e instanceof AuthError && e.offline && get(OWNER)) { if (alive) setS({ ready: true, signedIn: true }); return; } // sem internet: segue com os dados locais
-        put(TOKEN, null); clearLocal(); if (alive) setS({ ready: true, signedIn: false });
+      const [user, db] = await Promise.all([use<UserNS>("user"), use<DB>("db")]);
+      const me = user ? await user.me() : null;
+      const uid = me?.id ?? null;
+      if (!uid || !db) {
+        if (get(GUEST) === "1") { if (alive) setS({ ready: true, signedIn: true, guest: true }); return; }
+        if (get(OWNER)) clearLocal();
+        if (alive) setS({ ready: true, signedIn: false });
+        return;
       }
+      put(GUEST, null);
+      const ref = db.doc(`data/users/${uid}/progresso`);
+      if (get(OWNER) !== uid) {
+        try {
+          const snap = await ref.get();
+          clearLocal();
+          const d = snap.exists ? snap.data()?.dados : undefined;
+          if (typeof d === "string") { try { applySnapshot(JSON.parse(d) as Snapshot); } catch { /* */ } }
+          put(OWNER, uid);
+          lastSent = body();
+          window.location.reload(); return;
+        } catch { if (alive) setS({ ready: true, signedIn: false }); return; }
+      }
+      tick = async () => { if (busy) return; busy = true; try { await push(ref, uid); } catch { /* tenta no próximo ciclo */ } finally { busy = false; } };
+      timer = window.setInterval(() => { void tick(); }, 5000);
+      window.addEventListener("pagehide", onHide); document.addEventListener("visibilitychange", onHide);
+      if (alive) setS({ ready: true, signedIn: true, name: me?.name || undefined });
     })();
-    return () => { alive = false; stop?.(); };
+    return () => { alive = false; window.clearInterval(timer); window.removeEventListener("pagehide", onHide); document.removeEventListener("visibilitychange", onHide); };
   }, []);
   return s;
-}
-
-export function authMessage(e: unknown): string {
-  if (!(e instanceof AuthError)) return "Não foi possível concluir. Tente de novo.";
-  if (e.offline) return "offline";
-  const m = e.detail.toLowerCase();
-  if (m.includes("verif") || m.includes("not confirmed")) return "Confirme seu e-mail primeiro: digite o código que enviamos.";
-  if (m.includes("already") || m.includes("exist")) return "Este e-mail já tem cadastro. Use \"Entrar\" ou \"Esqueci minha senha\".";
-  if (m.includes("otp") || m.includes("code")) return "Código inválido ou expirado. Peça um novo código.";
-  if (m.includes("password") && (m.includes("short") || m.includes("weak") || m.includes("least"))) return "Senha fraca: use 8+ caracteres com letras e números.";
-  if (e.status === 401 || e.status === 403 || m.includes("invalid") || m.includes("incorrect")) return "E-mail ou senha incorretos.";
-  if (e.status === 429) return "Muitas tentativas. Espere um pouco e tente de novo.";
-  return "Não foi possível concluir. Tente de novo.";
 }

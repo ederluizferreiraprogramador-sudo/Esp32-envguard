@@ -9,7 +9,7 @@ import { Nest } from "@/components/Nest";
 import { CastImage } from "@/components/CastImage";
 import { CAST, type CastId } from "@/lib/cast";
 import { useStudent } from "@/lib/student";
-import { logout } from "@/lib/accounts";
+import { canLogout, logout } from "@/lib/accounts";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { getAudioDiagnostics, speak } from "@/lib/audio";
@@ -123,7 +123,7 @@ function Profile() {
         ) : (
           <button className="btn3d btn-red mt-8 w-full" onClick={() => setConfirmReset(true)}>Zerar progresso</button>
         )}
-        <button className="btn3d btn-outline mt-3 w-full" onClick={() => { void logout(); }}>🚪 Sair da conta</button>
+        {canLogout && <button className="btn3d btn-outline mt-3 w-full" onClick={() => { void logout(); }}>🚪 Sair da conta</button>}
       </main>
       <BottomNav active="profile" />
     </div>

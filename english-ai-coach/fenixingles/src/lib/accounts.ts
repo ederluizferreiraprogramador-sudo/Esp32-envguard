@@ -4,6 +4,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
+export const canLogout = true;
 export const DATA_KEYS = [
   "fenixingles-student-v1", "fenixingles-progress-v1", "fenixingles-mistakes-v1", "fenixingles-reviewed-v1",
   "fenixingles-nest-v1", "fenixingles-premium-v1", "fenixingles-home-v1",
