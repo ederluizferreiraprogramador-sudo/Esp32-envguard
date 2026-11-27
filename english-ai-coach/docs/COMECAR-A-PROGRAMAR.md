@@ -24,3 +24,9 @@ Código (~150 arquivos, `src/routes/_authed/*`, `src/data/units*.js`, `base44/en
 ## 3) Lovable
 - No editor: **GitHub → Connect project** (cria o repositório com sincronização de duas vias), ou **Code → Download**.
 - Para trazer as novidades: `tools/pacote-lovable.sh` e `docs/LOVABLE-LOGIN.md` (precisa de créditos).
+
+## Programar com o GitHub (Codespaces + agente Copilot)
+1. No repositório: **Code → Codespaces → Create codespace** na branch `claude/novo-projeto-app-ingles-b748xs` (já tem `.devcontainer`).
+2. No terminal do Codespace: `npm run check` (verificação de tipos + 18 testes).
+3. Agente Copilot: em **Issues → New issue → "Tarefa para o agente Copilot"**, preencha e atribua a issue ao **Copilot** (precisa de plano Copilot Pro/Business). Ele abre um PR; as regras vêm de `.github/copilot-instructions.md` e `AGENTS.md`.
+4. Todo PR roda a verificação automática (`.github/workflows/fenixingles.yml`). Só faça merge com ela verde.

@@ -1,0 +1,15 @@
+name: FenixInglês — verificação
+on:
+  push: { paths: ["english-ai-coach/fenixingles/**", ".github/workflows/fenixingles.yml"] }
+  pull_request: { paths: ["english-ai-coach/fenixingles/**", ".github/workflows/fenixingles.yml"] }
+permissions: { contents: read }
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: english-ai-coach/fenixingles } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm, cache-dependency-path: english-ai-coach/fenixingles/package-lock.json }
+      - run: npm ci
+      - run: npm run check

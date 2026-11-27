@@ -1,0 +1,19 @@
+name: Tarefa para o agente Copilot
+description: Peça uma mudança pequena e bem definida no FenixInglês
+labels: ["copilot"]
+body:
+  - type: textarea
+    id: pedido
+    attributes: { label: "O que fazer", description: "Uma mudança por tarefa. Diga a tela ou o arquivo.", placeholder: "Ex.: na tela Revisar, mostrar a estrela quando a criança acertar 10 seguidas." }
+    validations: { required: true }
+  - type: textarea
+    id: pronto
+    attributes: { label: "Como saber que ficou pronto", placeholder: "Ex.: npm run check passa e aparece o selo na tela." }
+    validations: { required: true }
+  - type: checkboxes
+    id: regras
+    attributes:
+      label: "Regras"
+      options:
+        - { label: "Não mexe em dados de criança nem em chaves", required: true }
+        - { label: "Não copia arte nem texto de outros apps", required: true }
