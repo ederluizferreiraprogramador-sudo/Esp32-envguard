@@ -1,5 +1,6 @@
 // Registro dos erros do aluno (localStorage) e agrupamento por tipo de dificuldade.
 import type { Activity } from "@/data/units";
+import { track } from "./analytics";
 
 export interface Mistake {
   unit: number;
@@ -48,6 +49,7 @@ export function recordMistake(unit: number, lesson: number, activity: number, a:
     unit, lesson, activity, type: a.type, prompt: promptOf(a), given: given.trim(),
     correct: correctOf(a), explain: a.explain, at: new Date().toISOString(),
   };
+  track("erro_na_questao", { unidade: unit, licao: lesson, tipo: a.type });
   try {
     const all = loadMistakes();
     all.push(m);

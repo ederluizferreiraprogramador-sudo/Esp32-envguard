@@ -5,6 +5,7 @@ import { completeLesson, lessonKey, MAX_HEARTS, update, useProgress } from "@/li
 import { playCorrect, playFinish, playWrong, speak } from "@/lib/audio";
 import { recordMistake } from "@/lib/mistakes";
 import { castSrc } from "@/lib/cast";
+import { track } from "@/lib/analytics";
 import { awardForLesson, usePremium, type PhoenixId } from "@/lib/rewards";
 import { Fireworks } from "@/components/Fireworks";
 import { PhoenixGift } from "@/components/PhoenixGift";
@@ -155,6 +156,7 @@ function LessonPage() {
     setRetry(false);
     if (pos + 1 >= queue.length) {
       update((x) => completeLesson(x, lessonKey(unit.id, Number(lessonId)), 10));
+      track("licao_concluida", { unidade: unit.id, licao: Number(lessonId) });
       setGift(awardForLesson(lessonKey(unit.id, Number(lessonId))));
       playFinish(); setFinished(true); return;
     }

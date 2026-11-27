@@ -1,6 +1,7 @@
 // Recompensas: uma fênix de presente a cada lição concluída (coleção "Ninho das Fênix")
 // e a "Fênix Imortal" (vidas infinitas). Tudo salvo no aparelho.
 import { useEffect, useState } from "react";
+import { track } from "./analytics";
 
 export type PhoenixId = "fogo" | "esmeralda" | "azul" | "ametista" | "dourada" | "cristal" | "aurora" | "imortal";
 export type Rarity = "comum" | "rara" | "épica" | "lendária" | "imortal";
@@ -40,6 +41,7 @@ export function awardForLesson(lessonKey: string, rnd = Math.random): PhoenixId 
     id = pool[i]!.id;
   }
   write(NEST, { counts: { ...n.counts, [id]: (n.counts[id] ?? 0) + 1 }, gifted: [...n.gifted, lessonKey] });
+  track("fenix_ganha", { fenix: id });
   return id;
 }
 
