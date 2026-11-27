@@ -6,6 +6,7 @@ import { UniFront } from "@/components/Characters";
 import { Kitten } from "@/components/Kittens";
 import { HeroCard } from "@/components/HeroCard";
 import { Nest } from "@/components/Nest";
+import { AnalyticsConsent } from "@/components/AnalyticsConsent";
 import { CastImage } from "@/components/CastImage";
 import { CAST, type CastId } from "@/lib/cast";
 import { useStudent } from "@/lib/student";
@@ -123,6 +124,7 @@ function Profile() {
         ) : (
           <button className="btn3d btn-red mt-8 w-full" onClick={() => setConfirmReset(true)}>Zerar progresso</button>
         )}
+        <AnalyticsConsent />
         {canLogout && <button className="btn3d btn-outline mt-3 w-full" onClick={() => { void logout(); }}>🚪 Sair da conta</button>}
       </main>
       <BottomNav active="profile" />
